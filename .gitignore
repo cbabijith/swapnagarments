@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -14,15 +14,39 @@
 /coverage
 
 # next.js
-/.next/
+.next/
 /out/
 
-# production
+# production builds
 /build
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# env files (can opt-in for committing if needed)
+.env
+.env.*
+!.env.example
+
+# runtime data (SQLite database files)
+data/
+*.db
+
+# flutter / dart
+mobile/.dart_tool/
+mobile/build/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/coverage/
+mobile/lib/generated_plugin_registrant.dart
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
+
+# local tool state
+.mimosa/
 
 # debug
 npm-debug.log*
@@ -30,12 +54,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
-
 # vercel
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# typescript / IDE
+.idea/
+.vscode/

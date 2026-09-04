@@ -1,0 +1,32 @@
+{
+  "name": "@swapna-garments/backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Hono API: Better Auth, Zod validation, event-driven feature architecture",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc --noEmit && tsup",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/index.js",
+    "db:push": "drizzle-kit push"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "@hono/zod-validator": "^0.9.1",
+    "better-auth": "^1.7.2",
+    "better-sqlite3": "^12.0.0",
+    "dotenv": "^17.2.0",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.13.5",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^22.10.0",
+    "drizzle-kit": "^0.31.10",
+    "tsup": "^8.5.0",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.3"
+  }
+}
