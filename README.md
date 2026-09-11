@@ -86,6 +86,10 @@ curl http://localhost:3001/api/v1/events -b backend/data/cookies.txt
 
 ## Documentation
 
+- [docs/HANDOFF.md](docs/HANDOFF.md) — developer handoff: state, setup,
+  conventions, scope for the PWA + admin panel build
+- [docs/BACKLOG.md](docs/BACKLOG.md) — the 63-issue work plan (PWA + admin
+  panel + supporting backend), to be worked in order
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — five layers, dependency
   rules, request lifecycle, how to add a feature
 - [docs/EVENTS.md](docs/EVENTS.md) — event catalog and the event-driven API
