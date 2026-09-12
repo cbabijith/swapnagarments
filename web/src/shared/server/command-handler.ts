@@ -15,7 +15,17 @@ export function commandHandler(
       checkOrigin(request);
       const owner = await requireOwner(request);
       const input = await readBody(request, schema);
-      return json(await executeWorkspaceCommand(input, owner));
+      const result = await executeWorkspaceCommand(input, owner);
+      // Existing clients retain their snapshot contract during the transition.
+      if (request.headers.get("prefer") === "return=minimal") {
+        const response = json({
+          revision: result.revision,
+          resultId: result.resultId,
+        });
+        response.headers.set("Preference-Applied", "return=minimal");
+        return response;
+      }
+      return json(result);
     } catch (error) {
       return failure(error);
     }

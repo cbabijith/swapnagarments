@@ -4,8 +4,8 @@
 > follow the feature-driven structure of the owner's Dolce CRM project:
 > feature UI, thin Next.js APIs, server services, and Drizzle domain schemas.
 > Feature/service extraction, the Drizzle baseline and relational migration are
-> deployed to Railway, and the live database migration is complete. Remaining
-> query/event stages are described in
+> deployed to Railway, and the live database migration is complete.
+> Paginated feature reads are implemented and validated; the remaining event stage is described in
 > [docs/ARCHITECTURE-ALIGNMENT.md](docs/ARCHITECTURE-ALIGNMENT.md).
 
 > **Website update (2026-09-12):** The responsive desktop/mobile Next.js website
@@ -355,8 +355,9 @@ Every event carries an id, timestamp, and metadata including `actorId`
 
 ## Development workflow
 
-- **One issue → one branch → one PR.** Branch `feature/<issue#>-slug`, PR
-  references the issue ("Closes #N"). Work backlog issues in order.
+- **Branches:** use `shahil` for development and `main` for verified releases.
+  The owner requested only these two branches; do not create feature or `codex/`
+  branches. Reference related backlog issues in changes where appropriate.
 - **Definition of done:** `npm run build` and `npm run lint` clean at the
   root; manually tested against a running backend; PR explains what/how
   to test.

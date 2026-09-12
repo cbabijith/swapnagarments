@@ -14,3 +14,7 @@ export const POST = commandHandler(
     ]),
   }),
 );
+import { ordersQuery } from "@/features/orders/contracts/query";
+import { queryHandler } from "@/shared/server/query-handler";
+import { readOrders } from "@/services/order-read-service";
+export const GET = queryHandler(ordersQuery, readOrders);

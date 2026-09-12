@@ -7,10 +7,12 @@ architecture used by their local Dolce CRM project. This document defines the
 target for the active `web/` application. **Feature/service extraction, the
 Drizzle baseline, and the relational migration are deployed to Railway.**
 Full live database backups, isolated migration/rollback rehearsal and production
-cutover passed on 2026-09-12. Paginated feature reads and durable events remain.
+cutover passed on 2026-09-12. Paginated feature reads are implemented and validated;
+durable events remain.
 The relational migration has a tested
 dry-run, reconciliation and rollback procedure in [RELATIONAL-MIGRATION.md](RELATIONAL-MIGRATION.md).
-The live application uses commit `c19d928` and relational workspace revision 3.
+The relational cutover used commit `c19d928` and advanced the workspace to revision 3.
+Subsequent shop commands continue advancing its revision.
 
 Reference inspected: `C:/flutter_projects/dolce-crm`, especially `AGENTS.md`,
 `apps/web/AGENTS.md`, the expenses route/service/feature, `src/db/index.ts`,
@@ -84,9 +86,9 @@ separate backend deployment.
 | --- | --- | --- |
 | UI ownership | Screens now live in their own feature folders; commands use feature hooks/contracts/types | Completed for the current screens |
 | Business logic | Pure rules belong to feature `domain/` modules; server services invoke them against locked database state | Completed extraction; relational persistence will replace the compatibility coordinator |
-| APIs | Thin feature command routes call services; `/api/workspace` remains a compatibility read/write API | Resource-specific reads with filters and pagination remain |
+| APIs | Authenticated feature GET/POST routes call services; `/api/workspace` remains for older clients | Feature reads and commands implemented |
 | Data model | Drizzle domain tables are live; source checksum, owner and sessions were preserved through reconciled cutover | Complete for this migration; retain the documented backup/rollback procedure |
-| List queries | Whole workspace is sent to the browser for filtering | Server-side filtering, stable sorting, pagination, and screen-specific summaries |
+| List queries | PostgreSQL filters and pages records before hydration; dashboard and billing totals are computed across all records | Implemented for current screens |
 | Cross-feature side effects | Activity persists with shop state; relational mode records structured workflow history with each command | Durable domain events recorded with state changes, dispatched to idempotent consumers |
 | Authentication | Shared guards and service-owned Drizzle authentication preserve password hashing and session cookies | Completed without resetting the owner account |
 
@@ -95,7 +97,7 @@ Hono in-memory event bus is also not used by the live Next.js website.
 
 ## Refactor order
 
-1. **Feature and service extraction — implemented.** Work on an isolated refactor branch. Move
+1. **Feature and service extraction — implemented.** Use `shahil` for development and `main` for verified releases, as requested by the owner. Move
    screens into their owning feature folders and extract server SQL/transactions
    from route handlers into services. Retain the current HTTP contract and
    database representation as compatibility adapters. Keep the current behavior
@@ -112,7 +114,7 @@ Hono in-memory event bus is also not used by the live Next.js website.
    history, idempotency records, and ownership. Compare records and totals and
    reject inconsistent data before switching reads/writes. Define a cutover
    and rollback procedure; do not allow two uncoordinated sources of truth.
-4. **Feature APIs and hooks — commands implemented; reads pending.** Replace the compatibility workspace calls with
+4. **Feature APIs and hooks — implemented and validated.** Replace the compatibility workspace calls with
    resource-specific APIs and feature hooks. Add server-side search, filters,
    pagination, and dashboard aggregates. Preserve conflict detection and safe
    retry behavior across the transition.
@@ -195,8 +197,55 @@ This stage is tested on isolated PostgreSQL fixtures and a restored copy of the
 live Railway database. Backup restore, migration and rollback reconciliation
 passed. Production cutover and final checks passed as recorded in
 [the operator runbook](RELATIONAL-MIGRATION.md). Resource-specific
-pagination and durable event dispatch remain subsequent code stages.
+pagination is implemented below; durable event dispatch remains a subsequent code stage.
 
 Validation for the relational stage: all 10 automated tests, type checking,
 lint, production build and operator CLI help passed. No UI changes were made
 in this stage; the browser checks above belong to the extraction stage.
+
+## Implemented next stage: paginated feature reads
+
+The live-mode browser now bootstraps through `/api/session` and requests only the
+active screens' data. It does not automatically call `/api/workspace`. Feature
+hooks own query parameters and preview selectors; shared transport handles
+cancellation, errors, visible-tab polling, focus refresh and mutation invalidation.
+Search changes reset list pagination, and background refresh preserves form input.
+Shop dates refresh across midnight in Asia/Kolkata.
+
+| Read | Behavior |
+| --- | --- |
+| Customers | Name/phone search, directory pages and total order counts; detail includes current measurements and paginated orders |
+| Orders | Search, status/due/priority filters, stable pages, related customers; detail includes bounded activity |
+| Dashboard | Full-shop counts and Kolkata-day payment/delivery totals, five priority tasks and three activity entries |
+| Workflow | Independent station pages and full station counts; advancement uses the rendered expected station |
+| Billing | Paginated filtered orders and full-shop pending/collected totals |
+| Reports / team | Paginated saved reports and staff directory |
+| Shell / search / QR | Open-order count, eight recent activities, six search results, direct code lookup |
+| CSV export | Every matching order, independent of the visible page, with existing escaping and INR columns |
+
+Lists default to 20 records and accept up to 50. Relational reads acquire a shared
+workspace metadata lock for a consistent revision and filter/limit in PostgreSQL
+before fetching nested records. Customer responses omit historical measurement
+versions; saved history remains intact in storage. JSON storage retains a bounded
+response adapter for rollback compatibility. No schema migration is added here.
+
+Feature commands support `Prefer: return=minimal` and return only revision and
+result ID to the new client. Older clients still receive their original snapshot
+response. Idempotency, conflict checks, owner/session protection and transaction
+rules are unchanged.
+
+Validation: all 12 automated tests, lint, type checking and production build pass.
+Tests cover multi-page fixtures, literal wildcard searches, all-shop aggregates,
+Kolkata midnight boundaries, authenticated reads, input limits, CSV export and
+JSON rollback behavior. Browser checks use a separate local PostgreSQL database
+with 45 synthetic customers and 65 initial orders. Search, pagination, all-record
+export, intake, station advancement and manual QR lookup pass. Eleven screens,
+including intake and detail views, fit a 390px phone viewport; desktop checks use
+1440px. No browser page errors or automatic workspace downloads were observed.
+
+Remaining limits: the compatibility command coordinator still hydrates the shop
+state on the server for authoritative rules. Nested items and payments are complete
+for each selected order. CSV export hydrates in batches but builds the complete
+file in memory while holding the read lock; large exports can delay writes.
+These are distinct from the completed screen-query work. Durable event dispatch
+and any new external notification providers remain future stages.

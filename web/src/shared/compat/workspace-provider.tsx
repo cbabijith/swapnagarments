@@ -22,11 +22,13 @@ type WorkspaceContext = {
   notice: string;
   mode: "preview" | "live";
   owner: Owner;
+  queryVersion: number;
+  onUnauthorized: () => void;
   notify: (message: string) => void;
   send: (
     action: unknown,
     message: string,
-  ) => Promise<{ data: Workspace; resultId?: string }>;
+  ) => Promise<{ data?: Workspace; resultId?: string; revision?: number }>;
   signOut: () => Promise<void>;
 };
 const Context = createContext<WorkspaceContext | null>(null);
@@ -48,11 +50,29 @@ export function WorkspaceProvider({
   );
   const [setupAvailable, setSetupAvailable] = useState(false);
   const [connectionError, setConnectionError] = useState("");
+  const [queryVersion, setQueryVersion] = useState(0);
   const snapshot = useRef(initialData);
   const revision = useRef(-1);
-  const loaded = useRef(false);
-  const notify = (message: string) => setNotice(message);
-  const today = shopDate();
+  const sessionRequest = useRef<AbortController | null>(null);
+  const notify = useCallback((message: string) => setNotice(message), []);
+  const onUnauthorized = useCallback(() => {
+    sessionRequest.current?.abort();
+    sessionRequest.current = null;
+    setAccess("signin");
+  }, []);
+  const [today, setToday] = useState(() => shopDate());
+
+  useEffect(() => {
+    const updateDate = () => setToday(shopDate());
+    const timer = window.setInterval(updateDate, 30000);
+    window.addEventListener("focus", updateDate);
+    document.addEventListener("visibilitychange", updateDate);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", updateDate);
+      document.removeEventListener("visibilitychange", updateDate);
+    };
+  }, []);
 
   const acceptSnapshot = useCallback(
     (updated: Workspace, updatedRevision: number) => {
@@ -66,12 +86,20 @@ export function WorkspaceProvider({
 
   const refresh = useCallback(async () => {
     if (mode === "preview") return;
+    sessionRequest.current?.abort();
+    const controller = new AbortController();
+    sessionRequest.current = controller;
     try {
-      const response = await fetch("/api/workspace", {
+      const response = await fetch("/api/session", {
         cache: "no-store",
-        signal: AbortSignal.timeout(15000),
+        signal: AbortSignal.any([
+          controller.signal,
+          AbortSignal.timeout(15000),
+        ]),
       });
       const result = await response.json();
+      if (controller.signal.aborted || sessionRequest.current !== controller)
+        return;
       if (response.status === 401) {
         setAccess(result.setupRequired ? "setup" : "signin");
         setSetupAvailable(Boolean(result.setupAvailable));
@@ -81,38 +109,29 @@ export function WorkspaceProvider({
         throw new Error(
           result.error || "The workspace connection is unavailable.",
         );
-      acceptSnapshot(result.data, result.revision);
       setOwner(result.owner);
-      loaded.current = true;
       setAccess("ready");
     } catch (error) {
+      if (controller.signal.aborted || sessionRequest.current !== controller)
+        return;
       const message =
         error instanceof Error
           ? error.message
           : "Could not reach your workspace.";
-      if (loaded.current)
-        setNotice(
-          "Could not refresh the workspace. Please check your connection.",
-        );
-      else {
-        setConnectionError(message);
-        setAccess("error");
-      }
+      setConnectionError(message);
+      setAccess("error");
+    } finally {
+      if (sessionRequest.current === controller) sessionRequest.current = null;
     }
-  }, [mode, acceptSnapshot]);
+  }, [mode]);
 
   useEffect(() => {
     if (mode === "preview") return;
     const initial = window.setTimeout(() => void refresh(), 0);
-    const interval = window.setInterval(() => {
-      if (document.visibilityState === "visible") void refresh();
-    }, 30000);
-    const focus = () => void refresh();
-    window.addEventListener("focus", focus);
     return () => {
       window.clearTimeout(initial);
-      window.clearInterval(interval);
-      window.removeEventListener("focus", focus);
+      sessionRequest.current?.abort();
+      sessionRequest.current = null;
     };
   }, [mode, refresh]);
 
@@ -130,7 +149,10 @@ export function WorkspaceProvider({
     const request = () =>
       fetch(commandEndpoint(command), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
         body: JSON.stringify({ mutationId, action: command }),
         signal: AbortSignal.timeout(20000),
       });
@@ -140,20 +162,22 @@ export function WorkspaceProvider({
       response = await request();
     }
     const result = await response.json();
-    if (response.status === 401) setAccess("signin");
+    if (response.status === 401) onUnauthorized();
     if (!response.ok)
       throw new Error(result.error || "The change could not be saved.");
-    acceptSnapshot(result.data, result.revision);
+    revision.current = Math.max(revision.current, result.revision);
+    setQueryVersion((version) => version + 1);
     notify(message);
-    return result as { data: Workspace; resultId?: string };
+    return result as { resultId?: string; revision: number };
   }
   const signOut = async () => {
+    sessionRequest.current?.abort();
+    sessionRequest.current = null;
     const response = await fetch("/api/auth", { method: "DELETE" });
     if (!response.ok) {
       notify("Could not sign out. Please try again.");
       return;
     }
-    loaded.current = false;
     setAccess("signin");
   };
 
@@ -174,6 +198,8 @@ export function WorkspaceProvider({
         notice,
         mode,
         owner,
+        queryVersion,
+        onUnauthorized,
         notify,
         send,
         signOut,

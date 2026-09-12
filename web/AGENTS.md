@@ -14,8 +14,10 @@ The owner's 2026-09-12 requirement is to follow the feature-driven architecture
 of the local Dolce CRM project. Read `../docs/ARCHITECTURE-ALIGNMENT.md` before
 implementing new features or structural changes. That document is the target;
 the feature/service extraction, Drizzle baseline and relational migration are
-implemented. Workspace API adapters remain while paginated feature reads are
-introduced. Read `../docs/RELATIONAL-MIGRATION.md` before storage cutover work.
+implemented, along with paginated feature reads. Workspace API adapters remain
+for older clients. Read `../docs/RELATIONAL-MIGRATION.md` before storage cutover work.
+Use only `shahil` for development and `main` for verified releases; the owner does
+not want additional feature or `codex/` branches.
 
 - Keep the active app in `web/`: Next.js pages and API Route Handlers. No Server
   Actions or separate backend deployment is required.

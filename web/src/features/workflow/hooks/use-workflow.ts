@@ -6,17 +6,17 @@ export function useWorkflow() {
   const workspace = useWorkspace();
   return {
     ...workspace,
-    advancePiece: async (orderId: string, pieceId: string) => {
-      const piece = workspace.data.orders
-        .find((order) => order.id === orderId)
-        ?.items.find((item) => item.id === pieceId);
-      if (!piece) throw new Error("Garment not found.");
+    advancePiece: async (
+      orderId: string,
+      pieceId: string,
+      expectedStation: number,
+    ) => {
       await workspace.send(
         {
           type: "piece.advance",
           orderId,
           pieceId,
-          expectedStation: piece.station,
+          expectedStation,
         } satisfies WorkspaceMutation,
         "Garment progress saved.",
       );

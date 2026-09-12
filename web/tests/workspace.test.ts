@@ -11,6 +11,7 @@ import {
   type Workspace,
 } from "../src/shared/workspace";
 import { GET, POST } from "../src/app/api/workspace/route";
+import { GET as sessionGet } from "../src/app/api/session/route";
 import { POST as customersPost } from "../src/app/api/customers/route";
 import { POST as ordersPost } from "../src/app/api/orders/route";
 import { POST as workflowPost } from "../src/app/api/workflow/route";
@@ -165,6 +166,9 @@ test("protected PostgreSQL lifecycle: setup, intake, retries, payment, delivery,
   const unsigned = await GET(request("/api/workspace"));
   assert.equal(unsigned.status, 401);
   assert.equal((await unsigned.json()).setupRequired, true);
+  const unsignedSession = await sessionGet(request("/api/session"));
+  assert.equal(unsignedSession.status, 401);
+  assert.equal((await unsignedSession.json()).setupRequired, true);
   const blocked = await POST(
     request("/api/workspace", "POST", {
       mutationId: crypto.randomUUID(),
@@ -193,6 +197,14 @@ test("protected PostgreSQL lifecycle: setup, intake, retries, payment, delivery,
   );
   assert.equal(setup.status, 200, JSON.stringify(await setup.clone().json()));
   const cookie = setup.headers.get("set-cookie")!.split(";")[0];
+  const session = await sessionGet(
+    request("/api/session", "GET", undefined, cookie),
+  );
+  assert.equal(session.status, 200);
+  assert.equal(session.headers.get("cache-control"), "no-store");
+  assert.deepEqual(await session.json(), {
+    owner: { name: "Test Owner", email: "owner@example.test" },
+  });
   assert.match(setup.headers.get("set-cookie")!, /HttpOnly/i);
   const rows = await pg.query<{ password_hash: string }>(
     "SELECT password_hash FROM sg_owner",
@@ -258,6 +270,20 @@ test("protected PostgreSQL lifecycle: setup, intake, retries, payment, delivery,
   assert.equal(repeated.body.data.orders.length, 1);
   assert.equal(repeated.body.resultId, created.body.resultId);
   assert.equal(repeated.body.revision, created.body.revision);
+  const smallRequest = request(
+    "/api/orders",
+    "POST",
+    { mutationId: commandId, action: orderCommand },
+    cookie,
+  );
+  smallRequest.headers.set("Prefer", "return=minimal");
+  const receipt = await ordersPost(smallRequest);
+  assert.equal(receipt.status, 200);
+  assert.equal(receipt.headers.get("preference-applied"), "return=minimal");
+  assert.deepEqual(await receipt.json(), {
+    revision: created.body.revision,
+    resultId: created.body.resultId,
+  });
   const collision = await mutate(
     { ...orderCommand, notes: "A different order" },
     commandId,

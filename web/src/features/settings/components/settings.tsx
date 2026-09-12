@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Check,
   Scissors,
@@ -9,10 +10,36 @@ import {
 } from "lucide-react";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { PageHeading } from "@/shared/components/ui";
-import { money, formatDate } from "@/shared/workspace";
+import { QueryState, Pagination } from "@/shared/components/query-state";
+import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
+import type { WorkspacePage } from "@/shared/contracts/query";
+import { money, formatDate, emptyWorkspace } from "@/shared/workspace";
 
 export function SettingsPage() {
-  const { mode, owner, signOut, data } = useWorkspace();
+  const { mode, owner, signOut } = useWorkspace();
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const reports = useFeatureQuery<WorkspacePage>(
+    `/api/reports?page=${page}&pageSize=${pageSize}`,
+    (workspace) => {
+      const matches = [...(workspace.dayReports ?? [])].sort((a, b) =>
+        b.date.localeCompare(a.date),
+      );
+      return {
+        revision: 0,
+        page: {
+          page,
+          pageSize,
+          total: matches.length,
+          pageCount: Math.max(1, Math.ceil(matches.length / pageSize)),
+        },
+        data: {
+          ...emptyWorkspace(),
+          dayReports: matches.slice((page - 1) * pageSize, page * pageSize),
+        },
+      };
+    },
+  );
   return (
     <>
       <PageHeading
@@ -61,27 +88,33 @@ export function SettingsPage() {
         <section className="panel settings-card">
           <Scissors size={26} strokeWidth={1.5} />
           <h2>The days, remembered</h2>
-          {data.dayReports?.length ? (
-            data.dayReports
-              .slice()
-              .reverse()
-              .map((report) => (
-                <div className="summary-line" key={report.date}>
-                  <span>
-                    {formatDate(report.date, true)}
-                    <small style={{ display: "block" }}>
-                      {report.delivered} delivered · reviewed by{" "}
-                      {report.reviewedBy}
-                    </small>
-                  </span>
-                  <strong>{money(report.collected)}</strong>
-                </div>
-              ))
-          ) : (
+          <QueryState
+            loading={reports.isLoading}
+            error={reports.error}
+            retry={reports.reload}
+          />
+          {reports.data?.data.dayReports?.length ? (
+            reports.data.data.dayReports.map((report) => (
+              <div className="summary-line" key={report.date}>
+                <span>
+                  {formatDate(report.date, true)}
+                  <small style={{ display: "block" }}>
+                    {report.delivered} delivered · reviewed by{" "}
+                    {report.reviewedBy}
+                  </small>
+                </span>
+                <strong>{money(report.collected)}</strong>
+              </div>
+            ))
+          ) : reports.data && !reports.isLoading && !reports.error ? (
             <p>
-              Your saved closing reports appear here after you review the day
-              from the overview.
+              {reports.data.page.total
+                ? "No reports on this page. Use the page controls below."
+                : "Your saved closing reports appear here after you review the day from the overview."}
             </p>
+          ) : null}
+          {reports.data && (
+            <Pagination page={reports.data.page} onPageChange={setPage} />
           )}
         </section>
       </div>

@@ -20,11 +20,9 @@ export function useOrders() {
         { type: "order.create", ...input },
         "Order saved.",
       );
-      const order = result.data.orders.find(
-        (entry) => entry.id === result.resultId,
-      );
-      if (!order) throw new Error("The new order could not be loaded.");
-      return order;
+      if (!result.resultId)
+        throw new Error("The new order could not be loaded.");
+      return { id: result.resultId };
     },
     deliver: async (orderId: string) => {
       await workspace.send(

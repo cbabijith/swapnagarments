@@ -14,3 +14,7 @@ export const POST = commandHandler(
     ]),
   }),
 );
+import { workflowQuery } from "@/features/workflow/contracts/query";
+import { queryHandler } from "@/shared/server/query-handler";
+import { readWorkflow } from "@/services/workflow-read-service";
+export const GET = queryHandler(workflowQuery, readWorkflow);

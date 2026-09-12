@@ -45,9 +45,9 @@ Tests run against an isolated PostgreSQL WASM engine and do not touch Railway.
 
 ## Structure
 
-Feature/service extraction, the Drizzle baseline and relational migration now
+Feature/service extraction, the Drizzle baseline, relational migration and paginated reads now
 follow the local Dolce CRM reference. [ARCHITECTURE-ALIGNMENT.md](../docs/ARCHITECTURE-ALIGNMENT.md)
-records completed work and the remaining deployment/query/event stages.
+records completed work and the remaining event stage.
 
 - `src/app/` — thin pages and protected API route composition.
 - `src/features/<feature>/` — feature components, hooks, contracts, types, and pure rules.
@@ -59,8 +59,15 @@ records completed work and the remaining deployment/query/event stages.
 - `tests/` — protected workflows, migration preservation and transitive client/server boundaries.
 
 Feature commands use `/api/customers`, `/api/orders`, `/api/workflow`,
-`/api/billing` and `/api/reports`. Existing `/api/workspace` reads and writes
-remain compatible. There is no separate backend deployment.
+`/api/billing` and `/api/reports`. Authenticated GET routes supply paginated
+screen records and server-computed totals. The browser uses `/api/session`
+for login state and feature queries for records, with bounded search, focus
+refresh and safe cancellation. Existing `/api/workspace` reads and writes
+remain compatible for older clients. New saves request a small revision/result
+receipt and refresh affected screens. There is no separate backend deployment.
+
+Use `shahil` for development and `main` for verified Railway releases. These are
+the project's only branches.
 
 Migrations run transactionally on first server access. Version 1 baselines the
 existing tables; version 2 adds a nullable retry fingerprint; version 3 adds

@@ -12,6 +12,12 @@ import {
 } from "lucide-react";
 import { useCustomers } from "@/features/customers/hooks/use-customers";
 import {
+  useCustomerDirectory,
+  useCustomerDetail,
+} from "@/features/customers/hooks/use-customer-reads";
+import { useDebouncedValue } from "@/shared/hooks/use-feature-query";
+import { QueryState, Pagination } from "@/shared/components/query-state";
+import {
   Avatar,
   Dialog,
   EmptyState,
@@ -127,14 +133,12 @@ function CustomerForm({
 }
 
 export function CustomersList() {
-  const { data } = useCustomers();
   const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const search = useDebouncedValue(query);
   const [add, setAdd] = useState(false);
-  const customers = data.customers.filter((customer) =>
-    `${customer.name} ${customer.phone}`
-      .toLowerCase()
-      .includes(query.toLowerCase()),
-  );
+  const read = useCustomerDirectory(search, page);
+  const customers = read.data?.data.customers ?? [];
   return (
     <>
       <PageHeading
@@ -152,13 +156,24 @@ export function CustomersList() {
           <Search size={17} />
           <input
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setPage(1);
+            }}
+            maxLength={160}
             placeholder="Search by name or phone"
             aria-label="Search customers"
           />
         </label>
-        <span className="muted small">{customers.length} customers</span>
+        {read.data && (
+          <span className="muted small">{read.data.page.total} customers</span>
+        )}
       </div>
+      <QueryState
+        loading={read.isLoading}
+        error={read.error}
+        retry={read.reload}
+      />
       <div className="customer-grid">
         {customers.map((customer, index) => (
           <Link
@@ -174,12 +189,7 @@ export function CustomersList() {
             <p>{customer.phone}</p>
             <div className="customer-card-foot">
               <span>
-                {
-                  data.orders.filter(
-                    (order) => order.customerId === customer.id,
-                  ).length
-                }{" "}
-                orders ·{" "}
+                {read.data?.orderCounts[customer.id] ?? 0} orders ·{" "}
                 {Object.keys(customer.measurements).length
                   ? "Measurements saved"
                   : "No measurements yet"}
@@ -189,24 +199,35 @@ export function CustomersList() {
           </Link>
         ))}
       </div>
-      {!customers.length && (
+      {!read.isLoading && !read.error && !customers.length && (
         <EmptyState
           title="No customers found"
           text="Try another name or add a new customer."
         />
       )}
+      {read.data && <Pagination page={read.data.page} onPageChange={setPage} />}
       {add && <CustomerForm onClose={() => setAdd(false)} />}
     </>
   );
 }
 
 export function CustomerDetail({ id }: { id: string }) {
-  const { data, saveCustomer } = useCustomers();
+  const { saveCustomer } = useCustomers();
+  const [page, setPage] = useState(1);
+  const read = useCustomerDetail(id, page);
   const [edit, setEdit] = useState(false);
   const [measurements, setMeasurements] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const customer = data.customers.find((entry) => entry.id === id);
+  const customer = read.data?.data.customers.find((entry) => entry.id === id);
+  if (!customer && (read.isLoading || read.error))
+    return (
+      <QueryState
+        loading={read.isLoading}
+        error={read.error}
+        retry={read.reload}
+      />
+    );
   if (!customer)
     return (
       <EmptyState
@@ -218,7 +239,7 @@ export function CustomerDetail({ id }: { id: string }) {
         </Link>
       </EmptyState>
     );
-  const orders = data.orders.filter((order) => order.customerId === id);
+  const orders = read.data?.data.orders ?? [];
   return (
     <>
       <Link className="back-link" href="/customers">
@@ -235,6 +256,11 @@ export function CustomerDetail({ id }: { id: string }) {
           Edit details
         </button>
       </PageHeading>
+      <QueryState
+        loading={read.isLoading}
+        error={read.error}
+        retry={read.reload}
+      />
       <div className="detail-columns">
         <div className="stack">
           <section className="panel">
@@ -265,7 +291,7 @@ export function CustomerDetail({ id }: { id: string }) {
           <section className="panel">
             <SectionHeading
               title="Every order, remembered"
-              subtitle={`${orders.length} orders with the studio`}
+              subtitle={`${read.data?.orderCounts[id] ?? 0} orders with the studio`}
             />
             {orders.map((order) => (
               <Link
@@ -288,11 +314,14 @@ export function CustomerDetail({ id }: { id: string }) {
                 </p>
               </Link>
             ))}
-            {!orders.length && (
+            {!read.isLoading && !read.error && !orders.length && (
               <EmptyState
                 title="The first chapter awaits"
                 text="This customer has no orders yet."
               />
+            )}
+            {read.data && (
+              <Pagination page={read.data.page} onPageChange={setPage} />
             )}
           </section>
         </div>

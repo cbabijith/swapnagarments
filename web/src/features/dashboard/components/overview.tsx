@@ -22,6 +22,8 @@ import {
   CircleAlert,
 } from "lucide-react";
 import { useReports } from "@/features/reports/hooks/use-reports";
+import { useDashboard } from "@/features/dashboard/hooks/use-dashboard";
+import { QueryState } from "@/shared/components/query-state";
 import {
   PageHeading,
   SectionHeading,
@@ -29,53 +31,42 @@ import {
   PriorityBadge,
   EmptyState,
 } from "@/shared/components/ui";
-import {
-  STATIONS,
-  isOpen,
-  isOverdue,
-  money,
-  prioritySort,
-  formatDate,
-  shopDate,
-} from "@/shared/workspace";
+import { STATIONS, isOverdue, money, formatDate } from "@/shared/workspace";
 
 const stationIcons = [Scissors, Ruler, Sparkles, Shirt, Wind];
 
 export function Overview() {
-  const { data, today, closeDay, mode, notify } = useReports();
+  const { closeDay, mode, notify } = useReports();
   const [view, setView] = useState("opening");
   const [filter, setFilter] = useState("Today & overdue");
-  const open = data.orders.filter(isOpen);
-  const due = open.filter((order) => order.dueDate === today);
-  const overdue = open.filter((order) => isOverdue(order, today));
-  const ready = open.filter((order) => order.status === "ready");
-  const inProgress = open.filter((order) => order.status === "in_progress");
-  const collected = data.orders
-    .flatMap((order) => order.payments)
-    .filter((payment) => shopDate(new Date(payment.date)) === today)
-    .reduce((sum, payment) => sum + payment.amount, 0);
-  const delivered = data.orders.filter(
-    (order) =>
-      order.deliveredAt && shopDate(new Date(order.deliveredAt)) === today,
-  );
-  const todayOrders = data.orders.filter(
-    (order) => order.dueDate === today && order.status !== "cancelled",
-  );
-  const finished = todayOrders.filter((order) =>
-    ["ready", "delivered"].includes(order.status),
-  ).length;
-  const completion = todayOrders.length
-    ? Math.round((finished / todayOrders.length) * 100)
-    : 0;
-  const tasks = (
+  const [closing, setClosing] = useState(false);
+  const query = useDashboard(
     filter === "Ready for pickup"
-      ? ready
+      ? "ready"
       : filter === "Urgent"
-        ? open.filter((order) => order.priority === "urgent")
-        : open.filter((order) => order.dueDate <= today)
-  ).sort(prioritySort);
+        ? "urgent"
+        : "due",
+  );
+  if (!query.data)
+    return (
+      <QueryState
+        loading={query.isLoading}
+        error={query.error}
+        retry={query.reload}
+      />
+    );
+  const { data, today, summary } = query.data;
+  const completion = summary.todayTotal
+    ? Math.round((summary.todayFinished / summary.todayTotal) * 100)
+    : 0;
+  const tasks = data.orders;
   return (
     <>
+      <QueryState
+        loading={query.isLoading}
+        error={query.error}
+        retry={query.reload}
+      />
       <PageHeading
         eyebrow="A LITTLE CLARITY FOR YOUR EVERYDAY"
         title="Your shop, at a glance."
@@ -129,8 +120,8 @@ export function Overview() {
           {[
             {
               label: "Due today",
-              value: String(due.length).padStart(2, "0"),
-              detail: `${overdue.length} overdue need attention`,
+              value: String(summary.due).padStart(2, "0"),
+              detail: `${summary.overdue} overdue need attention`,
               tone: "peach",
               icon: CalendarDays,
               href: "/orders?filter=due",
@@ -138,7 +129,7 @@ export function Overview() {
             },
             {
               label: "In the making",
-              value: String(inProgress.length).padStart(2, "0"),
+              value: String(summary.inProgress).padStart(2, "0"),
               detail: "Moving through your stations",
               tone: "lilac",
               icon: Scissors,
@@ -146,7 +137,7 @@ export function Overview() {
             },
             {
               label: "Ready for pickup",
-              value: String(ready.length).padStart(2, "0"),
+              value: String(summary.ready).padStart(2, "0"),
               detail: "Finished with care, ready to go",
               tone: "sage",
               icon: ShoppingBag,
@@ -154,7 +145,7 @@ export function Overview() {
             },
             {
               label: "Collected today",
-              value: money(collected),
+              value: money(summary.collectedToday),
               detail: "Advances & final payments",
               tone: "sand",
               icon: Wallet,
@@ -198,42 +189,42 @@ export function Overview() {
             </p>
             <div className="closing-numbers">
               <div>
-                <strong>{delivered.length}</strong>
+                <strong>{summary.deliveredToday}</strong>
                 <span>Orders delivered today</span>
               </div>
               <div>
-                <strong>{money(collected)}</strong>
+                <strong>{money(summary.collectedToday)}</strong>
                 <span>Payments collected</span>
               </div>
               <div>
-                <strong>
-                  {
-                    open.filter(
-                      (order) =>
-                        order.dueDate <= today && order.status !== "ready",
-                    ).length
-                  }
-                </strong>
-                <span>Due garments still in progress</span>
+                <strong>{summary.unfinished}</strong>
+                <span>Due orders still in progress</span>
               </div>
             </div>
             <button
               className="button primary"
-              disabled={data.closedDays.includes(today)}
-              onClick={() =>
-                void closeDay().catch((error: unknown) =>
+              disabled={summary.reviewed || closing || query.isRefreshing}
+              onClick={async () => {
+                setClosing(true);
+                try {
+                  await closeDay();
+                } catch (error) {
                   notify(
                     error instanceof Error
                       ? error.message
                       : "Could not save the daily report.",
-                  ),
-                )
-              }
+                  );
+                } finally {
+                  setClosing(false);
+                }
+              }}
             >
               <CheckCheck size={18} />
-              {data.closedDays.includes(today)
+              {summary.reviewed
                 ? "Day reviewed"
-                : "Mark the day reviewed"}
+                : closing
+                  ? "Saving…"
+                  : "Mark the day reviewed"}
             </button>
             <p className="small muted">
               {mode === "preview"
@@ -262,7 +253,7 @@ export function Overview() {
                     >
                       {value}
                       {value === "Today & overdue" && (
-                        <span>{due.length + overdue.length}</span>
+                        <span>{summary.due + summary.overdue}</span>
                       )}
                     </button>
                   ),
@@ -339,7 +330,7 @@ export function Overview() {
                 )}
               </div>
               <Link href="/orders" className="panel-footer-link">
-                See all {open.length} active orders
+                See all {summary.open} active orders
                 <ArrowRight size={15} />
               </Link>
             </section>
@@ -353,9 +344,7 @@ export function Overview() {
               <div className="station-overview">
                 {STATIONS.map((station, index) => {
                   const Icon = stationIcons[index];
-                  const count = open
-                    .flatMap((order) => order.items)
-                    .filter((item) => item.station === index).length;
+                  const count = summary.stations[index] ?? 0;
                   return (
                     <Link
                       key={station}
@@ -372,7 +361,7 @@ export function Overview() {
                       <div className="station-meter">
                         <span
                           style={{
-                            width: `${Math.min((count / Math.max(open.length, 1)) * 100 + (count ? 14 : 0), 100)}%`,
+                            width: `${Math.min((count / Math.max(summary.open, 1)) * 100 + (count ? 14 : 0), 100)}%`,
                           }}
                         />
                       </div>
@@ -399,12 +388,18 @@ export function Overview() {
                 with a little focus.
               </h2>
               <p>
-                {overdue.length > 0
-                  ? `You have ${overdue.length} overdue orders. Let’s give them a little extra attention today.`
+                {summary.overdue > 0
+                  ? `You have ${summary.overdue} overdue orders. Let’s give them a little extra attention today.`
                   : "Your orders are on track. Give today’s deliveries the finishing touches."}
               </p>
-              <Link href="/orders?filter=overdue">
-                {overdue.length
+              <Link
+                href={
+                  summary.overdue
+                    ? "/orders?filter=overdue"
+                    : "/orders?filter=due"
+                }
+              >
+                {summary.overdue
                   ? "Review overdue orders"
                   : "View today’s orders"}
                 <ArrowUpRight size={17} />
@@ -432,7 +427,7 @@ export function Overview() {
                 <div>
                   <strong>Today’s work</strong>
                   <p>
-                    {finished} of {todayOrders.length} due orders
+                    {summary.todayFinished} of {summary.todayTotal} due orders
                     <br />
                     ready or delivered
                   </p>

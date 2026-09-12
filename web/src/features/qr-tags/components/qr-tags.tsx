@@ -6,30 +6,92 @@ import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { PageHeading } from "@/shared/components/ui";
 
 export function Scan() {
-  const { data } = useWorkspace();
+  const { data: preview, mode, onUnauthorized } = useWorkspace();
   const router = useRouter();
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [camera, setCamera] = useState(false);
+  const [busy, setBusy] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
-  const resolveRef = useRef<(text: string) => void>(() => {});
-  function resolve(text: string) {
+  const inFlight = useRef(false);
+  const mounted = useRef(true);
+  const request = useRef<AbortController | null>(null);
+  const lastScan = useRef({ text: "", time: 0 });
+  const resolveRef = useRef<(text: string, scanned?: boolean) => Promise<void>>(
+    async () => {},
+  );
+  async function resolve(text: string, scanned = false) {
     const cleaned = text.trim();
-    const order = data.orders.find(
-      (entry) =>
-        entry.number.toLowerCase() === cleaned.toLowerCase() ||
-        entry.id === cleaned ||
-        (cleaned.startsWith("swapna:") && cleaned.split(":")[1] === entry.id),
-    );
-    if (!order) {
-      setError(
-        "We couldn’t find that garment. Check the order number and try again.",
-      );
+    if (!cleaned || inFlight.current) return;
+    if (
+      scanned &&
+      lastScan.current.text === cleaned &&
+      Date.now() - lastScan.current.time < 2500
+    )
       return;
+    if (scanned) lastScan.current = { text: cleaned, time: Date.now() };
+    inFlight.current = true;
+    setBusy(true);
+    setError("");
+    try {
+      let orderId: string | undefined;
+      if (mode === "preview") {
+        orderId = preview.orders.find(
+          (entry) =>
+            entry.number.toLowerCase() === cleaned.toLowerCase() ||
+            entry.id === cleaned ||
+            (cleaned.startsWith("swapna:") &&
+              cleaned.split(":")[1] === entry.id),
+        )?.id;
+      } else {
+        const controller = new AbortController();
+        request.current = controller;
+        const response = await fetch(
+          `/api/lookup?code=${encodeURIComponent(cleaned)}`,
+          {
+            cache: "no-store",
+            signal: AbortSignal.any([
+              controller.signal,
+              AbortSignal.timeout(15000),
+            ]),
+          },
+        );
+        const result = await response.json();
+        if (response.status === 401) onUnauthorized();
+        if (!response.ok)
+          throw new Error(
+            result.error || "Could not look up this garment. Please try again.",
+          );
+        orderId = result.orderId;
+      }
+      if (!orderId)
+        throw new Error(
+          "We couldn’t find that garment. Check the order number and try again.",
+        );
+      if (mounted.current) {
+        setCamera(false);
+        router.push(`/orders/${encodeURIComponent(orderId)}`);
+      }
+    } catch (error) {
+      if (mounted.current)
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Could not look up this garment. Please try again.",
+        );
+    } finally {
+      inFlight.current = false;
+      request.current = null;
+      if (mounted.current) setBusy(false);
     }
-    setCamera(false);
-    router.push(`/orders/${order.id}`);
   }
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      request.current?.abort();
+    };
+  }, []);
   useEffect(() => {
     resolveRef.current = resolve;
   });
@@ -46,7 +108,7 @@ export function Scan() {
           video.current,
           (result) => {
             if (result && !disposed) {
-              resolveRef.current(result.getText());
+              void resolveRef.current(result.getText(), true);
             }
           },
         );
@@ -113,7 +175,7 @@ export function Scan() {
         <form
           onSubmit={(event) => {
             event.preventDefault();
-            resolve(code);
+            void resolve(code);
           }}
         >
           <label className="field">
@@ -126,8 +188,8 @@ export function Scan() {
               autoCapitalize="characters"
             />
           </label>
-          <button className="button" type="submit">
-            Find garment
+          <button className="button" type="submit" disabled={busy}>
+            {busy ? "Finding garment…" : "Find garment"}
             <ArrowRight size={16} />
           </button>
         </form>

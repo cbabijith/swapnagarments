@@ -4,22 +4,115 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowUpRight, Check, Scissors, ScanLine } from "lucide-react";
 import { useWorkflow } from "@/features/workflow/hooks/use-workflow";
+import { useWorkflowColumn } from "@/features/workflow/hooks/use-workflow-column";
 import { PageHeading, PriorityBadge } from "@/shared/components/ui";
-import {
-  STATIONS,
-  isOpen,
-  isOverdue,
-  formatDate,
-  prioritySort,
-} from "@/shared/workspace";
+import { QueryState, Pagination } from "@/shared/components/query-state";
+import { STATIONS, formatDate } from "@/shared/workspace";
 
-export function Workflow() {
-  const { data, today, advancePiece } = useWorkflow();
-  const params = useSearchParams();
-  const router = useRouter();
-  const selected = params.get("station") ?? "all";
+function WorkflowColumn({ station }: { station: number }) {
+  const { advancePiece } = useWorkflow();
+  const [page, setPage] = useState(1);
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
+  const query = useWorkflowColumn(station, page);
+  const column = query.data?.columns.find((entry) => entry.station === station);
+  return (
+    <section
+      className="workflow-column"
+      aria-label={`${STATIONS[station]} station`}
+    >
+      <div className="workflow-column-head">
+        <Scissors size={15} />
+        <h2>{STATIONS[station]}</h2>
+        {column && <small>{column.page.total}</small>}
+      </div>
+      <QueryState
+        loading={query.isLoading}
+        error={query.error}
+        retry={query.reload}
+      />
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
+      {column?.pieces.map(({ order, item, customer }) => {
+        const overdue = order.dueDate < query.data!.today;
+        return (
+          <article className="workflow-card" key={item.id}>
+            <div
+              className="inline-row"
+              style={{ justifyContent: "space-between" }}
+            >
+              <PriorityBadge priority={order.priority} />
+              <Link
+                href={`/orders/${order.id}`}
+                aria-label={`View ${order.number}`}
+              >
+                <ArrowUpRight size={15} />
+              </Link>
+            </div>
+            <h3>{customer.name}</h3>
+            <p>
+              {order.number} · {item.garment}
+            </p>
+            <div className="workflow-card-foot">
+              <span className={overdue ? "overdue-text" : ""}>
+                {overdue ? "Overdue · " : "Due "}
+                {order.dueDate === query.data!.today
+                  ? "today"
+                  : formatDate(order.dueDate)}
+              </span>
+            </div>
+            <button
+              className="button subtle small-button"
+              disabled={Boolean(busy) || query.isRefreshing}
+              onClick={async () => {
+                setBusy(item.id);
+                setError("");
+                try {
+                  await advancePiece(order.id, item.id, item.station);
+                } catch (error) {
+                  setError(
+                    error instanceof Error
+                      ? error.message
+                      : "Could not update the garment.",
+                  );
+                  query.reload();
+                } finally {
+                  setBusy("");
+                }
+              }}
+            >
+              <Check size={13} />
+              {busy === item.id ? "Saving…" : "Complete step"}
+            </button>
+          </article>
+        );
+      })}
+      {column && !column.pieces.length && !query.isLoading && !query.error && (
+        <p className="workflow-empty">
+          {column.page.total ? (
+            "No pieces on this page. Use the page controls below."
+          ) : (
+            <>
+              A little breathing room.
+              <br />
+              No pieces at this station.
+            </>
+          )}
+        </p>
+      )}
+      {column && <Pagination page={column.page} onPageChange={setPage} />}
+    </section>
+  );
+}
+
+export function Workflow() {
+  const params = useSearchParams();
+  const router = useRouter();
+  const rawStation = params.get("station") ?? "all";
+  const selected = /^[0-4]$/.test(rawStation) ? rawStation : "all";
   return (
     <>
       <PageHeading
@@ -53,11 +146,6 @@ export function Workflow() {
           Urgent orders first, then earliest due date
         </span>
       </div>
-      {error && (
-        <p className="form-error" role="alert">
-          {error}
-        </p>
-      )}
       <div
         className="workflow-board"
         style={
@@ -66,91 +154,11 @@ export function Workflow() {
             : undefined
         }
       >
-        {STATIONS.map((station, index) => {
-          if (selected !== "all" && Number(selected) !== index) return null;
-          const pieces = data.orders
-            .filter(isOpen)
-            .sort(prioritySort)
-            .flatMap((order) =>
-              order.items
-                .filter((item) => item.station === index)
-                .map((item) => ({ item, order })),
-            );
-          return (
-            <section className="workflow-column" key={station}>
-              <div className="workflow-column-head">
-                <Scissors size={15} />
-                <h2>{station}</h2>
-                <small>{pieces.length}</small>
-              </div>
-              {pieces.map(({ order, item }) => (
-                <article className="workflow-card" key={item.id}>
-                  <div
-                    className="inline-row"
-                    style={{ justifyContent: "space-between" }}
-                  >
-                    <PriorityBadge priority={order.priority} />
-                    <Link
-                      href={`/orders/${order.id}`}
-                      aria-label={`View ${order.number}`}
-                    >
-                      <ArrowUpRight size={15} />
-                    </Link>
-                  </div>
-                  <h3>
-                    {
-                      data.customers.find(
-                        (customer) => customer.id === order.customerId,
-                      )?.name
-                    }
-                  </h3>
-                  <p>
-                    {order.number} · {item.garment}
-                  </p>
-                  <div className="workflow-card-foot">
-                    <span
-                      className={isOverdue(order, today) ? "overdue-text" : ""}
-                    >
-                      {isOverdue(order, today) ? "Overdue · " : "Due "}
-                      {order.dueDate === today
-                        ? "today"
-                        : formatDate(order.dueDate)}
-                    </span>
-                  </div>
-                  <button
-                    className="button subtle small-button"
-                    disabled={busy === item.id}
-                    onClick={async () => {
-                      setBusy(item.id);
-                      setError("");
-                      try {
-                        await advancePiece(order.id, item.id);
-                      } catch (error) {
-                        setError(
-                          error instanceof Error
-                            ? error.message
-                            : "Could not update the garment.",
-                        );
-                      } finally {
-                        setBusy("");
-                      }
-                    }}
-                  >
-                    <Check size={13} />
-                    {busy === item.id ? "Saving…" : "Complete step"}
-                  </button>
-                </article>
-              ))}
-              {!pieces.length && (
-                <p className="workflow-empty">
-                  A little breathing room.
-                  <br />
-                  No pieces at this station.
-                </p>
-              )}
-            </section>
-          );
-        })}
+        {STATIONS.map((_, station) =>
+          selected === "all" || Number(selected) === station ? (
+            <WorkflowColumn key={station} station={station} />
+          ) : null,
+        )}
       </div>
     </>
   );

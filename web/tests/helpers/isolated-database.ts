@@ -9,22 +9,25 @@ export function isolatedDatabase() {
     values?: unknown[],
   ) => {
     const statement = typeof input === "string" ? input : input.text;
+    const arrayRows = typeof input !== "string" && input.rowMode === "array";
+    const options = {
+      rowMode: arrayRows ? ("array" as const) : ("object" as const),
+    };
     const result = values
-      ? await engine.query(statement, values)
-      : (await engine.exec(statement)).at(-1)!;
-    const rows =
-      typeof input !== "string" && input.rowMode === "array"
-        ? result.rows.map((row) =>
-            result.fields.map((field) => {
-              const value = (row as Record<string, unknown>)[field.name];
-              if (value instanceof Date)
-                return field.dataTypeID === 1082
-                  ? value.toISOString().slice(0, 10)
-                  : value.toISOString();
-              return value;
-            }),
-          )
-        : result.rows;
+      ? await engine.query(statement, values, options)
+      : (await engine.exec(statement, options)).at(-1)!;
+    const rows = arrayRows
+      ? result.rows.map((row) =>
+          result.fields.map((field, index) => {
+            const value = (row as unknown[])[index];
+            if (value instanceof Date)
+              return field.dataTypeID === 1082
+                ? value.toISOString().slice(0, 10)
+                : value.toISOString();
+            return value;
+          }),
+        )
+      : result.rows;
     return { rows, rowCount: result.affectedRows || result.rows.length };
   };
   const pool = {

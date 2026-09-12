@@ -26,6 +26,14 @@ import {
 } from "lucide-react";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { Avatar, Dialog, EmptyState } from "@/shared/components/ui";
+import {
+  useFeatureQuery,
+  useDebouncedValue,
+} from "@/shared/hooks/use-feature-query";
+import { QueryState } from "@/shared/components/query-state";
+import type { ShellRead } from "@/shared/contracts/shell-query";
+import type { OrderRead } from "@/features/orders/types/queries";
+import { emptyWorkspace, isOpen } from "@/shared/workspace";
 
 const navigation = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
@@ -38,12 +46,45 @@ const navigation = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { data, notice, notify, mode, owner } = useWorkspace();
+  const { notice, notify, mode, owner } = useWorkspace();
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [more, setMore] = useState(false);
   const [notifications, setNotifications] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const debouncedQuery = useDebouncedValue(query);
+  const shell = useFeatureQuery<ShellRead>("/api/shell", (workspace) => ({
+    revision: 0,
+    openOrders: workspace.orders.filter(isOpen).length,
+    activity: workspace.activity.slice(0, 8),
+  }));
+  const search = useFeatureQuery<OrderRead>(
+    searchOpen ? `/api/search?q=${encodeURIComponent(debouncedQuery)}` : null,
+    (workspace) => {
+      const matches = workspace.orders.filter((order) =>
+        `${order.number} ${workspace.customers.find((customer) => customer.id === order.customerId)?.name} ${order.items.map((item) => item.garment).join(" ")}`
+          .toLowerCase()
+          .includes(debouncedQuery.toLowerCase().trim()),
+      );
+      const orders = matches.slice(0, 6);
+      return {
+        revision: 0,
+        data: {
+          ...emptyWorkspace(),
+          orders,
+          customers: workspace.customers.filter((customer) =>
+            orders.some((order) => order.customerId === customer.id),
+          ),
+        },
+        page: {
+          page: 1,
+          pageSize: 6,
+          total: matches.length,
+          pageCount: Math.ceil(matches.length / 6),
+        },
+      };
+    },
+  );
   const title =
     pathname === "/"
       ? "Overview"
@@ -64,13 +105,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, []);
-  const results = data.orders
-    .filter((order) =>
-      `${order.number} ${data.customers.find((customer) => customer.id === order.customerId)?.name} ${order.items.map((item) => item.garment).join(" ")}`
-        .toLowerCase()
-        .includes(query.toLowerCase()),
-    )
-    .slice(0, 6);
+  const results = search.data?.data.orders ?? [];
+  const searchCustomers = search.data?.data.customers ?? [];
   return (
     <div className={`app-shell ${collapsed ? "sidebar-collapsed" : ""}`}>
       <a className="skip-link" href="#main-content">
@@ -105,15 +141,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
               <Icon size={19} strokeWidth={1.6} />
               <span>{label}</span>
-              {href === "/orders" && (
-                <small>
-                  {
-                    data.orders.filter(
-                      (order) =>
-                        !["delivered", "cancelled"].includes(order.status),
-                    ).length
-                  }
-                </small>
+              {href === "/orders" && shell.data && (
+                <small>{shell.data.openOrders}</small>
               )}
             </Link>
           ))}
@@ -284,12 +313,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <input
                 autoFocus
                 value={query}
+                maxLength={200}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Name, order number, or garment"
                 aria-label="Search workspace"
               />
             </label>
             <div className="search-results">
+              <QueryState
+                loading={search.isLoading}
+                error={search.error}
+                retry={search.reload}
+              />
               {results.map((order) => (
                 <Link
                   key={order.id}
@@ -298,7 +333,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 >
                   <Avatar
                     name={
-                      data.customers.find(
+                      searchCustomers.find(
                         (customer) => customer.id === order.customerId,
                       )?.name ?? "Customer"
                     }
@@ -306,7 +341,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <div>
                     <strong>
                       {
-                        data.customers.find(
+                        searchCustomers.find(
                           (customer) => customer.id === order.customerId,
                         )?.name
                       }
@@ -319,7 +354,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <ArrowUpRight size={17} />
                 </Link>
               ))}
-              {!results.length && (
+              {!search.isLoading && !search.error && !results.length && (
                 <EmptyState
                   title="No matches found"
                   text="Try a customer name or order number."
@@ -357,7 +392,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           onClose={() => setNotifications(false)}
         >
           <div className="dialog-body activity-list">
-            {data.activity.slice(0, 8).map((entry) => (
+            <QueryState
+              loading={shell.isLoading}
+              error={shell.error}
+              retry={shell.reload}
+            />
+            {shell.data?.activity.map((entry) => (
               <Link
                 key={entry.id}
                 href={`/orders/${entry.orderId}`}

@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   ArrowUpRight,
-  ArrowRight,
   Plus,
   Search,
   Download,
@@ -19,7 +18,19 @@ import {
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useOrders } from "@/features/orders/hooks/use-orders";
+import {
+  useOrderDirectory,
+  useOrderDetail,
+  orderSearchParams,
+  selectPreviewOrders,
+} from "@/features/orders/hooks/use-order-reads";
 import { useCustomers } from "@/features/customers/hooks/use-customers";
+import {
+  useCustomerDirectory,
+  useCustomerDetail,
+} from "@/features/customers/hooks/use-customer-reads";
+import { useDebouncedValue } from "@/shared/hooks/use-feature-query";
+import { QueryState, Pagination } from "@/shared/components/query-state";
 import { useWorkflow } from "@/features/workflow/hooks/use-workflow";
 import { useBilling } from "@/features/billing/hooks/use-billing";
 import {
@@ -46,38 +57,23 @@ import {
   paid,
   balance,
   exportOrders,
-  prioritySort,
 } from "@/shared/workspace";
 
 export function OrdersList() {
-  const { data, today } = useOrders();
+  const { data: previewWorkspace, today, mode } = useOrders();
   const params = useSearchParams();
   const router = useRouter();
   const filter = params.get("filter") ?? "all";
   const [query, setQuery] = useState("");
+  const search = useDebouncedValue(query);
   const [priority, setPriority] = useState("all");
-  const [limit, setLimit] = useState(20);
-  const orders = data.orders
-    .filter((order) => {
-      const customer = data.customers.find(
-        (entry) => entry.id === order.customerId,
-      );
-      return (
-        `${order.number} ${customer?.name} ${customer?.phone} ${order.items.map((item) => item.garment)}`
-          .toLowerCase()
-          .includes(query.toLowerCase()) &&
-        (priority === "all" || order.priority === priority) &&
-        (filter === "all" ||
-          (filter === "due"
-            ? order.dueDate === today && isOpen(order)
-            : filter === "overdue"
-              ? isOverdue(order, today)
-              : filter === "active"
-                ? isOpen(order)
-                : order.status === filter))
-      );
-    })
-    .sort(prioritySort);
+  const filterKey = JSON.stringify([search, filter, priority]);
+  const [pagination, setPagination] = useState({ key: filterKey, page: 1 });
+  const page = pagination.key === filterKey ? pagination.page : 1;
+  const filters = { q: search, filter, priority };
+  const read = useOrderDirectory({ ...filters, page });
+  const data = read.data?.data;
+  const orders = data?.orders ?? [];
   return (
     <>
       <PageHeading
@@ -85,13 +81,29 @@ export function OrdersList() {
         title="Made to measure. Kept in order."
         description="From the first measurement to the final handover."
       >
-        <button
-          className="button"
-          onClick={() => exportOrders(orders, data.customers)}
-        >
-          <Download size={16} />
-          Export
-        </button>
+        {mode === "preview" ? (
+          <button
+            className="button"
+            onClick={() =>
+              exportOrders(
+                selectPreviewOrders(previewWorkspace, filters),
+                previewWorkspace.customers,
+              )
+            }
+          >
+            <Download size={16} />
+            Export
+          </button>
+        ) : (
+          <a
+            className="button"
+            href={`/api/orders/export?${orderSearchParams(filters)}`}
+            download
+          >
+            <Download size={16} />
+            Export
+          </a>
+        )}
         <Link className="button primary" href="/orders/new">
           <Plus size={17} />
           New order
@@ -105,6 +117,7 @@ export function OrdersList() {
               placeholder="Search orders or customers"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
+              maxLength={160}
               aria-label="Search orders"
             />
           </label>
@@ -138,6 +151,11 @@ export function OrdersList() {
             </select>
           </div>
         </div>
+        <QueryState
+          loading={read.isLoading}
+          error={read.error}
+          retry={read.reload}
+        />
         <div className="table-scroll orders-table">
           <table className="data-table">
             <thead>
@@ -154,8 +172,8 @@ export function OrdersList() {
               </tr>
             </thead>
             <tbody>
-              {orders.slice(0, limit).map((order) => {
-                const customer = data.customers.find(
+              {orders.map((order) => {
+                const customer = data?.customers.find(
                   (entry) => entry.id === order.customerId,
                 );
                 return (
@@ -211,7 +229,7 @@ export function OrdersList() {
           </table>
         </div>
         <div className="mobile-order-cards">
-          {orders.slice(0, limit).map((order, index) => (
+          {orders.map((order, index) => (
             <Link
               className="mobile-order-card"
               key={order.id}
@@ -227,7 +245,7 @@ export function OrdersList() {
                   <div>
                     <strong>
                       {
-                        data.customers.find(
+                        data?.customers.find(
                           (customer) => customer.id === order.customerId,
                         )?.name
                       }
@@ -252,36 +270,49 @@ export function OrdersList() {
             </Link>
           ))}
         </div>
-        {orders.length === 0 && (
+        {!read.isLoading && !read.error && orders.length === 0 && (
           <EmptyState
             title="No orders match"
             text="Try a different search or filter."
           />
         )}
-        <div className="table-footer">
-          <span>
-            Showing {Math.min(limit, orders.length)} of {orders.length} orders
-          </span>
-          {limit < orders.length && (
-            <button
-              className="button small-button"
-              onClick={() => setLimit(limit + 20)}
-            >
-              Load more
-              <ArrowRight size={14} />
-            </button>
-          )}
-        </div>
+        {read.data && (
+          <Pagination
+            page={read.data.page}
+            onPageChange={(nextPage) =>
+              setPagination({ key: filterKey, page: nextPage })
+            }
+          />
+        )}
       </section>
     </>
   );
 }
 
 export function NewOrderForm() {
-  const { data, today, mode, createOrder } = useOrders();
+  const { today, mode, createOrder } = useOrders();
   const { saveCustomer } = useCustomers();
   const router = useRouter();
   const [customerId, setCustomerId] = useState("");
+  const [customerQuery, setCustomerQuery] = useState("");
+  const [customerPage, setCustomerPage] = useState(1);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null,
+  );
+  const customerSearch = useDebouncedValue(customerQuery);
+  const directory = useCustomerDirectory(customerSearch, customerPage, 20);
+  const customerDetail = useCustomerDetail(
+    customerId && customerId !== "new" ? customerId : null,
+  );
+  const selected =
+    customerDetail.data?.data.customers.find(
+      (customer) => customer.id === customerId,
+    ) ?? (selectedCustomer?.id === customerId ? selectedCustomer : null);
+  const customerOptions = directory.data?.data.customers ?? [];
+  const visibleCustomers =
+    selected && !customerOptions.some((customer) => customer.id === selected.id)
+      ? [selected, ...customerOptions]
+      : customerOptions;
   const [items, setItems] = useState<
     { garment: string; material: string; price: string }[]
   >([{ garment: "Blouse", material: "", price: "" }]);
@@ -323,6 +354,7 @@ export function NewOrderForm() {
           throw new Error("Enter a customer name and a valid phone number.");
         await saveCustomer(customer);
         selected = customer.id;
+        setSelectedCustomer(customer);
         setCustomerId(selected);
       }
       const order = await createOrder({
@@ -366,21 +398,57 @@ export function NewOrderForm() {
             </div>
             <div className="form-grid">
               <label className="field full-width">
+                Find a customer
+                <input
+                  value={customerQuery}
+                  onChange={(event) => {
+                    setCustomerQuery(event.target.value);
+                    setCustomerPage(1);
+                  }}
+                  placeholder="Search by name or phone"
+                  maxLength={160}
+                />
+              </label>
+              <div className="full-width">
+                <QueryState
+                  loading={directory.isLoading}
+                  error={directory.error}
+                  retry={directory.reload}
+                />
+              </div>
+              <label className="field full-width">
                 Customer
                 <select
                   required
+                  aria-label="Customer"
                   value={customerId}
-                  onChange={(event) => setCustomerId(event.target.value)}
+                  onChange={(event) => {
+                    const nextId = event.target.value;
+                    setCustomerId(nextId);
+                    setSelectedCustomer(
+                      visibleCustomers.find(
+                        (customer) => customer.id === nextId,
+                      ) ?? null,
+                    );
+                  }}
                 >
                   <option value="">Choose a customer</option>
                   <option value="new">+ Add a new customer</option>
-                  {data.customers.map((customer) => (
+                  {visibleCustomers.map((customer) => (
                     <option key={customer.id} value={customer.id}>
                       {customer.name} · {customer.phone}
                     </option>
                   ))}
                 </select>
               </label>
+              {directory.data && (
+                <div className="full-width">
+                  <Pagination
+                    page={directory.data.page}
+                    onPageChange={setCustomerPage}
+                  />
+                </div>
+              )}
               {customerId === "new" && (
                 <>
                   <label className="field">
@@ -415,19 +483,27 @@ export function NewOrderForm() {
                 </>
               )}
               {customerId && customerId !== "new" && (
-                <p className="note-box full-width">
-                  {Object.keys(
-                    data.customers.find(
-                      (customer) => customer.id === customerId,
-                    )?.measurements ?? {},
-                  ).length
-                    ? "Saved measurements are available on this customer’s profile."
-                    : "No measurements saved yet. You can add them to the customer’s profile."}
-                  <Link className="text-link" href={`/customers/${customerId}`}>
-                    View profile
-                    <ArrowUpRight size={13} />
-                  </Link>
-                </p>
+                <div className="full-width">
+                  <QueryState
+                    loading={customerDetail.isLoading}
+                    error={customerDetail.error}
+                    retry={customerDetail.reload}
+                  />
+                  {selected && (
+                    <p className="note-box">
+                      {Object.keys(selected.measurements).length
+                        ? "Saved measurements are available on this customer’s profile."
+                        : "No measurements saved yet. You can add them to the customer’s profile."}
+                      <Link
+                        className="text-link"
+                        href={`/customers/${customerId}`}
+                      >
+                        View profile
+                        <ArrowUpRight size={13} />
+                      </Link>
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           </section>
@@ -612,7 +688,10 @@ export function NewOrderForm() {
 }
 
 export function OrderDetail({ id }: { id: string }) {
-  const { data, deliver } = useOrders();
+  const { deliver } = useOrders();
+  const [activityPage, setActivityPage] = useState(1);
+  const read = useOrderDetail(id, activityPage);
+  const data = read.data?.data;
   const { advancePiece, rework } = useWorkflow();
   const { recordPayment } = useBilling();
   const [dialog, setDialog] = useState<
@@ -621,7 +700,16 @@ export function OrderDetail({ id }: { id: string }) {
   const [piece, setPiece] = useState<OrderItem | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const order = data.orders.find((entry) => entry.id === id);
+  const mutationBlocked = busy || read.isRefreshing;
+  const order = data?.orders.find((entry) => entry.id === id);
+  if (!order && (read.isLoading || read.error))
+    return (
+      <QueryState
+        loading={read.isLoading}
+        error={read.error}
+        retry={read.reload}
+      />
+    );
   if (!order)
     return (
       <EmptyState
@@ -633,10 +721,11 @@ export function OrderDetail({ id }: { id: string }) {
         </Link>
       </EmptyState>
     );
-  const customer = data.customers.find(
+  const customer = data?.customers.find(
     (entry) => entry.id === order.customerId,
   );
   async function mutate(work: () => void | Promise<unknown>) {
+    if (mutationBlocked) return;
     setBusy(true);
     setError("");
     try {
@@ -683,9 +772,19 @@ export function OrderDetail({ id }: { id: string }) {
           Print order
         </button>
       </PageHeading>
+      <QueryState
+        loading={read.isLoading}
+        error={read.error}
+        retry={read.reload}
+      />
       <div className="inline-row" style={{ marginBottom: 23 }}>
         <StatusBadge status={order.status} />
         <PriorityBadge priority={order.priority} />
+        {read.isRefreshing && (
+          <span className="muted small" role="status">
+            Refreshing order…
+          </span>
+        )}
       </div>
       {error && !dialog && (
         <p className="form-error" role="alert">
@@ -728,10 +827,12 @@ export function OrderDetail({ id }: { id: string }) {
                   <div className="detail-item-actions">
                     {item.station < 5 && (
                       <button
-                        disabled={busy}
+                        disabled={mutationBlocked}
                         className="button primary small-button"
                         onClick={() =>
-                          void mutate(() => advancePiece(id, item.id))
+                          void mutate(() =>
+                            advancePiece(id, item.id, item.station),
+                          )
                         }
                       >
                         <Check size={14} />
@@ -740,6 +841,7 @@ export function OrderDetail({ id }: { id: string }) {
                     )}
                     <button
                       className="button small-button"
+                      disabled={mutationBlocked}
                       onClick={() => {
                         setPiece(item);
                         setDialog("rework");
@@ -761,10 +863,10 @@ export function OrderDetail({ id }: { id: string }) {
           </section>
           <section className="panel">
             <SectionHeading title="Order activity" />
-            {data.activity.filter((entry) => entry.orderId === order.id)
+            {data?.activity.filter((entry) => entry.orderId === order.id)
               .length ? (
               <div className="activity-list">
-                {data.activity
+                {data?.activity
                   .filter((entry) => entry.orderId === order.id)
                   .map((entry) => (
                     <div className="activity-item" key={entry.id}>
@@ -789,6 +891,12 @@ export function OrderDetail({ id }: { id: string }) {
               <p className="padded muted small">
                 The next update will appear here.
               </p>
+            )}
+            {read.data && (
+              <Pagination
+                page={read.data.page}
+                onPageChange={setActivityPage}
+              />
             )}
           </section>
         </div>
@@ -831,6 +939,7 @@ export function OrderDetail({ id }: { id: string }) {
             {balance(order) > 0 && (
               <button
                 className="button primary no-print"
+                disabled={mutationBlocked}
                 onClick={() => setDialog("payment")}
               >
                 <Plus size={16} />
@@ -841,7 +950,7 @@ export function OrderDetail({ id }: { id: string }) {
               <button
                 className="button subtle no-print"
                 style={{ marginTop: 9 }}
-                disabled={balance(order) > 0}
+                disabled={mutationBlocked || balance(order) > 0}
                 onClick={() => setDialog("deliver")}
               >
                 <Check size={16} />
@@ -914,7 +1023,7 @@ export function OrderDetail({ id }: { id: string }) {
               >
                 Cancel
               </button>
-              <button className="button primary" disabled={busy}>
+              <button className="button primary" disabled={mutationBlocked}>
                 Save payment
               </button>
             </div>
@@ -932,7 +1041,7 @@ export function OrderDetail({ id }: { id: string }) {
               Not yet
             </button>
             <button
-              disabled={busy}
+              disabled={mutationBlocked}
               className="button primary"
               onClick={() => void mutate(() => deliver(id))}
             >
@@ -994,7 +1103,7 @@ export function OrderDetail({ id }: { id: string }) {
               )}
             </div>
             <div className="dialog-actions">
-              <button className="button primary" disabled={busy}>
+              <button className="button primary" disabled={mutationBlocked}>
                 Request correction
               </button>
             </div>
