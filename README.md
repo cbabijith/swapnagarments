@@ -5,7 +5,7 @@
 > feature UI, thin Next.js APIs, server services, and Drizzle domain schemas.
 > Feature/service extraction, the Drizzle baseline and relational migration are
 > deployed to Railway, and the live database migration is complete.
-> Paginated feature reads are implemented and validated; the remaining event stage is described in
+> Paginated feature reads are also deployed and verified; the remaining event stage is described in
 > [docs/ARCHITECTURE-ALIGNMENT.md](docs/ARCHITECTURE-ALIGNMENT.md).
 
 > **Website update (2026-09-12):** The responsive desktop/mobile Next.js website

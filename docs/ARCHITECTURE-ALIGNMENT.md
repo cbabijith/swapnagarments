@@ -7,7 +7,7 @@ architecture used by their local Dolce CRM project. This document defines the
 target for the active `web/` application. **Feature/service extraction, the
 Drizzle baseline, and the relational migration are deployed to Railway.**
 Full live database backups, isolated migration/rollback rehearsal and production
-cutover passed on 2026-09-12. Paginated feature reads are implemented and validated;
+cutover passed on 2026-09-12. Paginated feature reads are deployed and verified;
 durable events remain.
 The relational migration has a tested
 dry-run, reconciliation and rollback procedure in [RELATIONAL-MIGRATION.md](RELATIONAL-MIGRATION.md).
@@ -114,7 +114,7 @@ Hono in-memory event bus is also not used by the live Next.js website.
    history, idempotency records, and ownership. Compare records and totals and
    reject inconsistent data before switching reads/writes. Define a cutover
    and rollback procedure; do not allow two uncoordinated sources of truth.
-4. **Feature APIs and hooks — implemented and validated.** Replace the compatibility workspace calls with
+4. **Feature APIs and hooks — deployed and verified.** Replace the compatibility workspace calls with
    resource-specific APIs and feature hooks. Add server-side search, filters,
    pagination, and dashboard aggregates. Preserve conflict detection and safe
    retry behavior across the transition.
@@ -249,3 +249,10 @@ for each selected order. CSV export hydrates in batches but builds the complete
 file in memory while holding the read lock; large exports can delay writes.
 These are distinct from the completed screen-query work. Durable event dispatch
 and any new external notification providers remain future stages.
+
+Railway release verified on 2026-09-12: code commit `27c7f30`, deployment
+`fd9ec87c-c8a5-4826-af5c-3a7c6ccc752e`, status `SUCCESS`. Live health reports
+PostgreSQL and bucket connected. All 13 feature list/detail/export read checks
+reject unsigned requests with 401 and `Cache-Control: no-store`; owner setup
+remains closed. The isolated browser and PostgreSQL test services were stopped
+after validation. Both `main` and `shahil` contain the release.
