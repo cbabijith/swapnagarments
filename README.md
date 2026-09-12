@@ -1,5 +1,11 @@
 # Swapna Garments — Tailoring Management System
 
+> **Website update (2026-09-12):** The responsive desktop/mobile Next.js website
+> is now implemented, with its own server-side Railway PostgreSQL connection.
+> See [web/README.md](web/README.md) for the current website scope, validation,
+> and deployment setup. The original backend baseline and backlog below remain
+> as reference; the new website does not require the Hono or Flutter services.
+
 Complete management software for the **Swapna Garments** custom tailoring
 shop (ladies' blouses and other garments): customer measurements, order
 intake, shop-floor workflow with QR-tagged pieces (cutting → sizing →
