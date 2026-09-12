@@ -1,9 +1,14 @@
 # Relational shop storage: migration and rollback
 
-Status: implemented on `codex/feature-architecture`. The live database has been
-backed up and restored to an isolated PostgreSQL 18.6 instance. Migration,
-rollback and recutover passed on that restored copy. Production deployment and
-storage cutover are pending.
+Status: **deployed and migrated in production on 2026-09-12**. Code commit
+`c19d92851b49b3f152e863e4dba3e9949fdc4187` was deployed as
+`a19a0fed-0db3-4568-b51b-0984f0a3e88c`. The live workspace now uses relational
+storage at revision 3. Final verification completed at 16:27:45 UTC.
+
+Both backups were restored to separate local PostgreSQL 18.6 databases. Migration,
+rollback and recutover passed on the original restored copy; the fresh backup
+also passed full-table reconciliation, migration and authenticated HTTP checks
+using the production build before the live switch.
 
 Verified backup (2026-09-12): `initial.dump`, SHA-256
 `154be1e7ee12a0a7929d4fe6c2a8360dd7ec154bb1646e99932bd5d258b7c0de`.
@@ -13,6 +18,19 @@ original tables matched their source row counts and full-row checksums after
 restore, including the owner, five login sessions and mutation retry record.
 The workspace has one customer, one staff entry and no orders/payments; its
 canonical checksum remained identical through all rehearsed transitions.
+
+A fresh post-deployment backup, `precutover.dump`, has SHA-256
+`de0eb3a905acf8f570f83aa22c2a07f95894be5d1763ef0f12eb997a23aa3c92`.
+All 17 tables in this backup matched after restore. The live migration snapshot
+ID is `c95bdbf5-9ed3-45b4-b8f7-682b5bee65d2`. The source and final workspace
+checksum is `7419c30a93cd5d4a2a5bec382b586ef80d24392a1736b8f0536a86fe5aa776bb`.
+
+Backups and verification manifests are retained under
+`%LOCALAPPDATA%/SwapnaGarments/migrations/20260912-213602/`. The portable bundle
+`swapna-garments-before-migration-20260912.zip` contains the two dumps, separate
+role exports and restore/checksum manifests. It contains private database data;
+keep it outside source control. The temporary Railway SSH key was revoked, its
+local key files removed, and the private tunnel and rehearsal server stopped.
 
 Railway's built-in volume backup controls are restricted to Pro on this account.
 This backup instead uses PostgreSQL 18.6 tools over a private SSH tunnel, without
@@ -29,7 +47,8 @@ provided for subsequent feature-specific APIs.
 
 The existing owner, salted password hashes, sessions and mutation retry records
 stay in their original tables. No sample records are inserted. Startup applies
-only additive schema changes and leaves `sg_workspace.storage_model = 'json'`.
+only additive schema changes and preserves the current storage model. A workspace
+starts in JSON mode until explicitly migrated.
 The storage switch is an explicit operator command, never an API route or a
 startup side effect.
 
@@ -166,6 +185,10 @@ reconciliation; foreign keys and money constraints; owner/session preservation;
 post-cutover mutations; forced transaction failure; rollback with subsequent
 work; and recutover with retained history.
 
-The live Railway network, logical backup, full-table restore reconciliation and
-live-data migration/rollback rehearsal have now been verified. Live cutover and
-post-deployment checks remain pending.
+The live Railway network, both logical backups, full-table restore reconciliation,
+live-data rehearsal and production cutover are verified. After cutover, server
+workspace reads matched the source checksum; original owner, session, rate-limit
+and mutation rows were unchanged. The immutable migration snapshot was verified.
+Database/bucket health returned connected; six website pages returned HTTP 200;
+all five feature command APIs required authentication; owner setup stayed closed.
+Authenticated HTTP workspace reads passed on the isolated restored database.

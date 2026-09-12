@@ -5,12 +5,12 @@
 On 2026-09-12 the owner required Swapna Garments to follow the feature-driven
 architecture used by their local Dolce CRM project. This document defines the
 target for the active `web/` application. **Feature/service extraction, the
-Drizzle baseline, and the relational migration are implemented locally on
-`codex/feature-architecture`.** A full live database backup and isolated
-live-data migration/rollback rehearsal passed. Production cutover, paginated
-feature reads, and durable events remain. The relational migration has a tested
+Drizzle baseline, and the relational migration are deployed to Railway.**
+Full live database backups, isolated migration/rollback rehearsal and production
+cutover passed on 2026-09-12. Paginated feature reads and durable events remain.
+The relational migration has a tested
 dry-run, reconciliation and rollback procedure in [RELATIONAL-MIGRATION.md](RELATIONAL-MIGRATION.md).
-The branch has not been deployed to Railway.
+The live application uses commit `c19d928` and relational workspace revision 3.
 
 Reference inspected: `C:/flutter_projects/dolce-crm`, especially `AGENTS.md`,
 `apps/web/AGENTS.md`, the expenses route/service/feature, `src/db/index.ts`,
@@ -85,7 +85,7 @@ separate backend deployment.
 | UI ownership | Screens now live in their own feature folders; commands use feature hooks/contracts/types | Completed for the current screens |
 | Business logic | Pure rules belong to feature `domain/` modules; server services invoke them against locked database state | Completed extraction; relational persistence will replace the compatibility coordinator |
 | APIs | Thin feature command routes call services; `/api/workspace` remains a compatibility read/write API | Resource-specific reads with filters and pagination remain |
-| Data model | Drizzle domain tables, constraints/indexes, explicit storage selection, reconciled backfill and rollback are implemented; JSON remains the default until cutover | Verify a full live backup and isolated live-data rehearsal before production cutover |
+| Data model | Drizzle domain tables are live; source checksum, owner and sessions were preserved through reconciled cutover | Complete for this migration; retain the documented backup/rollback procedure |
 | List queries | Whole workspace is sent to the browser for filtering | Server-side filtering, stable sorting, pagination, and screen-specific summaries |
 | Cross-feature side effects | Activity persists with shop state; relational mode records structured workflow history with each command | Durable domain events recorded with state changes, dispatched to idempotent consumers |
 | Authentication | Shared guards and service-owned Drizzle authentication preserve password hashing and session cookies | Completed without resetting the owner account |
@@ -105,7 +105,7 @@ Hono in-memory event bus is also not used by the live Next.js website.
    baseline for the already-existing production schema so deployments do not
    recreate or drop tables. Keep explicitly labelled sample data isolated from
    live services.
-3. **Relational data migration — implemented locally; live rehearsal/cutover pending.** Add customer, measurement-version, order,
+3. **Relational data migration — deployed and verified.** Add customer, measurement-version, order,
    order-item, workflow-history, payment, report, and activity tables. Back up
    the live database and rehearse the migration on an isolated copy. Backfill
    existing JSON records while preserving IDs, integer-paise amounts, dates,
@@ -193,7 +193,8 @@ snapshot. Frozen JSON writes from an older application version are blocked.
 
 This stage is tested on isolated PostgreSQL fixtures and a restored copy of the
 live Railway database. Backup restore, migration and rollback reconciliation
-passed. Production cutover follows [the operator runbook](RELATIONAL-MIGRATION.md). Resource-specific
+passed. Production cutover and final checks passed as recorded in
+[the operator runbook](RELATIONAL-MIGRATION.md). Resource-specific
 pagination and durable event dispatch remain subsequent code stages.
 
 Validation for the relational stage: all 10 automated tests, type checking,

@@ -4,8 +4,8 @@
 > follow the feature-driven structure of the owner's Dolce CRM project:
 > feature UI, thin Next.js APIs, server services, and Drizzle domain schemas.
 > Feature/service extraction, the Drizzle baseline and relational migration are
-> implemented locally on `codex/feature-architecture`. Production cutover and
-> remaining query/event stages are described in
+> deployed to Railway, and the live database migration is complete. Remaining
+> query/event stages are described in
 > [docs/ARCHITECTURE-ALIGNMENT.md](docs/ARCHITECTURE-ALIGNMENT.md).
 
 > **Website update (2026-09-12):** The responsive desktop/mobile Next.js website
