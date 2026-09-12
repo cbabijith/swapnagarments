@@ -226,22 +226,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Avatar name={owner.name} small />
           </div>
         </header>
-        <div
-          className={`preview-banner ${mode === "live" ? "connected-banner" : ""}`}
-        >
-          <span>
-            <i />
-            {mode === "preview"
-              ? "Workspace preview · Sample data"
-              : "Your shop’s live workspace"}
-          </span>
-          <Link href="/settings">
-            {mode === "preview"
-              ? "Railway connection pending"
-              : "Connected to Railway"}
-            <ArrowUpRight size={13} />
-          </Link>
-        </div>
+        {mode === "preview" && (
+          <div className="preview-banner">
+            <span>
+              <i />
+              Workspace preview · Sample data
+            </span>
+            <Link href="/settings">
+              Railway connection pending
+              <ArrowUpRight size={13} />
+            </Link>
+          </div>
+        )}
         <main id="main-content" className="page-content">
           {children}
         </main>

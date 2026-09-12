@@ -2594,10 +2594,6 @@ svg {
     gap: 8px;
   }
 }
-.connected-banner {
-  background: #eaf1e7;
-  color: #648254;
-}
 .page-description,
 .section-heading p,
 .metric-detail,
@@ -2640,9 +2636,6 @@ svg {
 }
 .status-delivered {
   color: #34694f;
-}
-.connected-banner i {
-  background: #69935b;
 }
 .access-page {
   min-height: 100dvh;
