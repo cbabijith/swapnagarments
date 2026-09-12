@@ -4,6 +4,12 @@ This file is the agenda for the discussion phase **before** building the
 business features. The project foundation (architecture, event-driven core,
 orders + notifications reference flow) is already live.
 
+> **North star (owner's words, 2026-09-12):** "When the owner opens or
+> closes the shop, they want to know what is highest priority, what must be
+> done today, how much got finished today — life made easy and
+> accountable." Every module should serve this daily open/close ritual.
+> It is specified as Milestone 15 in docs/BACKLOG.md (#64–#69).
+
 > Legend: ⚠ = blocking decision for the next build phase.
 
 ## 1. Customers & measurements
@@ -130,3 +136,5 @@ Every process step should notify the customer.
 | 2026-09-04 | `/api/v1/*` protected by session middleware; auth changes      |
 |            | publish events (`auth.user.created`)                          |
 | 2026-09-04 | Flutter 3.44 stable for mobile (station scanning focus)        |
+| 2026-09-12 | North star captured: owner's daily open/close ritual is the   |
+|            | product's core — specified as Backlog Milestone 15 (#64–#69)  |

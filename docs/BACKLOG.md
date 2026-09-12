@@ -479,6 +479,76 @@ this backlog with ✅ per issue, note deviations you made and why.
 
 ---
 
+## Milestone 15 — The Owner's Day (open/close ritual) — ★ NORTH STAR
+*This is the product's reason to exist, in the owner's own words: "when the
+owner opens or closes the shop, they want to know what is highest priority,
+what must be done today, how much got finished today — life made easy and
+accountable." Build #64–#65 early: pull them forward immediately after
+Milestone 5 (they only need existing orders data). #66–#69 build on later
+milestones. Every screen in this milestone is judged by one question:
+"can the owner act on it in 30 seconds on a phone?"*
+
+### #64 — Backend: opening summary endpoint
+**What:** The morning answer — what needs doing today, in priority order.
+**Do:** `GET /api/v1/day/opening?date=`: orders due today + overdue
+(flagged red, carried over), urgent/high first then earliest due; WIP
+snapshot (orders per status); station load counts (from orders data for
+now — enriched per-station after #42). Cache-friendly, one call.
+**Done when:** one curl returns the full prioritized must-do list.
+**Depends on:** nothing beyond existing orders v1.
+
+### #65 — Opening screen ("Good morning")
+**What:** The first thing the owner sees each day, on phone or desktop.
+**Do:** PWA home becomes the opening view when visited before noon (time-
+based default + manual toggle): "Due today (n)" · "Overdue (n)" ·
+"Urgent (n)" with a single prioritized list (badges + red overdue), link
+each item to order detail; admin dashboard embeds the same component.
+**Done when:** the owner's morning routine is: open app → see the day.
+**Depends on:** #64, #21/#24 (dashboard/home shells).
+
+### #66 — Backend: closing summary endpoint
+**What:** The evening answer — how much got finished, what slipped, what
+was collected.
+**Do:** `GET /api/v1/day/closing?date=` computed from the event stream +
+orders: orders created / ready / delivered today; items completed per
+station (needs #40 events); due-today-but-not-finished → slipped list
+(auto-carried to tomorrow's opening); payments collected today (advances +
+balances, needs #51); per-employee completion counts (actorId on events).
+**Done when:** one curl gives the full day's account.
+**Depends on:** #40 (station events), #51 (payments) for full richness —
+ship an orders-only version first, enrich later.
+
+### #67 — Closing screen + "Close the day"
+**What:** The evening ritual, one screen, then done.
+**Do:** Evening view: "Finished today" counts (delivered, ready, per
+station), "Slipped (n)" with reasons + one-tap confirm to carry over,
+"Collected today" money tally, "Pending balances" total. A **Close the
+day** button that locks the summary into a day report.
+**Done when:** closing the shop takes the owner under two minutes.
+**Depends on:** #66.
+
+### #68 — Day report persistence + owner summary message
+**What:** Yesterday, on record.
+**Do:** Persist each close as a `day_report` record (counts, slips,
+collections, who closed); show the last close summary at the top of the
+next morning's opening screen; send the owner a WhatsApp summary on close
+(uses the notifications feature + its templates).
+**Done when:** opening screen starts with "Yesterday: 12 finished, 2
+slipped, ₹8,400 collected".
+**Depends on:** #67, #58 (WhatsApp adapter for the message).
+
+### #69 — Accountability view (who did what today)
+**What:** "Accountable" made visible — per person.
+**Do:** Admin panel (Workflow or Staff module): per-employee table for a
+chosen day — items checked in/out per station, corrections raised,
+orders taken (counter staff), payments received — all sourced from event
+`actorId` (already recorded on every action; verify and backfill
+coverage where missing).
+**Done when:** the owner can answer "what did everyone do today?" in one
+screen, from real data, not memory.
+
+---
+
 ## Suggested GitHub flow
 
 Turn each issue into a GitHub issue (title + body from here) or ask the

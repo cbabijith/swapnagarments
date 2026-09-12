@@ -127,6 +127,10 @@ is the mobile story for now (kept for future native needs).
 
 **Planned (full list with details in [docs/BACKLOG.md](docs/BACKLOG.md)):**
 
+- **★ The Owner's Day — open/close ritual (north star):** morning view of
+  what's highest priority and due today; evening view of what got
+  finished, what slipped, what was collected — with per-employee
+  accountability from event audit trails (backlog #64–#69)
 - Customer registry with measurement profiles & versioned sizes
 - Full intake flow with quotation + printable QR labels per piece
 - Station workflow: scan check-in/out, priority queues, correction loops
@@ -364,6 +368,7 @@ Detailed, ordered plan: [docs/BACKLOG.md](docs/BACKLOG.md) — 14 milestones:
 | 10 | Station UIs (scan, queues, corrections, workflow board) |
 | 11–12 | Billing · roles & staff |
 | 13–14 | Real WhatsApp/email providers · quality closeout |
+| 15 ★ | **The Owner's Day** — opening/closing summaries, day reports, accountability (build #64–65 early, right after M5) |
 
 Domain decisions still open (measurement fields per garment, station
 ordering, WhatsApp provider, GST, database): tracked in
