@@ -54,9 +54,11 @@ The website service now has reference variables for PostgreSQL and the existing
 bucket. No database credentials or bucket secrets are stored in source code.
 Live verification on 2026-09-12 returned HTTP 200 from `/api/health` with
 `database: connected` and `bucket: connected`. The protected workspace endpoint
-returned HTTP 401 with `setupRequired: true` and `setupAvailable: false`.
-The website is deployed; first-use owner setup still requires `SETUP_TOKEN` in
-the website service and the owner entering their own name, email, and password.
+returned HTTP 401 with `setupRequired: false` and `setupAvailable: false` after
+the owner created their account. The authenticated live dashboard was verified.
+The temporary `SETUP_TOKEN` was removed from Railway and the local setup file
+was deleted. Registration is closed; the owner now signs in with their email
+and password.
 The connected Railway MCP account cannot access this project; the user's Chrome
 Railway session can. Deployment must use that authorized project context.
 
@@ -68,7 +70,7 @@ the **website service**, not on PostgreSQL:
 | Variable | Value |
 | --- | --- |
 | `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` |
-| `SETUP_TOKEN` | A private randomly generated setup code (32 random bytes as hex) |
+| `SETUP_TOKEN` | Omit after owner setup; needed only for a fresh installation |
 | `APP_ORIGIN` | Exact HTTPS website origin after a domain is assigned, no trailing slash |
 | `WORKSPACE_PREVIEW` | `false` |
 | `AWS_ENDPOINT_URL` | `${{buffered-tin.ENDPOINT}}` |
