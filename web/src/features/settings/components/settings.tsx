@@ -43,41 +43,41 @@ export function SettingsPage() {
   return (
     <>
       <PageHeading
-        eyebrow="A PLACE FOR THE PRACTICAL THINGS"
-        title="Make yourself at home."
-        description="Your shop’s workspace and connection details."
+        eyebrow="SHOP SETTINGS"
+        title="Settings"
+        description="Check the database connection, view your account, and review saved daily reports."
       />
       <div className="settings-grid">
         <section className="panel settings-card">
           <Database size={26} strokeWidth={1.5} />
-          <h2>Railway PostgreSQL</h2>
+          <h2>Database connection</h2>
           <p>
-            Your database keeps customers, measurements, orders, and payments
-            together.
+            Your shop’s customers, measurements, orders, and payments are stored
+            in Railway PostgreSQL.
           </p>
           <div className="connection-status">
             {mode === "live" ? <Check size={17} /> : <CircleAlert size={17} />}
             {mode === "live"
               ? "Connected · your shop data is saved"
-              : "Preview · Railway connection pending"}
+              : "Preview · sample data"}
           </div>
           <p>
             {mode === "live"
-              ? "Changes are saved in PostgreSQL. Other devices refresh every 30 seconds and when you return to the website."
-              : "This workspace is showing sample data. Changes here do not reach your Railway database."}
+              ? "Other devices refresh every 30 seconds and when you return to the website."
+              : "Changes to sample data do not affect your shop records."}
           </p>
         </section>
         <section className="panel settings-card">
           <ShieldCheck size={26} strokeWidth={1.5} />
-          <h2>Your workspace access</h2>
+          <h2>Owner account</h2>
           <p>
             {mode === "live"
               ? `Signed in as ${owner.name} (${owner.email}).`
-              : "Sign-in will be required when the Railway connection is enabled."}
+              : "You are viewing a sample account."}
           </p>
           <p style={{ marginTop: 16 }}>
-            Database access stays on the website’s server. Customer messaging is
-            not enabled yet.
+            Customer messaging is not enabled. Order updates are recorded in
+            Recent activity.
           </p>
           {mode === "live" && (
             <button className="button" onClick={() => void signOut()}>
@@ -87,7 +87,7 @@ export function SettingsPage() {
         </section>
         <section className="panel settings-card">
           <Scissors size={26} strokeWidth={1.5} />
-          <h2>The days, remembered</h2>
+          <h2>Saved daily reports</h2>
           <QueryState
             loading={reports.isLoading}
             error={reports.error}
@@ -110,7 +110,7 @@ export function SettingsPage() {
             <p>
               {reports.data.page.total
                 ? "No reports on this page. Use the page controls below."
-                : "Your saved closing reports appear here after you review the day from the overview."}
+                : "To save a report, open Overview, choose Daily report, then Save daily report."}
             </p>
           ) : null}
           {reports.data && (

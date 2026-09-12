@@ -1480,6 +1480,29 @@ svg {
   gap: 23px;
   align-items: start;
 }
+.order-fields {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.new-customer-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.new-customer-heading .text-link {
+  min-height: 44px;
+  white-space: normal;
+}
+.summary-customer {
+  color: var(--green);
+  font-weight: 500;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
 .order-summary {
   padding: 24px;
   position: sticky;

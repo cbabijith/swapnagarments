@@ -45,6 +45,8 @@ test("client imports cannot reach server services, database code or integrations
         `${entry} reaches server module ${local}`,
       );
       for (const ref of dependencies(file)) {
+        // CSS modules are styling assets, not executable client dependencies.
+        if (ref.endsWith(".css")) continue;
         assert.notEqual(
           ref,
           "server-only",

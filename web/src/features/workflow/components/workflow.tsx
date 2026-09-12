@@ -38,6 +38,9 @@ function WorkflowColumn({ station }: { station: number }) {
       )}
       {column?.pieces.map(({ order, item, customer }) => {
         const overdue = order.dueDate < query.data!.today;
+        const actionLabel = STATIONS[item.station + 1]
+          ? `Move to ${STATIONS[item.station + 1]}`
+          : "Mark ready";
         return (
           <article className="workflow-card" key={item.id}>
             <div
@@ -47,7 +50,7 @@ function WorkflowColumn({ station }: { station: number }) {
               <PriorityBadge priority={order.priority} />
               <Link
                 href={`/orders/${order.id}`}
-                aria-label={`View ${order.number}`}
+                aria-label={`Open order ${order.number} for ${customer.name}`}
               >
                 <ArrowUpRight size={15} />
               </Link>
@@ -66,6 +69,7 @@ function WorkflowColumn({ station }: { station: number }) {
             </div>
             <button
               className="button subtle small-button"
+              aria-label={`${actionLabel} for ${item.garment}, ${order.number}, ${customer.name}`}
               disabled={Boolean(busy) || query.isRefreshing}
               onClick={async () => {
                 setBusy(item.id);
@@ -85,22 +89,16 @@ function WorkflowColumn({ station }: { station: number }) {
               }}
             >
               <Check size={13} />
-              {busy === item.id ? "Saving…" : "Complete step"}
+              {busy === item.id ? "Saving…" : actionLabel}
             </button>
           </article>
         );
       })}
       {column && !column.pieces.length && !query.isLoading && !query.error && (
         <p className="workflow-empty">
-          {column.page.total ? (
-            "No pieces on this page. Use the page controls below."
-          ) : (
-            <>
-              A little breathing room.
-              <br />
-              No pieces at this station.
-            </>
-          )}
+          {column.page.total
+            ? "No pieces on this page. Use the page controls below."
+            : "No pieces at this station."}
         </p>
       )}
       {column && <Pagination page={column.page} onPageChange={setPage} />}
@@ -116,13 +114,13 @@ export function Workflow() {
   return (
     <>
       <PageHeading
-        eyebrow="FROM FIRST CUT TO FINAL PRESS"
-        title="Good things are in the making."
-        description="See where every piece is, and help the next step happen."
+        eyebrow="PIECE PROGRESS"
+        title="Workflow"
+        description="Choose a station and move each piece when its current step is complete."
       >
         <Link className="button primary" href="/scan">
           <ScanLine size={17} />
-          Scan a garment
+          Find an order
         </Link>
       </PageHeading>
       <div className="toolbar" style={{ padding: "0 0 22px", border: 0 }}>

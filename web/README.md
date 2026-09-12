@@ -29,6 +29,13 @@ and camera/manual lookup, advances/balances, delivery, CSV export, owner sign-in
 and a team directory. Live writes are validated and persisted in PostgreSQL;
 preview data is never inserted into the live database.
 
+Order intake uses one customer search with up to five name/phone matches.
+Select a customer with one click, change the selection, or add a new customer
+without leaving the form. The selected customer and order fields survive a failed
+order save. Screen labels describe the task directly; workflow buttons name the
+next station. Filters remain available while results load, save dialogs show their
+progress, and timestamps display in the shop's Asia/Kolkata timezone.
+
 See [the website handoff](../docs/WEBSITE.md) for the exact Railway resources,
 deployment settings, persistence model, security boundaries, and remaining scope.
 

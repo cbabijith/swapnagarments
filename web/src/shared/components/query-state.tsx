@@ -48,28 +48,30 @@ export function Pagination({
           ? `0 of ${page.total}`
           : `${start}–${end} of ${page.total}`}
       </span>
-      <div>
-        <button
-          type="button"
-          className="button small-button"
-          disabled={page.page <= 1}
-          onClick={() => onPageChange(page.page - 1)}
-          aria-label="Previous page"
-        >
-          <ChevronLeft size={16} />
-          Previous
-        </button>
-        <button
-          type="button"
-          className="button small-button"
-          disabled={page.page >= page.pageCount}
-          onClick={() => onPageChange(page.page + 1)}
-          aria-label="Next page"
-        >
-          Next
-          <ChevronRight size={16} />
-        </button>
-      </div>
+      {(page.pageCount > 1 || page.page > 1) && (
+        <div>
+          <button
+            type="button"
+            className="button small-button"
+            disabled={page.page <= 1}
+            onClick={() => onPageChange(page.page - 1)}
+            aria-label="Previous page"
+          >
+            <ChevronLeft size={16} />
+            Previous
+          </button>
+          <button
+            type="button"
+            className="button small-button"
+            disabled={page.page >= page.pageCount}
+            onClick={() => onPageChange(page.page + 1)}
+            aria-label="Next page"
+          >
+            Next
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      )}
     </nav>
   );
 }

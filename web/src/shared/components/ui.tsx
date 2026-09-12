@@ -16,12 +16,14 @@ export function Dialog({
   children,
   onClose,
   wide = false,
+  busy = false,
 }: {
   title: string;
   subtitle?: string;
   children: ReactNode;
   onClose: () => void;
   wide?: boolean;
+  busy?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const id = useId();
@@ -39,9 +41,14 @@ export function Dialog({
     <dialog
       ref={ref}
       aria-labelledby={id}
+      aria-busy={busy || undefined}
       className={`dialog ${wide ? "dialog-wide" : ""}`}
-      onCancel={onClose}
+      onCancel={(event) => {
+        event.preventDefault();
+        if (!busy) onClose();
+      }}
       onClick={(e) => {
+        if (busy) return;
         if (e.target === e.currentTarget) {
           const bounds = e.currentTarget.getBoundingClientRect();
           if (
@@ -61,8 +68,10 @@ export function Dialog({
           {subtitle && <p className="muted">{subtitle}</p>}
         </div>
         <button
+          type="button"
           className="icon-button"
           onClick={onClose}
+          disabled={busy}
           aria-label="Close dialog"
         >
           <X size={20} />

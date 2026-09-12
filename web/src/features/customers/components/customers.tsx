@@ -65,8 +65,9 @@ function CustomerForm({
   }
   return (
     <Dialog
-      title={customer ? "The customer details" : "A new face at the studio"}
-      subtitle="A little care begins with knowing your customer."
+      title={customer ? "Edit customer" : "New customer"}
+      subtitle="Enter the customer’s name, phone number, and any useful notes."
+      busy={busy}
       onClose={onClose}
     >
       <form onSubmit={submit}>
@@ -104,12 +105,12 @@ function CustomerForm({
             />
           </label>
           <label className="field full-width">
-            Customer notes
+            Customer notes (optional)
             <textarea
               name="notes"
               defaultValue={customer?.notes}
               maxLength={2000}
-              placeholder="Fit preferences, fabric notes, or anything useful."
+              placeholder="Fit preferences, fabric details, or other notes"
             />
           </label>
           {error && (
@@ -119,7 +120,12 @@ function CustomerForm({
           )}
         </div>
         <div className="dialog-actions">
-          <button type="button" className="button" onClick={onClose}>
+          <button
+            type="button"
+            className="button"
+            onClick={onClose}
+            disabled={busy}
+          >
             Cancel
           </button>
           <button className="button primary" disabled={busy}>
@@ -142,9 +148,9 @@ export function CustomersList() {
   return (
     <>
       <PageHeading
-        eyebrow="FAMILIAR FACES. THOUGHTFUL DETAILS."
-        title="The people we make for."
-        description="Keep measurements, preferences, and every past order close at hand."
+        eyebrow="CUSTOMER DIRECTORY"
+        title="Customers"
+        description="Find a customer, update measurements, or view their order history."
       >
         <button className="button primary" onClick={() => setAdd(true)}>
           <Plus size={17} />
@@ -202,7 +208,7 @@ export function CustomersList() {
       {!read.isLoading && !read.error && !customers.length && (
         <EmptyState
           title="No customers found"
-          text="Try another name or add a new customer."
+          text="Try another name or phone number, or add a new customer."
         />
       )}
       {read.data && <Pagination page={read.data.page} onPageChange={setPage} />}
@@ -247,7 +253,7 @@ export function CustomerDetail({ id }: { id: string }) {
         Back to customers
       </Link>
       <PageHeading
-        eyebrow="A FIT THAT FEELS FAMILIAR"
+        eyebrow="CUSTOMER DETAILS"
         title={customer.name}
         description={`${customer.phone}${customer.email ? ` · ${customer.email}` : ""}`}
       >
@@ -290,8 +296,8 @@ export function CustomerDetail({ id }: { id: string }) {
           </section>
           <section className="panel">
             <SectionHeading
-              title="Every order, remembered"
-              subtitle={`${read.data?.orderCounts[id] ?? 0} orders with the studio`}
+              title="Order history"
+              subtitle={`${read.data?.orderCounts[id] ?? 0} orders for this customer`}
             />
             {orders.map((order) => (
               <Link
@@ -316,8 +322,12 @@ export function CustomerDetail({ id }: { id: string }) {
             ))}
             {!read.isLoading && !read.error && !orders.length && (
               <EmptyState
-                title="The first chapter awaits"
-                text="This customer has no orders yet."
+                title="No orders to show"
+                text={
+                  read.data?.page.total
+                    ? "No orders on this page. Use the page controls below."
+                    : "This customer has no orders yet."
+                }
               />
             )}
             {read.data && (
@@ -326,10 +336,10 @@ export function CustomerDetail({ id }: { id: string }) {
           </section>
         </div>
         <aside className="panel padded">
-          <SectionHeading title="The little preferences" />
+          <SectionHeading title="Customer notes" />
           <p className="note-box">
             {customer.notes ||
-              "No special preferences saved. You can add them by editing the customer details."}
+              "No notes saved. Choose Edit details to add notes."}
           </p>
         </aside>
       </div>
@@ -338,8 +348,9 @@ export function CustomerDetail({ id }: { id: string }) {
       )}
       {measurements && (
         <Dialog
-          title="A few careful measurements"
-          subtitle="Blouse profile · all measurements are in inches."
+          title="Blouse measurements"
+          subtitle="Enter measurements in inches. Leave unused fields blank."
+          busy={busy}
           onClose={() => setMeasurements(false)}
         >
           <form
@@ -398,7 +409,7 @@ export function CustomerDetail({ id }: { id: string }) {
             </div>
             <div className="dialog-actions">
               <button className="button primary" disabled={busy}>
-                Save measurements
+                {busy ? "Saving…" : "Save measurements"}
               </button>
             </div>
           </form>

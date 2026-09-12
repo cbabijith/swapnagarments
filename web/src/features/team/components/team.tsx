@@ -29,9 +29,9 @@ export function Team() {
   return (
     <>
       <PageHeading
-        eyebrow="THE HANDS BEHIND EVERY STITCH"
-        title="Your lovely little team."
-        description="The people who turn a piece of fabric into something special."
+        eyebrow="STAFF DIRECTORY"
+        title="Team"
+        description="View team members, their roles, and assigned stations."
       />
       <QueryState
         loading={query.isLoading}
@@ -53,11 +53,11 @@ export function Team() {
         !query.isLoading &&
         !query.error && (
           <EmptyState
-            title="Your team starts here"
+            title="No team members to show"
             text={
               query.data.page.total
                 ? "No team members on this page. Use the page controls below."
-                : "Your owner profile will appear after setup."
+                : "No team members have been saved."
             }
           />
         )}

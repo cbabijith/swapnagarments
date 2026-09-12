@@ -41,7 +41,7 @@ const navigation = [
   { href: "/customers", label: "Customers", icon: Users },
   { href: "/workflow", label: "Workflow", icon: GitBranch },
   { href: "/billing", label: "Billing & payments", icon: Wallet },
-  { href: "/team", label: "Your team", icon: Users },
+  { href: "/team", label: "Team", icon: Users },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -92,7 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         ? "New order"
         : (navigation.find(
             (entry) => entry.href !== "/" && pathname.startsWith(entry.href),
-          )?.label ?? (pathname === "/scan" ? "Find a garment" : "Settings"));
+          )?.label ?? (pathname === "/scan" ? "Find an order" : "Settings"));
   const active = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
   useEffect(() => {
@@ -124,8 +124,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="shop-switcher">
           <span className="shop-initial">S</span>
           <div>
-            <strong>The tailoring studio</strong>
-            <span>Your everyday workspace</span>
+            <strong>Swapna Garments</strong>
+            <span>Shop management</span>
           </div>
           <ChevronDown size={14} />
         </div>
@@ -151,7 +151,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <p className="nav-label">TOOLS</p>
           <Link href="/scan">
             <ScanLine size={19} strokeWidth={1.6} />
-            <span>Scan a garment</span>
+            <span>Find an order</span>
             <ArrowUpRight size={14} />
           </Link>
           <Link
@@ -166,10 +166,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="studio-note">
             <Scissors size={23} strokeWidth={1.3} />
             <p>
-              A little more organised.
-              <br />A lot more peace of mind.
+              Orders and customers.
+              <br />
+              Workflow and payments.
             </p>
-            <span>Made for your everyday.</span>
+            <span>Your shop in one place.</span>
           </div>
           <div className="user-panel">
             <Avatar name={owner.name} />
@@ -207,11 +208,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="topbar-actions">
             <button
               className="global-search"
-              aria-label="Search workspace"
+              aria-label="Search orders"
               onClick={() => setSearchOpen(true)}
             >
               <Search size={17} />
-              <span>Search anything...</span>
+              <span>Search orders</span>
               <kbd>Ctrl K</kbd>
             </button>
             <button
@@ -233,7 +234,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               Workspace preview · Sample data
             </span>
             <Link href="/settings">
-              Railway connection pending
+              View settings
               <ArrowUpRight size={13} />
             </Link>
           </div>
@@ -242,9 +243,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {children}
         </main>
         <footer className="workspace-footer">
-          <span>Made with care, for every stitch.</span>
+          <span>Orders, customers and payments.</span>
           <span>
-            Swapna Garments <i /> Your shop. In order.
+            Swapna Garments <i /> Shop management
           </span>
         </footer>
       </div>
@@ -255,7 +256,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           aria-current={active("/") ? "page" : undefined}
         >
           <LayoutDashboard size={21} />
-          <span>Home</span>
+          <span>Overview</span>
         </Link>
         <Link
           href="/orders"
@@ -299,8 +300,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       )}
       {searchOpen && (
         <Dialog
-          title="Find what you need"
-          subtitle="Search orders, customers, or garments."
+          title="Search orders"
+          subtitle="Find an order by customer name, order number, or garment."
           onClose={() => setSearchOpen(false)}
         >
           <div className="dialog-body">
@@ -312,7 +313,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 maxLength={200}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Name, order number, or garment"
-                aria-label="Search workspace"
+                aria-label="Search orders"
               />
             </label>
             <div className="search-results">
@@ -353,7 +354,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               {!search.isLoading && !search.error && !results.length && (
                 <EmptyState
                   title="No matches found"
-                  text="Try a customer name or order number."
+                  text="Try another customer name, order number, or garment."
                 />
               )}
             </div>
@@ -361,7 +362,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </Dialog>
       )}
       {more && (
-        <Dialog title="Your workspace" onClose={() => setMore(false)}>
+        <Dialog title="More pages" onClose={() => setMore(false)}>
           <nav className="more-navigation" aria-label="More pages">
             {[
               ...navigation,
@@ -383,8 +384,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       )}
       {notifications && (
         <Dialog
-          title="Around the studio"
-          subtitle="The latest activity in your workspace."
+          title="Recent activity"
+          subtitle="The latest recorded order updates."
           onClose={() => setNotifications(false)}
         >
           <div className="dialog-body activity-list">
@@ -413,9 +414,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <p className="small muted">
               <CircleHelp size={13} />{" "}
               {mode === "preview"
-                ? "Sample workspace activity."
-                : "Your shop’s latest recorded activity."}{" "}
-              Customer messaging is not enabled yet.
+                ? "Sample order activity."
+                : "Your shop’s latest recorded activity."}
             </p>
           </div>
         </Dialog>

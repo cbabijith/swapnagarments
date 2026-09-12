@@ -11,9 +11,12 @@ import {
 } from "@/shared/workspace";
 import type { DashboardRead } from "@/features/dashboard/types/queries";
 
-export function useDashboard(taskFilter: "due" | "urgent" | "ready") {
+export function useDashboard(
+  taskFilter: "due" | "urgent" | "ready",
+  enabled = true,
+) {
   return useFeatureQuery<DashboardRead>(
-    `/api/dashboard?taskFilter=${taskFilter}`,
+    enabled ? `/api/dashboard?taskFilter=${taskFilter}` : null,
     (workspace) => {
       const today = shopDate();
       const open = workspace.orders.filter(isOpen);

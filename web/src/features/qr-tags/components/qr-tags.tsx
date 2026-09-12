@@ -60,13 +60,13 @@ export function Scan() {
         if (response.status === 401) onUnauthorized();
         if (!response.ok)
           throw new Error(
-            result.error || "Could not look up this garment. Please try again.",
+            result.error || "Could not find this order. Please try again.",
           );
         orderId = result.orderId;
       }
       if (!orderId)
         throw new Error(
-          "We couldn’t find that garment. Check the order number and try again.",
+          "Order not found. Check the order number and try again.",
         );
       if (mounted.current) {
         setCamera(false);
@@ -77,7 +77,7 @@ export function Scan() {
         setError(
           error instanceof Error
             ? error.message
-            : "Could not look up this garment. Please try again.",
+            : "Could not find this order. Please try again.",
         );
     } finally {
       inFlight.current = false;
@@ -131,8 +131,8 @@ export function Scan() {
   return (
     <>
       <PageHeading
-        eyebrow="ONE LITTLE SCAN. THE WHOLE STORY."
-        title="Find the piece in front of you."
+        eyebrow="QR SCAN OR ORDER NUMBER"
+        title="Find an order"
         description="Scan a garment’s QR label or enter its order number."
       />
       <section className="panel scan-panel">
@@ -155,11 +155,8 @@ export function Scan() {
             <div className="scan-target">
               <ScanLine size={64} strokeWidth={1} />
             </div>
-            <h2>Every piece has a place.</h2>
-            <p>
-              Point your camera at the QR label to see the order and its next
-              step.
-            </p>
+            <h2>Scan a garment label</h2>
+            <p>Open the camera and point it at a QR label to view the order.</p>
             <button
               className="button primary"
               onClick={() => {
@@ -189,7 +186,7 @@ export function Scan() {
             />
           </label>
           <button className="button" type="submit" disabled={busy}>
-            {busy ? "Finding garment…" : "Find garment"}
+            {busy ? "Finding order…" : "Find order"}
             <ArrowRight size={16} />
           </button>
         </form>
