@@ -1,4 +1,4 @@
-import { CustomerDetail } from "@/components/customers";
+import { CustomerDetail } from "@/features/customers/components/customers";
 export default async function Page({
   params,
 }: {

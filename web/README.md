@@ -45,12 +45,33 @@ Tests run against an isolated PostgreSQL WASM engine and do not touch Railway.
 
 ## Structure
 
-- `src/app/` — pages and protected Next.js API routes.
-- `src/components/` — responsive shell, forms, views, and live/preview provider.
-- `src/lib/workspace.ts` — shared types, formatting, explicitly labelled samples.
-- `src/lib/workspace-mutations.ts` — validated, transactional shop commands.
-- `src/lib/server/` — PostgreSQL, owner authentication, and safe responses.
-- `tests/` — workflow and PostgreSQL route integration tests.
+Feature/service extraction, the Drizzle baseline and relational migration now
+follow the local Dolce CRM reference. [ARCHITECTURE-ALIGNMENT.md](../docs/ARCHITECTURE-ALIGNMENT.md)
+records completed work and the remaining deployment/query/event stages.
+
+- `src/app/` — thin pages and protected API route composition.
+- `src/features/<feature>/` — feature components, hooks, contracts, types, and pure rules.
+- `src/services/` — server services, authentication, transaction orchestration and persistence.
+- `src/db/` — bounded PostgreSQL pool, Drizzle schemas and versioned migrations.
+- `src/integrations/storage/` — Railway S3 adapter.
+- `src/shared/` — common UI, request guards, errors and formatting.
+- `src/shared/compat/` — temporary workspace read/transport and sample-preview adapters.
+- `tests/` — protected workflows, migration preservation and transitive client/server boundaries.
+
+Feature commands use `/api/customers`, `/api/orders`, `/api/workflow`,
+`/api/billing` and `/api/reports`. Existing `/api/workspace` reads and writes
+remain compatible. There is no separate backend deployment.
+
+Migrations run transactionally on first server access. Version 1 baselines the
+existing tables; version 2 adds a nullable retry fingerprint; version 3 adds
+relational shop tables and storage-selection metadata. The ledger stores checksums
+and rejects edits to applied migrations. Startup keeps JSON storage active.
+
+`npm run db:relational -w web -- help` describes the operator CLI. It supports
+read-only status, dry-run rehearsal, reconciled cutover and rollback that preserves
+post-cutover work. Existing owner hashes, sessions, IDs, paise amounts and history
+are preserved. Follow [RELATIONAL-MIGRATION.md](../docs/RELATIONAL-MIGRATION.md)
+for full backup/live-data rehearsal requirements before switching production.
 
 ## Design
 

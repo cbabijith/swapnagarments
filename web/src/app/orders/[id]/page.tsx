@@ -1,4 +1,4 @@
-import { OrderDetail } from "@/components/orders";
+import { OrderDetail } from "@/features/orders/components/orders";
 export default async function Page({
   params,
 }: {

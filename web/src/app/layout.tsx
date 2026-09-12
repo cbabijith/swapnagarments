@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { WorkspaceProvider } from "@/components/workspace-provider";
-import { AppShell } from "@/components/app-shell";
-import { createPreviewWorkspace, emptyWorkspace } from "@/lib/workspace";
+import { WorkspaceProvider } from "@/shared/compat/workspace-provider";
+import { AppShell } from "@/shared/components/app-shell";
+import { createPreviewWorkspace, emptyWorkspace } from "@/shared/workspace";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

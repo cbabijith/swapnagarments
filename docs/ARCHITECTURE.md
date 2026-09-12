@@ -1,5 +1,11 @@
 # Architecture
 
+> **Current website requirement (2026-09-12):** The active Next.js website must
+> follow the owner's Dolce CRM architecture. See
+> [ARCHITECTURE-ALIGNMENT.md](ARCHITECTURE-ALIGNMENT.md) for the target structure,
+> current gaps, and migration sequence. The Hono five-layer description below
+> documents the original backend baseline and does not describe the live website.
+
 Feature-driven, five-layered, event-driven architecture in an npm-workspaces
 monorepo. The guiding rules:
 

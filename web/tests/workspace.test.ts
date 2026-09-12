@@ -3,14 +3,21 @@ import assert from "node:assert/strict";
 import { PGlite } from "@electric-sql/pglite";
 import { NextRequest } from "next/server";
 import type { Pool } from "pg";
-import { applyMutation } from "../src/lib/workspace-mutations";
+import { applyMutation } from "../src/shared/compat/workspace-mutations";
 import {
   createPreviewWorkspace,
   emptyWorkspace,
   shopDate,
   type Workspace,
-} from "../src/lib/workspace";
+} from "../src/shared/workspace";
 import { GET, POST } from "../src/app/api/workspace/route";
+import { POST as customersPost } from "../src/app/api/customers/route";
+import { POST as ordersPost } from "../src/app/api/orders/route";
+import { POST as workflowPost } from "../src/app/api/workflow/route";
+import { POST as billingPost } from "../src/app/api/billing/route";
+import { POST as reportsPost } from "../src/app/api/reports/route";
+import { commandEndpoint } from "../src/shared/contracts/command-endpoint";
+import { mutationSchema } from "../src/shared/contracts/command";
 import {
   POST as authenticate,
   DELETE as signOut,
@@ -18,12 +25,25 @@ import {
 
 // Actual PostgreSQL WASM engine for SQL/transaction checks. No Railway data is used.
 const pg = new PGlite();
-async function query(sql: string, values?: unknown[]) {
+async function query(
+  input: string | { text: string; rowMode?: string },
+  values?: unknown[],
+) {
+  const sql = typeof input === "string" ? input : input.text;
   const result = values
     ? await pg.query(sql, values)
     : (await pg.exec(sql)).at(-1)!;
+  const rows =
+    typeof input !== "string" && input.rowMode === "array"
+      ? result.rows.map((row) =>
+          result.fields.map((field) => {
+            const value = (row as Record<string, unknown>)[field.name];
+            return value instanceof Date ? value.toISOString() : value;
+          }),
+        )
+      : result.rows;
   return {
-    rows: result.rows,
+    rows,
     rowCount: result.affectedRows || result.rows.length,
   };
 }
@@ -187,8 +207,16 @@ test("protected PostgreSQL lifecycle: setup, intake, retries, payment, delivery,
   );
   assert.equal(crossSite.status, 403);
   async function mutate(action: unknown, mutationId = crypto.randomUUID()) {
-    const response = await POST(
-      request("/api/workspace", "POST", { mutationId, action }, cookie),
+    const endpoint = commandEndpoint(mutationSchema.parse(action));
+    const handlers = {
+      "/api/customers": customersPost,
+      "/api/orders": ordersPost,
+      "/api/workflow": workflowPost,
+      "/api/billing": billingPost,
+      "/api/reports": reportsPost,
+    };
+    const response = await handlers[endpoint](
+      request(endpoint, "POST", { mutationId, action }, cookie),
     );
     return {
       status: response.status,
@@ -230,6 +258,63 @@ test("protected PostgreSQL lifecycle: setup, intake, retries, payment, delivery,
   assert.equal(repeated.body.data.orders.length, 1);
   assert.equal(repeated.body.resultId, created.body.resultId);
   assert.equal(repeated.body.revision, created.body.revision);
+  const collision = await mutate(
+    { ...orderCommand, notes: "A different order" },
+    commandId,
+  );
+  assert.equal(collision.status, 409);
+  const compatibilityRetry = await POST(
+    request(
+      "/api/workspace",
+      "POST",
+      { mutationId: commandId, action: orderCommand },
+      cookie,
+    ),
+  );
+  assert.equal(compatibilityRetry.status, 200);
+  assert.equal(
+    (await compatibilityRetry.json()).revision,
+    created.body.revision,
+  );
+  const wrongFeature = await customersPost(
+    request(
+      "/api/customers",
+      "POST",
+      { mutationId: crypto.randomUUID(), action: orderCommand },
+      cookie,
+    ),
+  );
+  assert.equal(wrongFeature.status, 400);
+  for (const handler of [
+    customersPost,
+    ordersPost,
+    workflowPost,
+    billingPost,
+    reportsPost,
+  ]) {
+    assert.equal(
+      (await handler(request("/api/orders", "POST", {}))).status,
+      401,
+    );
+    assert.equal(
+      (
+        await handler(
+          request(
+            "/api/orders",
+            "POST",
+            {},
+            cookie,
+            "https://untrusted.example",
+          ),
+        )
+      ).status,
+      403,
+    );
+  }
+  const oversized = await customersPost(
+    request("/api/customers", "POST", { padding: "x".repeat(100_001) }, cookie),
+  );
+  assert.equal(oversized.status, 413);
   const orderId = created.body.resultId;
   const pieceId = created.body.data.orders[0].items[0].id;
   const overpayment = await mutate({

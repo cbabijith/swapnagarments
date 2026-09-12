@@ -1,0 +1,53 @@
+import { type Workspace, type Order } from "@/shared/workspace";
+import { WorkspaceError } from "@/shared/errors";
+import type { MutationContext } from "@/shared/domain/mutation-context";
+
+export function createOrder({
+  data,
+  action,
+  timestamp,
+  today,
+  event,
+}: MutationContext<"order.create">): { data: Workspace; resultId?: string } {
+  if (!data.customers.some((entry) => entry.id === action.customerId))
+    throw new WorkspaceError("Choose an existing customer.");
+  if (action.dueDate < today)
+    throw new WorkspaceError("The delivery date cannot be in the past.");
+  const quoted = action.items.reduce((sum, item) => sum + item.price, 0);
+  if (!Number.isSafeInteger(quoted) || quoted > 100_000_000)
+    throw new WorkspaceError("The order total is too large.");
+  if (action.advance > quoted)
+    throw new WorkspaceError("The advance cannot exceed the order total.");
+  const order: Order = {
+    id: crypto.randomUUID(),
+    number: `SG-${Math.max(1000, ...data.orders.map((entry) => Number(entry.number.replace("SG-", "")) || 0)) + 1}`,
+    customerId: action.customerId,
+    items: action.items.map((item) => ({
+      ...item,
+      id: crypto.randomUUID(),
+      station: 0,
+    })),
+    priority: action.priority,
+    dueDate: action.dueDate,
+    notes: action.notes,
+    createdAt: timestamp,
+    status: "received",
+    payments: action.advance
+      ? [
+          {
+            id: crypto.randomUUID(),
+            amount: action.advance,
+            method: action.method,
+            date: timestamp,
+          },
+        ]
+      : [],
+  };
+  data.orders.unshift(order);
+  event(
+    order.id,
+    "A new order on the books",
+    `${order.number} was added to the queue.`,
+  );
+  return { data, resultId: order.id };
+}

@@ -1,4 +1,4 @@
-import { Scan } from "@/components/studio-pages";
+import { Scan } from "@/features/qr-tags/components/qr-tags";
 export default function Page() {
   return <Scan />;
 }

@@ -1,5 +1,13 @@
 # Swapna Garments — Tailoring Management System
 
+> **Architecture requirement (2026-09-12):** Future website development must
+> follow the feature-driven structure of the owner's Dolce CRM project:
+> feature UI, thin Next.js APIs, server services, and Drizzle domain schemas.
+> Feature/service extraction, the Drizzle baseline and relational migration are
+> implemented locally on `codex/feature-architecture`. Production cutover and
+> remaining query/event stages are described in
+> [docs/ARCHITECTURE-ALIGNMENT.md](docs/ARCHITECTURE-ALIGNMENT.md).
+
 > **Website update (2026-09-12):** The responsive desktop/mobile Next.js website
 > is now implemented, with its own server-side Railway PostgreSQL connection.
 > See [web/README.md](web/README.md) for the current website scope, validation,

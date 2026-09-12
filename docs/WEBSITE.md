@@ -106,14 +106,22 @@ No new `railway.toml` is supplied; use the existing service settings.
 
 ## Persistence and request boundaries
 
-`src/lib/server/database.ts` maintains a bounded PostgreSQL pool. First access
-creates only app-owned `sg_*` tables under a PostgreSQL advisory lock. This does
-not drop, rename, or seed other tables.
+On the architecture branch, `web/src/db/index.ts` maintains the bounded
+PostgreSQL pool and Drizzle adapter. First access runs checksum-checked,
+versioned migrations under a PostgreSQL advisory lock. The baseline retains
+existing app-owned tables; the next migration adds a nullable command fingerprint.
+Migration 3 adds relational domain tables and an explicit storage selector; it
+does not automatically switch shop data. Operator rehearsal, cutover and rollback
+are documented in [RELATIONAL-MIGRATION.md](RELATIONAL-MIGRATION.md).
+This does not drop, rename or seed other tables. See
+[the architecture status](ARCHITECTURE-ALIGNMENT.md) for rollout status.
 
-`sg_workspace` contains one versioned JSONB snapshot for this single shop. A
-database row lock serializes mutations; clients send commands rather than full
-snapshots. `sg_mutations` records command IDs so an ambiguous retry cannot record
+Until cutover, `sg_workspace` contains the active JSONB snapshot for this single
+shop. After cutover, services read/write relational domain tables and preserve
+the frozen JSON snapshot. A workspace row lock serializes mutations; clients send
+commands rather than full snapshots. `sg_mutations` records command IDs so an ambiguous retry cannot record
 a second payment or order. Expected station numbers reject stale workflow steps.
+New retry records also reject reuse of one command ID for different input.
 This is a small-shop starting model, not a multi-tenant or high-volume schema.
 
 `sg_owner` stores a salted scrypt password hash. Session cookies are HttpOnly,
@@ -128,7 +136,9 @@ parameters; database errors and credentials are not returned to the browser.
 `npm run test -w web` runs isolated tests against PostgreSQL's PGlite WASM engine
 and the real route handlers. Coverage includes setup-code checks, authentication,
 origin checks, data persistence, monetary guards, multi-step workflow, stale
-updates, idempotent retries, delivery, reports, and session revocation. This is
+updates, idempotent retries, delivery, reports, and session revocation. Architecture
+checks cover client/server boundaries and thin routes; migration checks retain
+existing owner/session and shop records on an isolated fixture. This is
 not a test of the live Railway network connection.
 
 Build, lint, and TypeScript checks run in the web workspace. Browser checks cover
