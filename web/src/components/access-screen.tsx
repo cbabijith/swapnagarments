@@ -128,8 +128,8 @@ export function AccessScreen({
               </p>
               {setup && !setupAvailable ? (
                 <p className="form-error">
-                  Owner setup needs a setup code configured in Railway. Please
-                  finish the website connection first.
+                  Your workspace is connected. Owner account setup needs a
+                  private setup code configured in the Railway website service.
                 </p>
               ) : (
                 <form onSubmit={submit}>

@@ -52,6 +52,11 @@ Verified through the owner's browser on 2026-09-12:
 
 The website service now has reference variables for PostgreSQL and the existing
 bucket. No database credentials or bucket secrets are stored in source code.
+Live verification on 2026-09-12 returned HTTP 200 from `/api/health` with
+`database: connected` and `bucket: connected`. The protected workspace endpoint
+returned HTTP 401 with `setupRequired: true` and `setupAvailable: false`.
+The website is deployed; first-use owner setup still requires `SETUP_TOKEN` in
+the website service and the owner entering their own name, email, and password.
 The connected Railway MCP account cannot access this project; the user's Chrome
 Railway session can. Deployment must use that authorized project context.
 
