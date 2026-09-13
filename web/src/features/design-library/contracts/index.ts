@@ -98,6 +98,8 @@ export type LibraryPage = {
   total: number;
   page: number;
   pageCount: number;
+  builtinOverrides?: DesignAsset[];
+  uploadTotal?: number;
 };
 export const assetUpdateSchema = z.strictObject({
   id: assetId,

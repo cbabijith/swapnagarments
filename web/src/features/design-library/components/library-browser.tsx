@@ -253,8 +253,11 @@ export function LibraryBrowser({
             </label>
           </div>
           {library.loading && (
-            <p role="status" className={styles.empty}>
-              Loading images…
+            <p
+              role="status"
+              className={library.data ? "muted small" : styles.empty}
+            >
+              {library.data ? "Updating images…" : "Loading images…"}
             </p>
           )}
           {library.error && (
@@ -271,7 +274,11 @@ export function LibraryBrowser({
           )}
           {library.data && (
             <>
-              <div className={styles.grid} aria-label="Image results">
+              <div
+                className={styles.grid}
+                aria-label="Image results"
+                aria-busy={library.loading}
+              >
                 {library.data.items.map((a) => (
                   <article
                     key={a.id}
@@ -281,7 +288,7 @@ export function LibraryBrowser({
                     <button
                       type="button"
                       className={styles.pick}
-                      disabled={busy}
+                      disabled={busy || library.loading}
                       aria-label={
                         onSelect
                           ? `${multiple && selectedIds.includes(a.id) ? "Remove" : "Choose"} ${a.label}`
@@ -309,7 +316,7 @@ export function LibraryBrowser({
                     <div className={styles.actions}>
                       <button
                         type="button"
-                        disabled={busy}
+                        disabled={busy || library.loading}
                         aria-label={`${a.favourite ? "Unfavourite" : "Favourite"} ${a.label}`}
                         aria-pressed={a.favourite}
                         onClick={() =>
@@ -331,7 +338,7 @@ export function LibraryBrowser({
                       {!onSelect && (
                         <button
                           type="button"
-                          disabled={busy}
+                          disabled={busy || library.loading}
                           aria-label={`${a.active ? "Archive" : "Restore"} ${a.label}`}
                           onClick={() => void update(a, { active: !a.active })}
                         >
@@ -360,7 +367,7 @@ export function LibraryBrowser({
                   <button
                     type="button"
                     className="button"
-                    disabled={library.data.page <= 1}
+                    disabled={library.loading || library.data.page <= 1}
                     onClick={() =>
                       setQuery({ ...query, page: library.data!.page - 1 })
                     }
@@ -370,7 +377,10 @@ export function LibraryBrowser({
                   <button
                     type="button"
                     className="button"
-                    disabled={library.data.page >= library.data.pageCount}
+                    disabled={
+                      library.loading ||
+                      library.data.page >= library.data.pageCount
+                    }
                     onClick={() =>
                       setQuery({ ...query, page: library.data!.page + 1 })
                     }

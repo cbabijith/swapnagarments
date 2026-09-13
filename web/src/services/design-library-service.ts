@@ -108,9 +108,14 @@ export async function browseDesignLibrary(
       query.family && query.family !== "my-images" ? sql`false` : undefined,
     );
     const [customCount] = await tx
-      .select({ value: count() })
+      .select({
+        value: sql<number>`count(*) filter (where ${where})`.mapWith(Number),
+        total: count(),
+      })
       .from(designAssets)
-      .where(where);
+      .where(
+        and(eq(designAssets.workspaceId, 1), eq(designAssets.source, "upload")),
+      );
     const total = builtins.length + customCount.value,
       pageCount = Math.max(1, Math.ceil(total / 12)),
       page = Math.min(query.page, pageCount),
@@ -128,7 +133,14 @@ export async function browseDesignLibrary(
             .limit(12 - items.length)
         ).map(publicAsset),
       );
-    return { items, total, page, pageCount };
+    return {
+      items,
+      total,
+      page,
+      pageCount,
+      builtinOverrides: [...overrides.values()],
+      uploadTotal: customCount.total,
+    };
   });
 }
 export async function updateDesignAsset(

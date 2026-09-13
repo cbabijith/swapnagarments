@@ -6,6 +6,9 @@ import { previewImage } from "../domain/preview-library";
 import { garmentImage } from "../domain/designs";
 import type { Garment } from "@/features/settings/contracts/catalogue";
 import styles from "./library.module.css";
+import artwork from "../domain/builtin-artwork.json";
+
+const builtinArtwork: Record<string, string> = artwork;
 
 export function AssetImage({
   asset,
@@ -21,7 +24,8 @@ export function AssetImage({
   const src = asset.id.startsWith("upload-")
     ? (previewImage(asset.id) ??
       `/api/design-library/${encodeURIComponent(asset.id)}/image?size=${full ? "full" : "thumb"}`)
-    : `/design-library/v1/${encodeURIComponent(asset.id)}.svg`;
+    : (builtinArtwork[asset.id] ??
+      `/design-library/v1/${encodeURIComponent(asset.id)}.svg`);
   const [failed, setFailed] = useState("");
   if (failed === src)
     return (
@@ -55,7 +59,7 @@ export function AssetImage({
       width={size}
       height={full ? undefined : size}
       alt={decorative ? "" : asset.label}
-      loading={full ? "eager" : "lazy"}
+      loading={full || builtinArtwork[asset.id] ? "eager" : "lazy"}
       onError={() => setFailed(src)}
       data-design-asset={asset.id}
     />

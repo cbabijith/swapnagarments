@@ -254,6 +254,8 @@ test("library pagination, private uploads, retries, immutable order designs and 
     for (let page = 1; page <= 13; page++) {
       const result = await browseDesignLibrary(query({ page }));
       assert.equal(result.total, 150);
+      assert.equal(result.uploadTotal, 0);
+      assert.deepEqual(result.builtinOverrides, []);
       result.items.forEach((a) => seen.add(a.id));
     }
     assert.equal(seen.size, 150);
@@ -294,6 +296,12 @@ test("library pagination, private uploads, retries, immutable order designs and 
     );
     failThumbnail = false;
     const upload = await uploadDesignAsset(metadata, source);
+    assert.equal(
+      (await browseDesignLibrary(query({ q: "no matching garment" })))
+        .uploadTotal,
+      1,
+      "The cache must know uploads exist even when a search does not match them",
+    );
     assert.equal((await uploadDesignAsset(metadata, source)).id, upload.id);
     assert.equal(
       (await browseDesignLibrary(query({ source: "upload" }))).total,

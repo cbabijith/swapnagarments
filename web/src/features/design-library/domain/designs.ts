@@ -2,6 +2,7 @@ import { WorkspaceError } from "@/shared/errors";
 import type { Garment } from "@/features/settings/contracts/catalogue";
 import { resolveGarmentIllustration } from "@/features/settings/domain/garment-illustrations";
 import { builtinAssets, builtinById } from "./registry";
+import { matchGarmentAsset } from "./garment-match";
 import {
   toAssetRef,
   type AssetRef,
@@ -35,15 +36,8 @@ export function garmentImage(
     return toAssetRef(
       builtinById[`garment-${defaultModels[garment.illustrationId]}`],
     );
-  const exact = builtinAssets.find(
-    (a) =>
-      a.kind === "garment" &&
-      [a.label, ...a.aliases].some(
-        (n) => n.toLowerCase() === garment.name.trim().toLowerCase(),
-      ),
-  );
   return toAssetRef(
-    exact ??
+    matchGarmentAsset(garment.name) ??
       builtinById[
         `garment-${defaultModels[resolveGarmentIllustration(garment)]}`
       ],

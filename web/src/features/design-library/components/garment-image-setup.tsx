@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { Garment } from "@/features/settings/contracts/catalogue";
 import { AssetImage, GarmentImage } from "./asset-image";
 import { LibraryBrowser } from "./library-browser";
+import { garmentImage } from "../domain/designs";
 import styles from "./library.module.css";
 export function GarmentImageSetup({
   garment,
@@ -14,6 +15,8 @@ export function GarmentImageSetup({
   onEditing?: (editing: boolean) => void;
 }) {
   const [browse, setBrowse] = useState<"main" | "reference" | null>(null);
+  const automatic = !garment.image && !garment.illustrationId;
+  const matched = garmentImage(garment);
   useEffect(() => {
     onEditing?.(Boolean(browse));
     return () => onEditing?.(false);
@@ -49,11 +52,14 @@ export function GarmentImageSetup({
         <GarmentImage garment={garment} size={64} />
         <div>
           <strong>Garment image</strong>
-          <small>
-            {garment.image?.label ??
-              (garment.illustrationId
-                ? "Saved garment illustration"
-                : "Automatic image for this garment")}
+          <small role="status" aria-live="polite">
+            {automatic
+              ? matched.id === "garment-other-or-service"
+                ? garment.name.trim()
+                  ? "No matching model yet. Choose an image below."
+                  : "Type a garment name to match its image."
+                : `Automatic · ${matched.label}`
+              : matched.label}
           </small>
         </div>
         <button

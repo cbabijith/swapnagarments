@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import {
   browsePreview,
@@ -13,49 +13,88 @@ import type {
   AssetKind,
   AssetRef,
 } from "../contracts";
+import { LibraryCache, libraryKey } from "../domain/library-cache";
+
+// A new login has a new owner object. Private metadata is never kept in localStorage
+// or shared with another account; WeakMap entries disappear with their session.
+const sessions = new WeakMap<object, LibraryCache>();
 
 export function useLibrary(query: LibraryQuery) {
-  const { mode, onUnauthorized } = useWorkspace();
+  const { mode, owner, onUnauthorized } = useWorkspace();
   const version = useSyncExternalStore(
     libraryEvents.subscribe,
     libraryEvents.version,
     () => 0,
   );
-  const params = new URLSearchParams(
-    Object.entries(query).map(([k, v]) => [k, String(v)]),
-  ).toString();
+  const params = libraryKey(query);
   const key = `${mode}:${params}:${version}`;
+  const cache = useMemo(() => {
+    let current = sessions.get(owner);
+    if (!current || current.version !== version) {
+      current = new LibraryCache(version);
+      sessions.set(owner, current);
+    }
+    return current;
+  }, [owner, version]);
+  const currentQuery = useMemo(
+    () =>
+      Object.fromEntries(
+        new URLSearchParams(params),
+      ) as unknown as LibraryQuery,
+    [params],
+  );
+  const cached = mode === "preview" ? browsePreview(query) : cache.get(query);
   const [result, setResult] = useState<{
     key: string;
     data?: LibraryPage;
     error?: string;
   }>({ key: "" });
   useEffect(() => {
+    if (mode === "preview") return;
+    const refresh = () => {
+      if (document.visibilityState === "visible") libraryEvents.refresh();
+    };
+    const timer = window.setInterval(refresh, 60_000);
+    window.addEventListener("focus", refresh);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refresh);
+    };
+  }, [mode]);
+  useEffect(() => {
+    if (mode === "preview" || cache.get(currentQuery)) return;
     const controller = new AbortController();
+    const read = async (query: LibraryQuery) => {
+      const response = await fetch(`/api/design-library?${libraryKey(query)}`, {
+        cache: "no-store",
+        signal: AbortSignal.any([
+          controller.signal,
+          AbortSignal.timeout(20000),
+        ]),
+      });
+      if (response.status === 401) {
+        sessions.delete(owner);
+        onUnauthorized();
+      }
+      const body = await response.json();
+      if (!response.ok)
+        throw new Error(body.error || "Could not load the image library.");
+      if (!controller.signal.aborted) cache.put(query, body);
+      return body as LibraryPage;
+    };
     const run = async () => {
       try {
-        let data: LibraryPage;
-        if (mode === "preview")
-          data = browsePreview(
-            Object.fromEntries(
-              new URLSearchParams(params),
-            ) as unknown as LibraryQuery,
-          );
-        else {
-          const response = await fetch(`/api/design-library?${params}`, {
-            cache: "no-store",
-            signal: AbortSignal.any([
-              controller.signal,
-              AbortSignal.timeout(20000),
-            ]),
-          });
-          if (response.status === 401) onUnauthorized();
-          const body = await response.json();
-          if (!response.ok)
-            throw new Error(body.error || "Could not load the image library.");
-          data = body;
-        }
+        const data = await read(currentQuery);
         if (!controller.signal.aborted) setResult({ key, data });
+        // Prepare the next mixed/upload page while the current page is being read.
+        const next = { ...currentQuery, page: data.page + 1 };
+        if (
+          data.page < data.pageCount &&
+          !controller.signal.aborted &&
+          !cache.get(next)
+        ) {
+          void read(next).catch(() => {});
+        }
       } catch (error) {
         if (!controller.signal.aborted)
           setResult({
@@ -65,13 +104,19 @@ export function useLibrary(query: LibraryQuery) {
           });
       }
     };
-    void Promise.resolve().then(run);
-    return () => controller.abort();
-  }, [key, params, mode, onUnauthorized]);
+    // Built-in filters resolve synchronously; only remote searches wait for typing.
+    const timer = window.setTimeout(() => void run(), currentQuery.q ? 180 : 0);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [key, currentQuery, mode, owner, cache, onUnauthorized]);
+  const data = cached ?? (result.key === key ? result.data : undefined);
+  const error = result.key === key ? result.error : undefined;
   return {
-    data: result.key === key ? result.data : undefined,
-    error: result.key === key ? result.error : undefined,
-    loading: result.key !== key,
+    data: data ?? (error ? undefined : result.data),
+    error,
+    loading: !data && !error,
     reload: libraryEvents.refresh,
   };
 }
