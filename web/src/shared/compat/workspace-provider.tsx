@@ -1,4 +1,5 @@
 "use client";
+import { previewAssets } from "@/features/design-library/domain/preview-library";
 
 import {
   createContext,
@@ -138,7 +139,13 @@ export function WorkspaceProvider({
 
   async function send(action: unknown, message: string, retryId?: string) {
     if (mode === "preview") {
-      const result = applyMutation(snapshot.current, action, owner.name);
+      const result = applyMutation(
+        snapshot.current,
+        action,
+        owner.name,
+        new Date(),
+        previewAssets(),
+      );
       acceptSnapshot(result.data, revision.current + 1);
       notify(message + " (preview)");
       return result;

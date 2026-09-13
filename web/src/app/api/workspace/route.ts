@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
   try {
     checkOrigin(request);
     const owner = await requireOwner(request);
-    const input = await readBody(request, commandSchema);
+    const input = await readBody(request, commandSchema, 2_000_000);
     return json(await executeWorkspaceCommand(input, owner));
   } catch (error) {
     return failure(error);

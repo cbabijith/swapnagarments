@@ -1,3 +1,4 @@
+import { designSnapshotSchema } from "@/features/design-library/contracts";
 import "server-only";
 import { StorageMigrationError } from "./migration-error";
 import { createHash } from "node:crypto";
@@ -60,6 +61,7 @@ const workspaceSchema = z.strictObject({
             station: z.number().int().min(0).max(5),
             price: money,
             measurement: snapshotSchema.optional(),
+            design: designSnapshotSchema.optional(),
             measurementHistory: z.array(snapshotSchema).optional(),
           }),
         )

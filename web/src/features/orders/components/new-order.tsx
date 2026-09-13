@@ -1,4 +1,9 @@
 "use client";
+import {
+  DesignChoices,
+  emptyDesign,
+} from "@/features/design-library/components/design-choices";
+import type { DesignInput } from "@/features/design-library/contracts";
 import { useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -35,6 +40,7 @@ type DraftPiece = {
   quantity: number;
   material: string;
   measurements: MeasurementInput;
+  design: DesignInput;
 };
 function draftPiece(
   garment: Garment,
@@ -48,6 +54,7 @@ function draftPiece(
     price: garment.price === null ? "" : String(garment.price / 100),
     quantity: 1,
     material: "",
+    design: emptyDesign(),
     measurements: {
       values: compatibleValues(garment, customer),
       extraFields: [],
@@ -218,6 +225,7 @@ function OrderComposer({
         price: Math.round(Number(item.price) * 100),
         quantity: item.quantity,
         material: item.material,
+        design: item.design,
         measurements: {
           ...item.measurements,
           saveProfile:
@@ -473,6 +481,12 @@ function OrderComposer({
                     </button>
                   </div>
                 )}
+                <DesignChoices
+                  key={`${item.id}-${item.garment.id}-${item.garment.revision}`}
+                  garment={item.garment}
+                  value={item.design}
+                  onChange={(design) => update(item.id, { design })}
+                />
                 <div className={styles.measureHead}>
                   <strong>
                     {item.garment.name} measurements ·{" "}

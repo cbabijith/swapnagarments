@@ -1,3 +1,4 @@
+import { assetRefSchema } from "@/features/design-library/contracts";
 import { z } from "zod";
 import { id } from "@/shared/contracts/fields";
 import { garmentIllustrationIds } from "@/features/settings/contracts/garment-illustration";
@@ -11,6 +12,7 @@ export const snapshotSchema = z.strictObject({
   garmentRevision: z.number().int().min(1),
   garmentName: z.string().min(1).max(100),
   illustrationId: z.enum(garmentIllustrationIds).optional(),
+  image: assetRefSchema.optional(),
   revision: z.number().int().min(1),
   unit: z.enum(["in", "cm"]),
   fields: z.array(fieldSchema).max(40),

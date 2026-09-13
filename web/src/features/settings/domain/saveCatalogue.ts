@@ -1,3 +1,4 @@
+import { validateGarmentDesigns } from "@/features/design-library/domain/designs";
 import type { MutationContext } from "@/shared/domain/mutation-context";
 import { WorkspaceError } from "@/shared/errors";
 import { catalogueFor } from "./catalogue";
@@ -18,6 +19,7 @@ function definitionKey(value: unknown): string {
 export function saveCatalogue({
   data,
   action,
+  assets,
 }: MutationContext<"settings.save">) {
   const current = catalogueFor(data),
     next = structuredClone(action.catalogue);
@@ -47,6 +49,7 @@ export function saveCatalogue({
     throw new WorkspaceError("Choose an active default garment.");
   next.garments = next.garments.map((garment) => {
     const old = current.garments.find((g) => g.id === garment.id);
+    validateGarmentDesigns(garment, old, assets);
     unique(
       garment.fields.map((f) => f.id),
       "field IDs",

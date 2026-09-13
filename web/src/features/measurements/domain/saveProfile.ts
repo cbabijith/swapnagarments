@@ -1,3 +1,4 @@
+import { garmentImage } from "@/features/design-library/domain/designs";
 import type { Workspace } from "@/shared/workspace";
 import type {
   MeasurementInput,
@@ -69,6 +70,7 @@ export function prepareMeasurement(
     garmentRevision,
     garmentName: garment.name,
     illustrationId: resolveGarmentIllustration(garment),
+    image: garmentImage(garment),
     revision: 1,
     fields: fieldsForSnapshot(fields),
     unit: garment.unit,

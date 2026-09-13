@@ -3,8 +3,7 @@ import { useState, type FormEvent } from "react";
 import type { Customer } from "@/features/customers/types";
 import type { Garment } from "@/features/settings/contracts/catalogue";
 import { useCatalogue } from "@/features/settings/hooks/use-catalogue";
-import { GarmentIllustration } from "@/features/settings/components/garment-illustration";
-import { resolveGarmentIllustration } from "@/features/settings/domain/garment-illustrations";
+import { GarmentImage } from "@/features/design-library/components/asset-image";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { QueryState } from "@/shared/components/query-state";
 import { Dialog } from "@/shared/components/ui";
@@ -36,10 +35,7 @@ export function CustomerMeasurements({ customer }: { customer: Customer }) {
               key={g.id}
               onClick={() => setEdit(structuredClone(g))}
             >
-              <GarmentIllustration
-                illustrationId={resolveGarmentIllustration(g)}
-                size={32}
-              />
+              <GarmentImage garment={g} size={32} />
               {profileFor(customer, g.id) ? "Edit" : "Add"} {g.name}
             </button>
           ))}

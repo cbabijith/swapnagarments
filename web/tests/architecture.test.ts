@@ -47,6 +47,15 @@ test("client imports cannot reach server services, database code or integrations
       for (const ref of dependencies(file)) {
         // CSS modules are styling assets, not executable client dependencies.
         if (ref.endsWith(".css")) continue;
+        if (ref.endsWith(".json")) {
+          const asset = path.resolve(path.dirname(file), ref);
+          assert.ok(
+            asset.startsWith(root + path.sep),
+            `Data import outside src: ${ref}`,
+          );
+          JSON.parse(readFileSync(asset, "utf8"));
+          continue;
+        }
         assert.notEqual(
           ref,
           "server-only",

@@ -7,4 +7,5 @@ export const runtime = "nodejs";
 export const GET = queryHandler(z.object({}), readCatalogue);
 export const POST = commandHandler(
   z.object({ mutationId: z.uuid(), action: saveCatalogueSchema }),
+  2_000_000,
 );

@@ -1,3 +1,4 @@
+import type { AssetMap } from "@/features/design-library/domain/designs";
 import {
   mutationSchema,
   type WorkspaceMutation,
@@ -24,6 +25,7 @@ export function applyMutation(
   input: unknown,
   actor: string,
   now = new Date(),
+  assets?: AssetMap,
 ): { data: Workspace; resultId?: string } {
   const parsed = mutationSchema.safeParse(input);
   if (!parsed.success)
@@ -34,6 +36,7 @@ export function applyMutation(
   const data = structuredClone(current);
   const timestamp = now.toISOString();
   const context = {
+    assets,
     data,
     actor,
     timestamp,

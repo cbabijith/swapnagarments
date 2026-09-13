@@ -1,5 +1,7 @@
 # Feature-driven architecture: alignment with Dolce CRM
 
+The garment/design image library now follows these boundaries in `features/design-library`, `services/design-library-service.ts`, and `integrations/storage`. Migration 6 is additive. See [implementation and validation](DESIGN-LIBRARY-IMPLEMENTATION.md).
+
 ## Decision and status
 
 On 2026-09-12 the owner required Swapna Garments to follow the feature-driven

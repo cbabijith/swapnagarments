@@ -103,6 +103,7 @@ export async function readRelationalWorkspace(
         station: i.station,
         price: i.price,
         ...(i.measurement ? { measurement: i.measurement } : {}),
+        ...(i.design ? { design: i.design } : {}),
         ...(i.measurementHistory
           ? { measurementHistory: i.measurementHistory }
           : {}),

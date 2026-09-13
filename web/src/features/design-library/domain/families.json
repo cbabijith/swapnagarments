@@ -1,0 +1,34 @@
+[
+  {
+    "id": "blouse-and-traditional",
+    "label": "Blouses and traditional wear"
+  },
+  {
+    "id": "kurta-and-salwar",
+    "label": "Kurtas and salwar sets"
+  },
+  {
+    "id": "bottoms",
+    "label": "Bottoms"
+  },
+  {
+    "id": "skirts-and-dresses",
+    "label": "Skirts and dresses"
+  },
+  {
+    "id": "mens-and-unisex",
+    "label": "Menswear and unisex garments"
+  },
+  {
+    "id": "modest-and-home",
+    "label": "Modest wear and homewear"
+  },
+  {
+    "id": "children",
+    "label": "Children's garments"
+  },
+  {
+    "id": "uniforms-and-services",
+    "label": "Uniforms and services"
+  }
+]

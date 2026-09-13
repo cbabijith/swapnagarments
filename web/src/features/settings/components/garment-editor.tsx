@@ -27,10 +27,11 @@ import {
 } from "../contracts/catalogue";
 import { useSaveCatalogue } from "../hooks/use-save-catalogue";
 import { SettingsTabs } from "./settings-tabs";
-import { GarmentIllustrationPicker } from "./garment-illustration-picker";
+import { GarmentImageSetup } from "@/features/design-library/components/garment-image-setup";
+import { GarmentDesignSetup } from "@/features/design-library/components/garment-design-setup";
 import styles from "./catalogue.module.css";
 
-type Tab = "details" | "fields" | "presets";
+type Tab = "details" | "fields" | "presets" | "designs";
 type Preset = Garment["presets"][number];
 type Stage =
   | { kind: "main" }
@@ -53,6 +54,7 @@ export function GarmentEditor({
   onClose: () => void;
   onRefresh: () => void;
 }) {
+  const [innerEditor, setInnerEditor] = useState(false);
   const [draft, setDraft] = useState(() => structuredClone(initial));
   const [price, setPrice] = useState(
     initial.price === null ? "" : String(initial.price / 100),
@@ -130,7 +132,7 @@ export function GarmentEditor({
   }
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (write.busy || discard) return;
+    if (write.busy || discard || (innerEditor && stage.kind === "main")) return;
     write.setError("");
     if (stage.kind === "field") {
       const field = {
@@ -295,6 +297,7 @@ export function GarmentEditor({
               disabled={write.busy}
               items={[
                 { value: "details", label: "Details" },
+                { value: "designs", label: "Designs" },
                 {
                   value: "fields",
                   label: "Measurements",
@@ -335,6 +338,13 @@ export function GarmentEditor({
                 role="tabpanel"
                 aria-labelledby={`${id}-tab-${tab}`}
               >
+                {tab === "designs" && (
+                  <GarmentDesignSetup
+                    garment={draft}
+                    onChange={change}
+                    onEditing={setInnerEditor}
+                  />
+                )}
                 {tab === "details" && (
                   <div className={styles.formStack}>
                     <label className="field">
@@ -349,11 +359,10 @@ export function GarmentEditor({
                         placeholder="e.g. Designer blouse or Alteration"
                       />
                     </label>
-                    <GarmentIllustrationPicker
+                    <GarmentImageSetup
                       garment={draft}
-                      onChange={(illustrationId) =>
-                        change({ ...draft, illustrationId })
-                      }
+                      onChange={change}
+                      onEditing={setInnerEditor}
                     />
                     <div className={styles.twoColumns}>
                       <label className="field">
@@ -932,7 +941,9 @@ export function GarmentEditor({
             <div className={styles.footerRow}>
               <small>
                 {stage.kind === "main"
-                  ? "Existing orders keep their measurements."
+                  ? innerEditor
+                    ? "Finish this image or design step, then save the garment."
+                    : "Existing orders keep their measurements and designs."
                   : stage.kind === "preview"
                     ? "Preview only · nothing is saved"
                     : "Changes stay in your draft until you save."}
@@ -951,7 +962,11 @@ export function GarmentEditor({
                 <button
                   type="submit"
                   className="button primary"
-                  disabled={write.busy || (stale && stage.kind === "main")}
+                  disabled={
+                    write.busy ||
+                    innerEditor ||
+                    (stale && stage.kind === "main")
+                  }
                 >
                   {write.busy
                     ? "Saving…"

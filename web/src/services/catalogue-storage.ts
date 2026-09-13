@@ -29,10 +29,24 @@ export async function readStoredCatalogue(
     defaultGarmentId: settings.defaultGarmentId,
     leadDays: settings.leadDays,
     garments: rows.map(
-      ({ workspaceId: _shop, position: _position, illustrationId, ...g }) => {
+      ({
+        workspaceId: _shop,
+        position: _position,
+        illustrationId,
+        image,
+        referenceImages,
+        designConfig,
+        ...g
+      }) => {
         void _shop;
         void _position;
-        return { ...g, ...(illustrationId === null ? {} : { illustrationId }) };
+        return {
+          ...g,
+          ...(illustrationId === null ? {} : { illustrationId }),
+          ...(image ? { image } : {}),
+          ...(referenceImages ? { referenceImages } : {}),
+          ...(designConfig ? { designConfig } : {}),
+        };
       },
     ),
   };
@@ -75,6 +89,9 @@ export async function writeCatalogue(
     const row = {
       ...garment,
       illustrationId: garment.illustrationId ?? null,
+      image: garment.image ?? null,
+      referenceImages: garment.referenceImages ?? null,
+      designConfig: garment.designConfig ?? null,
       position,
     };
     await tx

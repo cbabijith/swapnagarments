@@ -59,6 +59,10 @@ export const orders = pgTable(
 export const orderItems = pgTable(
   "sg_order_items",
   {
+    design:
+      jsonb().$type<
+        import("@/features/design-library/contracts").DesignSnapshot
+      >(),
     measurement:
       jsonb().$type<
         import("@/features/measurements/contracts/profiles").MeasurementSnapshot

@@ -234,3 +234,9 @@ Released in code commit `574745b`, deployment
 Live handlers completed schema initialization before returning their expected
 unsigned-request responses; database/bucket health passed and owner setup
 remained closed. No shop test records or storage-mode changes were made.
+
+## Design library extension (migration 6)
+
+Migration 6 adds nullable `image`, `reference_images` and `design_config` garment columns, a nullable `sg_order_items.design` snapshot, and `sg_design_assets`. Startup preserves existing values, revisions, owner/session records and the current storage mode. Null image fields are omitted when rebuilding existing workspace objects.
+
+Current validation and reconciliation include image/configuration fields and immutable piece designs. The independent asset metadata/preferences table is retained through rollback and recutover. Full backups must include it and the private bucket; workspace JSON alone cannot restore uploaded images. Tests cover these transitions with custom photos, archived references and saved order snapshots. Use the updated tools for any future storage transition. See [feature details and release verification](DESIGN-LIBRARY-IMPLEMENTATION.md).

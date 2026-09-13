@@ -3,8 +3,7 @@ import { useId, useRef, useState } from "react";
 import { Dialog } from "@/shared/components/ui";
 import { money } from "@/shared/workspace";
 import type { Garment } from "../contracts/catalogue";
-import { resolveGarmentIllustration } from "../domain/garment-illustrations";
-import { GarmentIllustration } from "./garment-illustration";
+import { GarmentImage } from "@/features/design-library/components/asset-image";
 import styles from "./garment-visuals.module.css";
 
 export function GarmentPicker({
@@ -32,10 +31,7 @@ export function GarmentPicker({
     <div className="field">
       <label htmlFor={id}>Garment</label>
       <div className={styles.selectRow}>
-        <GarmentIllustration
-          illustrationId={resolveGarmentIllustration(selected)}
-          size={44}
-        />
+        <GarmentImage garment={selected} size={44} />
         <select
           id={id}
           value={selected.id}
@@ -108,10 +104,7 @@ export function GarmentPicker({
                     close();
                   }}
                 >
-                  <GarmentIllustration
-                    illustrationId={resolveGarmentIllustration(garment)}
-                    size={80}
-                  />
+                  <GarmentImage garment={garment} size={80} />
                   <strong>{garment.name}</strong>
                   <small>
                     {garment.price === null

@@ -1,3 +1,4 @@
+import { designInputSchema } from "@/features/design-library/contracts";
 import { z } from "zod";
 import { id, amount, method, date } from "@/shared/contracts/fields";
 import { measurementInputSchema } from "@/features/measurements/contracts/profiles";
@@ -25,6 +26,7 @@ export const intakeSchema = z.object({
         price: amount.min(1),
         material: z.string().max(500),
         measurements: measurementInputSchema,
+        design: designInputSchema.optional(),
       }),
     )
     .min(1)

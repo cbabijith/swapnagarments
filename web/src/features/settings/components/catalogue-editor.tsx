@@ -21,7 +21,8 @@ import type { Catalogue, Garment } from "../contracts/catalogue";
 import { money } from "@/shared/workspace";
 import { GarmentEditor } from "./garment-editor";
 import { DefaultsEditor } from "./defaults-editor";
-import { GarmentIllustration } from "./garment-illustration";
+import { GarmentImage } from "@/features/design-library/components/asset-image";
+import { garmentImage } from "@/features/design-library/domain/designs";
 import { resolveGarmentIllustration } from "../domain/garment-illustrations";
 import styles from "./catalogue.module.css";
 
@@ -76,6 +77,7 @@ export function CatalogueSettings({
       {
         ...structuredClone(garment),
         illustrationId: resolveGarmentIllustration(garment),
+        image: garmentImage(garment),
         id: crypto.randomUUID(),
         revision: 1,
         name,
@@ -149,11 +151,7 @@ export function CatalogueSettings({
             </div>
             <div className={styles.defaultCards}>
               <div>
-                <GarmentIllustration
-                  illustrationId={resolveGarmentIllustration(
-                    defaultGarment ?? { name: "" },
-                  )}
-                />
+                <GarmentImage garment={defaultGarment ?? { name: "" }} />
                 <small>DEFAULT GARMENT</small>
                 <h3>{defaultGarment?.name}</h3>
                 <p>
@@ -266,10 +264,7 @@ export function CatalogueSettings({
                   return (
                     <li key={garment.id} className={styles.garmentRow}>
                       <div className={styles.garmentIdentity}>
-                        <GarmentIllustration
-                          illustrationId={resolveGarmentIllustration(garment)}
-                          size={44}
-                        />
+                        <GarmentImage garment={garment} size={44} />
                         <div>
                           <button
                             type="button"

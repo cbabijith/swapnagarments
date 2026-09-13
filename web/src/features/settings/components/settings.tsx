@@ -31,7 +31,11 @@ export function SettingsPage() {
         eyebrow="YOUR SHOP, YOUR WAY"
         title="Settings"
         description="Set up your garments and the details you use every day."
-      />
+      >
+        <Link className="button" href="/settings/designs">
+          Image library · 150 styles
+        </Link>
+      </PageHeading>
       <SettingsTabs
         id={id}
         label="Settings sections"

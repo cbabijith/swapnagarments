@@ -1,3 +1,4 @@
+import { snapshotDesign } from "@/features/design-library/domain/designs";
 import type { MutationContext } from "@/shared/domain/mutation-context";
 import { WorkspaceError } from "@/shared/errors";
 import { catalogueFor } from "@/features/settings/domain/catalogue";
@@ -12,6 +13,7 @@ export function createIntake({
   today,
   actor,
   event,
+  assets,
 }: MutationContext<"order.intake">) {
   if (action.dueDate < today)
     throw new WorkspaceError("The delivery date cannot be in the past.");
@@ -65,6 +67,10 @@ export function createIntake({
       timestamp,
       actor,
     );
+    const garment = catalogueFor(data).garments.find(
+      (g) => g.id === item.garmentId,
+    )!;
+    const design = snapshotDesign(garment, item.design, assets);
     if (item.measurements.saveProfile) saved.add(item.garmentId);
     return Array.from({ length: item.quantity }, () => ({
       id: crypto.randomUUID(),
@@ -73,6 +79,7 @@ export function createIntake({
       material: item.material,
       station: 0,
       measurement: structuredClone(measurement),
+      design: structuredClone(design),
     }));
   });
   for (const item of action.items.filter((i) => i.measurements.saveProfile)) {

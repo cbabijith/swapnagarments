@@ -1,4 +1,5 @@
 "use client";
+import { DesignSummary } from "@/features/design-library/components/design-summary";
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
@@ -402,6 +403,7 @@ export function OrderDetail({ id }: { id: string }) {
                   <strong>{money(item.price)}</strong>
                 </div>
                 <MeasurementSummary snapshot={item.measurement} />
+                <DesignSummary design={item.design} />
                 {item.measurementHistory?.length ? (
                   <details className="no-print">
                     <summary>Earlier measurements for this piece</summary>

@@ -10,3 +10,4 @@ export * from "./activity";
 export * from "./backups";
 export * from "./catalogue";
 export * from "./events";
+export * from "./design-library";

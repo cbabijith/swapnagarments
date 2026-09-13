@@ -3,8 +3,7 @@ import { useState } from "react";
 import { Dialog } from "@/shared/components/ui";
 import type { Catalogue } from "../contracts/catalogue";
 import { useSaveCatalogue } from "../hooks/use-save-catalogue";
-import { GarmentIllustration } from "./garment-illustration";
-import { resolveGarmentIllustration } from "../domain/garment-illustrations";
+import { GarmentImage } from "@/features/design-library/components/asset-image";
 import visualStyles from "./garment-visuals.module.css";
 import styles from "./catalogue.module.css";
 
@@ -80,12 +79,12 @@ export function DefaultsEditor({
             <label className="field">
               Default garment
               <span className={visualStyles.selectRow}>
-                <GarmentIllustration
-                  illustrationId={resolveGarmentIllustration(
+                <GarmentImage
+                  garment={
                     base.garments.find(
                       (garment) => garment.id === garmentId,
-                    ) ?? { name: "" },
-                  )}
+                    ) ?? { name: "" }
+                  }
                   size={44}
                 />
                 <select

@@ -9,12 +9,13 @@ import { readBody } from "./request";
 
 export function commandHandler(
   schema: z.ZodType<{ mutationId: string; action: WorkspaceMutation }>,
+  maximum = 100_000,
 ) {
   return async (request: NextRequest) => {
     try {
       checkOrigin(request);
       const owner = await requireOwner(request);
-      const input = await readBody(request, schema);
+      const input = await readBody(request, schema, maximum);
       const result = await executeWorkspaceCommand(input, owner);
       // Existing clients retain their snapshot contract during the transition.
       if (request.headers.get("prefer") === "return=minimal") {

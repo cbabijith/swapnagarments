@@ -3,6 +3,7 @@ export type Priority = "normal" | "high" | "urgent";
 export type OrderStatus =
   "received" | "in_progress" | "ready" | "delivered" | "cancelled";
 export type OrderItem = {
+  design?: import("@/features/design-library/contracts").DesignSnapshot;
   measurement?: import("@/features/measurements/contracts/profiles").MeasurementSnapshot;
   measurementHistory?: import("@/features/measurements/contracts/profiles").MeasurementSnapshot[];
   id: string;

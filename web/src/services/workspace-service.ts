@@ -1,3 +1,7 @@
+import {
+  collectDesignIds,
+  resolveDesignAssets,
+} from "./design-library-service";
 import "server-only";
 import { eq } from "drizzle-orm";
 import { createHash } from "node:crypto";
@@ -87,7 +91,15 @@ export async function executeWorkspaceCommand(
     }
     const data = structuredClone(snapshot.data);
     const now = new Date();
+    const assets =
+      action.type === "settings.save" || action.type === "order.intake"
+        ? await resolveDesignAssets(tx, [
+            ...collectDesignIds(action),
+            ...collectDesignIds(data.catalogue),
+          ])
+        : undefined;
     const context = {
+      assets,
       data,
       actor: owner.name,
       timestamp: now.toISOString(),

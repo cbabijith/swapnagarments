@@ -1,0 +1,1458 @@
+{
+  "title": "Garment and design image catalogue",
+  "status": "Implemented: 150 original SVG illustrations; see DESIGN-LIBRARY-IMPLEMENTATION.md for release verification.",
+  "reviewedAt": "2026-09-13",
+  "scope": "Garment types and design details for women, men and children; expandable through shop-owned uploads",
+  "counts": {
+    "garmentModels": 70,
+    "designOptions": 80,
+    "total": 150
+  },
+  "note": "This is a proposed coverage baseline, not an exhaustive fashion taxonomy or a collection of sewing patterns. Front/back views can require multiple image files per entry. Categories are navigation aids; a garment may receive additional audience tags. Compatibility must be specified per garment, not inferred from every combination.",
+  "garmentFamilies": [
+    {
+      "id": "blouse-and-traditional",
+      "label": "Blouses and traditional wear",
+      "count": 10
+    },
+    {
+      "id": "kurta-and-salwar",
+      "label": "Kurtas and salwar sets",
+      "count": 10
+    },
+    {
+      "id": "bottoms",
+      "label": "Bottoms",
+      "count": 10
+    },
+    {
+      "id": "skirts-and-dresses",
+      "label": "Skirts and dresses",
+      "count": 12
+    },
+    {
+      "id": "mens-and-unisex",
+      "label": "Menswear and unisex garments",
+      "count": 10
+    },
+    {
+      "id": "modest-and-home",
+      "label": "Modest wear and homewear",
+      "count": 6
+    },
+    {
+      "id": "children",
+      "label": "Children's garments",
+      "count": 5
+    },
+    {
+      "id": "uniforms-and-services",
+      "label": "Uniforms and services",
+      "count": 7
+    }
+  ],
+  "designGroups": [
+    {
+      "id": "front-neck",
+      "label": "Front neckline",
+      "count": 12
+    },
+    {
+      "id": "back",
+      "label": "Back design",
+      "count": 10
+    },
+    {
+      "id": "sleeve-shape",
+      "label": "Sleeve shape",
+      "count": 12
+    },
+    {
+      "id": "sleeve-length",
+      "label": "Sleeve length",
+      "count": 5
+    },
+    {
+      "id": "collar",
+      "label": "Collar and lapel",
+      "count": 8
+    },
+    {
+      "id": "closure",
+      "label": "Closure",
+      "count": 8
+    },
+    {
+      "id": "hem",
+      "label": "Hem design",
+      "count": 8
+    },
+    {
+      "id": "construction",
+      "label": "Cut and construction",
+      "count": 8
+    },
+    {
+      "id": "pocket",
+      "label": "Pocket design",
+      "count": 6
+    },
+    {
+      "id": "cuff",
+      "label": "Cuff",
+      "count": 3
+    }
+  ],
+  "entries": [
+    {
+      "id": "garment-basic-saree-blouse",
+      "kind": "garment",
+      "family": "blouse-and-traditional",
+      "label": "Basic saree blouse",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-basic-saree-blouse.svg"
+    },
+    {
+      "id": "garment-princess-seam-blouse",
+      "kind": "garment",
+      "family": "blouse-and-traditional",
+      "label": "Princess seam blouse",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-princess-seam-blouse.svg"
+    },
+    {
+      "id": "garment-darted-blouse",
+      "kind": "garment",
+      "family": "blouse-and-traditional",
+      "label": "Darted blouse",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-darted-blouse.svg"
+    },
+    {
+      "id": "garment-katori-blouse",
+      "kind": "garment",
+      "family": "blouse-and-traditional",
+      "label": "Katori blouse",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-katori-blouse.svg"
+    },
+    {
+      "id": "garment-long-blouse",
+      "kind": "garment",
+      "family": "blouse-and-traditional",
+      "label": "Long blouse",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-long-blouse.svg"
+    },
+    {
+      "id": "garment-peplum-blouse",
+      "kind": "garment",
+      "family": "blouse-and-traditional",
+      "label": "Peplum blouse",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-peplum-blouse.svg"
+    },
+    {
+      "id": "garment-choli",
+      "kind": "garment",
+      "family": "blouse-and-traditional",
+      "label": "Choli",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-choli.svg"
+    },
+    {
+      "id": "garment-pavada-and-davani",
+      "kind": "garment",
+      "family": "blouse-and-traditional",
+      "label": "Pavada and davani",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-pavada-and-davani.svg"
+    },
+    {
+      "id": "garment-pattu-pavadai",
+      "kind": "garment",
+      "family": "blouse-and-traditional",
+      "label": "Pattu pavadai",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-pattu-pavadai.svg"
+    },
+    {
+      "id": "garment-saree",
+      "kind": "garment",
+      "family": "blouse-and-traditional",
+      "label": "Saree",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-saree.svg"
+    },
+    {
+      "id": "garment-straight-kurta",
+      "kind": "garment",
+      "family": "kurta-and-salwar",
+      "label": "Straight kurta",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-straight-kurta.svg"
+    },
+    {
+      "id": "garment-a-line-kurta",
+      "kind": "garment",
+      "family": "kurta-and-salwar",
+      "label": "A-line kurta",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-a-line-kurta.svg"
+    },
+    {
+      "id": "garment-anarkali",
+      "kind": "garment",
+      "family": "kurta-and-salwar",
+      "label": "Anarkali",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-anarkali.svg"
+    },
+    {
+      "id": "garment-angrakha-kurta",
+      "kind": "garment",
+      "family": "kurta-and-salwar",
+      "label": "Angrakha kurta",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-angrakha-kurta.svg"
+    },
+    {
+      "id": "garment-panelled-kurta",
+      "kind": "garment",
+      "family": "kurta-and-salwar",
+      "label": "Panelled kurta",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-panelled-kurta.svg"
+    },
+    {
+      "id": "garment-short-kurti",
+      "kind": "garment",
+      "family": "kurta-and-salwar",
+      "label": "Short kurti",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-short-kurti.svg"
+    },
+    {
+      "id": "garment-high-low-kurta",
+      "kind": "garment",
+      "family": "kurta-and-salwar",
+      "label": "High-low kurta",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-high-low-kurta.svg"
+    },
+    {
+      "id": "garment-salwar-suit",
+      "kind": "garment",
+      "family": "kurta-and-salwar",
+      "label": "Salwar suit",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-salwar-suit.svg"
+    },
+    {
+      "id": "garment-churidar-set",
+      "kind": "garment",
+      "family": "kurta-and-salwar",
+      "label": "Churidar set",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-churidar-set.svg"
+    },
+    {
+      "id": "garment-sharara-suit",
+      "kind": "garment",
+      "family": "kurta-and-salwar",
+      "label": "Sharara suit",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-sharara-suit.svg"
+    },
+    {
+      "id": "garment-straight-trousers",
+      "kind": "garment",
+      "family": "bottoms",
+      "label": "Straight trousers",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-straight-trousers.svg"
+    },
+    {
+      "id": "garment-churidar-bottoms",
+      "kind": "garment",
+      "family": "bottoms",
+      "label": "Churidar bottoms",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-churidar-bottoms.svg"
+    },
+    {
+      "id": "garment-salwar-bottoms",
+      "kind": "garment",
+      "family": "bottoms",
+      "label": "Salwar bottoms",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-salwar-bottoms.svg"
+    },
+    {
+      "id": "garment-patiala-bottoms",
+      "kind": "garment",
+      "family": "bottoms",
+      "label": "Patiala bottoms",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-patiala-bottoms.svg"
+    },
+    {
+      "id": "garment-palazzo",
+      "kind": "garment",
+      "family": "bottoms",
+      "label": "Palazzo",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-palazzo.svg"
+    },
+    {
+      "id": "garment-sharara-bottoms",
+      "kind": "garment",
+      "family": "bottoms",
+      "label": "Sharara bottoms",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-sharara-bottoms.svg"
+    },
+    {
+      "id": "garment-gharara-bottoms",
+      "kind": "garment",
+      "family": "bottoms",
+      "label": "Gharara bottoms",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-gharara-bottoms.svg"
+    },
+    {
+      "id": "garment-dhoti-pants",
+      "kind": "garment",
+      "family": "bottoms",
+      "label": "Dhoti pants",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-dhoti-pants.svg"
+    },
+    {
+      "id": "garment-leggings",
+      "kind": "garment",
+      "family": "bottoms",
+      "label": "Leggings",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-leggings.svg"
+    },
+    {
+      "id": "garment-shorts",
+      "kind": "garment",
+      "family": "bottoms",
+      "label": "Shorts",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-shorts.svg"
+    },
+    {
+      "id": "garment-straight-skirt",
+      "kind": "garment",
+      "family": "skirts-and-dresses",
+      "label": "Straight skirt",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-straight-skirt.svg"
+    },
+    {
+      "id": "garment-a-line-skirt",
+      "kind": "garment",
+      "family": "skirts-and-dresses",
+      "label": "A-line skirt",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-a-line-skirt.svg"
+    },
+    {
+      "id": "garment-circular-skirt",
+      "kind": "garment",
+      "family": "skirts-and-dresses",
+      "label": "Circular skirt",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-circular-skirt.svg"
+    },
+    {
+      "id": "garment-pleated-skirt",
+      "kind": "garment",
+      "family": "skirts-and-dresses",
+      "label": "Pleated skirt",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-pleated-skirt.svg"
+    },
+    {
+      "id": "garment-wrap-skirt",
+      "kind": "garment",
+      "family": "skirts-and-dresses",
+      "label": "Wrap skirt",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-wrap-skirt.svg"
+    },
+    {
+      "id": "garment-saree-petticoat",
+      "kind": "garment",
+      "family": "skirts-and-dresses",
+      "label": "Saree petticoat",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-saree-petticoat.svg"
+    },
+    {
+      "id": "garment-lehenga",
+      "kind": "garment",
+      "family": "skirts-and-dresses",
+      "label": "Lehenga",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-lehenga.svg"
+    },
+    {
+      "id": "garment-a-line-dress",
+      "kind": "garment",
+      "family": "skirts-and-dresses",
+      "label": "A-line dress",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-a-line-dress.svg"
+    },
+    {
+      "id": "garment-shift-dress",
+      "kind": "garment",
+      "family": "skirts-and-dresses",
+      "label": "Shift dress",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-shift-dress.svg"
+    },
+    {
+      "id": "garment-maxi-dress",
+      "kind": "garment",
+      "family": "skirts-and-dresses",
+      "label": "Maxi dress",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-maxi-dress.svg"
+    },
+    {
+      "id": "garment-evening-gown",
+      "kind": "garment",
+      "family": "skirts-and-dresses",
+      "label": "Evening gown",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-evening-gown.svg"
+    },
+    {
+      "id": "garment-jumpsuit",
+      "kind": "garment",
+      "family": "skirts-and-dresses",
+      "label": "Jumpsuit",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-jumpsuit.svg"
+    },
+    {
+      "id": "garment-shirt",
+      "kind": "garment",
+      "family": "mens-and-unisex",
+      "label": "Shirt",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-shirt.svg"
+    },
+    {
+      "id": "garment-t-shirt",
+      "kind": "garment",
+      "family": "mens-and-unisex",
+      "label": "T-shirt",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-t-shirt.svg"
+    },
+    {
+      "id": "garment-polo-shirt",
+      "kind": "garment",
+      "family": "mens-and-unisex",
+      "label": "Polo shirt",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-polo-shirt.svg"
+    },
+    {
+      "id": "garment-kurta-pyjama-set",
+      "kind": "garment",
+      "family": "mens-and-unisex",
+      "label": "Kurta pyjama set",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-kurta-pyjama-set.svg"
+    },
+    {
+      "id": "garment-sherwani",
+      "kind": "garment",
+      "family": "mens-and-unisex",
+      "label": "Sherwani",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-sherwani.svg"
+    },
+    {
+      "id": "garment-nehru-jacket",
+      "kind": "garment",
+      "family": "mens-and-unisex",
+      "label": "Nehru jacket",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-nehru-jacket.svg"
+    },
+    {
+      "id": "garment-waistcoat",
+      "kind": "garment",
+      "family": "mens-and-unisex",
+      "label": "Waistcoat",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-waistcoat.svg"
+    },
+    {
+      "id": "garment-blazer",
+      "kind": "garment",
+      "family": "mens-and-unisex",
+      "label": "Blazer",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-blazer.svg"
+    },
+    {
+      "id": "garment-dhoti-or-mundu",
+      "kind": "garment",
+      "family": "mens-and-unisex",
+      "label": "Dhoti or mundu",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-dhoti-or-mundu.svg"
+    },
+    {
+      "id": "garment-suit",
+      "kind": "garment",
+      "family": "mens-and-unisex",
+      "label": "Suit",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-suit.svg"
+    },
+    {
+      "id": "garment-abaya",
+      "kind": "garment",
+      "family": "modest-and-home",
+      "label": "Abaya",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-abaya.svg"
+    },
+    {
+      "id": "garment-kaftan",
+      "kind": "garment",
+      "family": "modest-and-home",
+      "label": "Kaftan",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-kaftan.svg"
+    },
+    {
+      "id": "garment-nightdress",
+      "kind": "garment",
+      "family": "modest-and-home",
+      "label": "Nightdress",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-nightdress.svg"
+    },
+    {
+      "id": "garment-pyjama-set",
+      "kind": "garment",
+      "family": "modest-and-home",
+      "label": "Pyjama set",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-pyjama-set.svg"
+    },
+    {
+      "id": "garment-robe",
+      "kind": "garment",
+      "family": "modest-and-home",
+      "label": "Robe",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-robe.svg"
+    },
+    {
+      "id": "garment-maternity-dress",
+      "kind": "garment",
+      "family": "modest-and-home",
+      "label": "Maternity dress",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-maternity-dress.svg"
+    },
+    {
+      "id": "garment-frock",
+      "kind": "garment",
+      "family": "children",
+      "label": "Frock",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-frock.svg"
+    },
+    {
+      "id": "garment-pinafore-dress",
+      "kind": "garment",
+      "family": "children",
+      "label": "Pinafore dress",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-pinafore-dress.svg"
+    },
+    {
+      "id": "garment-romper",
+      "kind": "garment",
+      "family": "children",
+      "label": "Romper",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-romper.svg"
+    },
+    {
+      "id": "garment-kids-kurta-set",
+      "kind": "garment",
+      "family": "children",
+      "label": "Kids kurta set",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-kids-kurta-set.svg"
+    },
+    {
+      "id": "garment-kids-lehenga-set",
+      "kind": "garment",
+      "family": "children",
+      "label": "Kids lehenga set",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-kids-lehenga-set.svg"
+    },
+    {
+      "id": "garment-uniform-shirt",
+      "kind": "garment",
+      "family": "uniforms-and-services",
+      "label": "Uniform shirt",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-uniform-shirt.svg"
+    },
+    {
+      "id": "garment-uniform-trousers",
+      "kind": "garment",
+      "family": "uniforms-and-services",
+      "label": "Uniform trousers",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-uniform-trousers.svg"
+    },
+    {
+      "id": "garment-scrub-set",
+      "kind": "garment",
+      "family": "uniforms-and-services",
+      "label": "Scrub set",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-scrub-set.svg"
+    },
+    {
+      "id": "garment-lab-coat",
+      "kind": "garment",
+      "family": "uniforms-and-services",
+      "label": "Lab coat",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-lab-coat.svg"
+    },
+    {
+      "id": "garment-chef-coat",
+      "kind": "garment",
+      "family": "uniforms-and-services",
+      "label": "Chef coat",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-chef-coat.svg"
+    },
+    {
+      "id": "garment-alteration",
+      "kind": "garment",
+      "family": "uniforms-and-services",
+      "label": "Alteration",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-alteration.svg"
+    },
+    {
+      "id": "garment-other-or-service",
+      "kind": "garment",
+      "family": "uniforms-and-services",
+      "label": "Other or service",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/garment-other-or-service.svg"
+    },
+    {
+      "id": "detail-front-neck-round",
+      "kind": "front-neck",
+      "family": "design-detail",
+      "label": "Round",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-front-neck-round.svg"
+    },
+    {
+      "id": "detail-front-neck-u-neck",
+      "kind": "front-neck",
+      "family": "design-detail",
+      "label": "U neck",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-front-neck-u-neck.svg"
+    },
+    {
+      "id": "detail-front-neck-v-neck",
+      "kind": "front-neck",
+      "family": "design-detail",
+      "label": "V neck",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-front-neck-v-neck.svg"
+    },
+    {
+      "id": "detail-front-neck-boat",
+      "kind": "front-neck",
+      "family": "design-detail",
+      "label": "Boat",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-front-neck-boat.svg"
+    },
+    {
+      "id": "detail-front-neck-square",
+      "kind": "front-neck",
+      "family": "design-detail",
+      "label": "Square",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-front-neck-square.svg"
+    },
+    {
+      "id": "detail-front-neck-sweetheart",
+      "kind": "front-neck",
+      "family": "design-detail",
+      "label": "Sweetheart",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-front-neck-sweetheart.svg"
+    },
+    {
+      "id": "detail-front-neck-pentagon",
+      "kind": "front-neck",
+      "family": "design-detail",
+      "label": "Pentagon",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-front-neck-pentagon.svg"
+    },
+    {
+      "id": "detail-front-neck-leaf",
+      "kind": "front-neck",
+      "family": "design-detail",
+      "label": "Leaf",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-front-neck-leaf.svg"
+    },
+    {
+      "id": "detail-front-neck-scalloped",
+      "kind": "front-neck",
+      "family": "design-detail",
+      "label": "Scalloped",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-front-neck-scalloped.svg"
+    },
+    {
+      "id": "detail-front-neck-keyhole",
+      "kind": "front-neck",
+      "family": "design-detail",
+      "label": "Keyhole",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-front-neck-keyhole.svg"
+    },
+    {
+      "id": "detail-front-neck-halter",
+      "kind": "front-neck",
+      "family": "design-detail",
+      "label": "Halter",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-front-neck-halter.svg"
+    },
+    {
+      "id": "detail-front-neck-asymmetric",
+      "kind": "front-neck",
+      "family": "design-detail",
+      "label": "Asymmetric",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-front-neck-asymmetric.svg"
+    },
+    {
+      "id": "detail-back-round-back",
+      "kind": "back",
+      "family": "design-detail",
+      "label": "Round back",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-back-round-back.svg"
+    },
+    {
+      "id": "detail-back-u-back",
+      "kind": "back",
+      "family": "design-detail",
+      "label": "U back",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-back-u-back.svg"
+    },
+    {
+      "id": "detail-back-v-back",
+      "kind": "back",
+      "family": "design-detail",
+      "label": "V back",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-back-v-back.svg"
+    },
+    {
+      "id": "detail-back-square-back",
+      "kind": "back",
+      "family": "design-detail",
+      "label": "Square back",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-back-square-back.svg"
+    },
+    {
+      "id": "detail-back-boat-back",
+      "kind": "back",
+      "family": "design-detail",
+      "label": "Boat back",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-back-boat-back.svg"
+    },
+    {
+      "id": "detail-back-keyhole-back",
+      "kind": "back",
+      "family": "design-detail",
+      "label": "Keyhole back",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-back-keyhole-back.svg"
+    },
+    {
+      "id": "detail-back-teardrop-back",
+      "kind": "back",
+      "family": "design-detail",
+      "label": "Teardrop back",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-back-teardrop-back.svg"
+    },
+    {
+      "id": "detail-back-racerback",
+      "kind": "back",
+      "family": "design-detail",
+      "label": "Racerback",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-back-racerback.svg"
+    },
+    {
+      "id": "detail-back-cross-strap-back",
+      "kind": "back",
+      "family": "design-detail",
+      "label": "Cross-strap back",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-back-cross-strap-back.svg"
+    },
+    {
+      "id": "detail-back-open-back",
+      "kind": "back",
+      "family": "design-detail",
+      "label": "Open back",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-back-open-back.svg"
+    },
+    {
+      "id": "detail-sleeve-shape-straight-sleeve",
+      "kind": "sleeve-shape",
+      "family": "design-detail",
+      "label": "Straight sleeve",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-shape-straight-sleeve.svg"
+    },
+    {
+      "id": "detail-sleeve-shape-puff-sleeve",
+      "kind": "sleeve-shape",
+      "family": "design-detail",
+      "label": "Puff sleeve",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-shape-puff-sleeve.svg"
+    },
+    {
+      "id": "detail-sleeve-shape-bell-sleeve",
+      "kind": "sleeve-shape",
+      "family": "design-detail",
+      "label": "Bell sleeve",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-shape-bell-sleeve.svg"
+    },
+    {
+      "id": "detail-sleeve-shape-cap-sleeve",
+      "kind": "sleeve-shape",
+      "family": "design-detail",
+      "label": "Cap sleeve",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-shape-cap-sleeve.svg"
+    },
+    {
+      "id": "detail-sleeve-shape-petal-sleeve",
+      "kind": "sleeve-shape",
+      "family": "design-detail",
+      "label": "Petal sleeve",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-shape-petal-sleeve.svg"
+    },
+    {
+      "id": "detail-sleeve-shape-flutter-sleeve",
+      "kind": "sleeve-shape",
+      "family": "design-detail",
+      "label": "Flutter sleeve",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-shape-flutter-sleeve.svg"
+    },
+    {
+      "id": "detail-sleeve-shape-bishop-sleeve",
+      "kind": "sleeve-shape",
+      "family": "design-detail",
+      "label": "Bishop sleeve",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-shape-bishop-sleeve.svg"
+    },
+    {
+      "id": "detail-sleeve-shape-lantern-sleeve",
+      "kind": "sleeve-shape",
+      "family": "design-detail",
+      "label": "Lantern sleeve",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-shape-lantern-sleeve.svg"
+    },
+    {
+      "id": "detail-sleeve-shape-raglan-sleeve",
+      "kind": "sleeve-shape",
+      "family": "design-detail",
+      "label": "Raglan sleeve",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-shape-raglan-sleeve.svg"
+    },
+    {
+      "id": "detail-sleeve-shape-batwing-sleeve",
+      "kind": "sleeve-shape",
+      "family": "design-detail",
+      "label": "Batwing sleeve",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-shape-batwing-sleeve.svg"
+    },
+    {
+      "id": "detail-sleeve-shape-ruffle-sleeve",
+      "kind": "sleeve-shape",
+      "family": "design-detail",
+      "label": "Ruffle sleeve",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-shape-ruffle-sleeve.svg"
+    },
+    {
+      "id": "detail-sleeve-shape-layered-sleeve",
+      "kind": "sleeve-shape",
+      "family": "design-detail",
+      "label": "Layered sleeve",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-shape-layered-sleeve.svg"
+    },
+    {
+      "id": "detail-sleeve-length-sleeveless",
+      "kind": "sleeve-length",
+      "family": "design-detail",
+      "label": "Sleeveless",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-length-sleeveless.svg"
+    },
+    {
+      "id": "detail-sleeve-length-short",
+      "kind": "sleeve-length",
+      "family": "design-detail",
+      "label": "Short",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-length-short.svg"
+    },
+    {
+      "id": "detail-sleeve-length-elbow",
+      "kind": "sleeve-length",
+      "family": "design-detail",
+      "label": "Elbow",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-length-elbow.svg"
+    },
+    {
+      "id": "detail-sleeve-length-three-quarter",
+      "kind": "sleeve-length",
+      "family": "design-detail",
+      "label": "Three-quarter",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-length-three-quarter.svg"
+    },
+    {
+      "id": "detail-sleeve-length-full",
+      "kind": "sleeve-length",
+      "family": "design-detail",
+      "label": "Full",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-sleeve-length-full.svg"
+    },
+    {
+      "id": "detail-collar-no-collar",
+      "kind": "collar",
+      "family": "design-detail",
+      "label": "No collar",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-collar-no-collar.svg"
+    },
+    {
+      "id": "detail-collar-shirt-collar",
+      "kind": "collar",
+      "family": "design-detail",
+      "label": "Shirt collar",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-collar-shirt-collar.svg"
+    },
+    {
+      "id": "detail-collar-mandarin-collar",
+      "kind": "collar",
+      "family": "design-detail",
+      "label": "Mandarin collar",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-collar-mandarin-collar.svg"
+    },
+    {
+      "id": "detail-collar-peter-pan-collar",
+      "kind": "collar",
+      "family": "design-detail",
+      "label": "Peter Pan collar",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-collar-peter-pan-collar.svg"
+    },
+    {
+      "id": "detail-collar-shawl-collar",
+      "kind": "collar",
+      "family": "design-detail",
+      "label": "Shawl collar",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-collar-shawl-collar.svg"
+    },
+    {
+      "id": "detail-collar-notched-lapel",
+      "kind": "collar",
+      "family": "design-detail",
+      "label": "Notched lapel",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-collar-notched-lapel.svg"
+    },
+    {
+      "id": "detail-collar-sailor-collar",
+      "kind": "collar",
+      "family": "design-detail",
+      "label": "Sailor collar",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-collar-sailor-collar.svg"
+    },
+    {
+      "id": "detail-collar-tie-neck",
+      "kind": "collar",
+      "family": "design-detail",
+      "label": "Tie neck",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-collar-tie-neck.svg"
+    },
+    {
+      "id": "detail-closure-front-buttons",
+      "kind": "closure",
+      "family": "design-detail",
+      "label": "Front buttons",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-closure-front-buttons.svg"
+    },
+    {
+      "id": "detail-closure-back-buttons",
+      "kind": "closure",
+      "family": "design-detail",
+      "label": "Back buttons",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-closure-back-buttons.svg"
+    },
+    {
+      "id": "detail-closure-side-zip",
+      "kind": "closure",
+      "family": "design-detail",
+      "label": "Side zip",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-closure-side-zip.svg"
+    },
+    {
+      "id": "detail-closure-back-zip",
+      "kind": "closure",
+      "family": "design-detail",
+      "label": "Back zip",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-closure-back-zip.svg"
+    },
+    {
+      "id": "detail-closure-hooks-and-eyes",
+      "kind": "closure",
+      "family": "design-detail",
+      "label": "Hooks and eyes",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-closure-hooks-and-eyes.svg"
+    },
+    {
+      "id": "detail-closure-dori-tie",
+      "kind": "closure",
+      "family": "design-detail",
+      "label": "Dori tie",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-closure-dori-tie.svg"
+    },
+    {
+      "id": "detail-closure-wrap-tie",
+      "kind": "closure",
+      "family": "design-detail",
+      "label": "Wrap tie",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-closure-wrap-tie.svg"
+    },
+    {
+      "id": "detail-closure-pull-on",
+      "kind": "closure",
+      "family": "design-detail",
+      "label": "Pull-on",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-closure-pull-on.svg"
+    },
+    {
+      "id": "detail-hem-straight-hem",
+      "kind": "hem",
+      "family": "design-detail",
+      "label": "Straight hem",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-hem-straight-hem.svg"
+    },
+    {
+      "id": "detail-hem-curved-hem",
+      "kind": "hem",
+      "family": "design-detail",
+      "label": "Curved hem",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-hem-curved-hem.svg"
+    },
+    {
+      "id": "detail-hem-high-low-hem",
+      "kind": "hem",
+      "family": "design-detail",
+      "label": "High-low hem",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-hem-high-low-hem.svg"
+    },
+    {
+      "id": "detail-hem-asymmetric-hem",
+      "kind": "hem",
+      "family": "design-detail",
+      "label": "Asymmetric hem",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-hem-asymmetric-hem.svg"
+    },
+    {
+      "id": "detail-hem-slit-hem",
+      "kind": "hem",
+      "family": "design-detail",
+      "label": "Slit hem",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-hem-slit-hem.svg"
+    },
+    {
+      "id": "detail-hem-scalloped-hem",
+      "kind": "hem",
+      "family": "design-detail",
+      "label": "Scalloped hem",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-hem-scalloped-hem.svg"
+    },
+    {
+      "id": "detail-hem-ruffled-hem",
+      "kind": "hem",
+      "family": "design-detail",
+      "label": "Ruffled hem",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-hem-ruffled-hem.svg"
+    },
+    {
+      "id": "detail-hem-banded-hem",
+      "kind": "hem",
+      "family": "design-detail",
+      "label": "Banded hem",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-hem-banded-hem.svg"
+    },
+    {
+      "id": "detail-construction-straight-cut",
+      "kind": "construction",
+      "family": "design-detail",
+      "label": "Straight cut",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-construction-straight-cut.svg"
+    },
+    {
+      "id": "detail-construction-a-line-cut",
+      "kind": "construction",
+      "family": "design-detail",
+      "label": "A-line cut",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-construction-a-line-cut.svg"
+    },
+    {
+      "id": "detail-construction-princess-seams",
+      "kind": "construction",
+      "family": "design-detail",
+      "label": "Princess seams",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-construction-princess-seams.svg"
+    },
+    {
+      "id": "detail-construction-waist-darts",
+      "kind": "construction",
+      "family": "design-detail",
+      "label": "Waist darts",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-construction-waist-darts.svg"
+    },
+    {
+      "id": "detail-construction-panelled",
+      "kind": "construction",
+      "family": "design-detail",
+      "label": "Panelled",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-construction-panelled.svg"
+    },
+    {
+      "id": "detail-construction-gathered-waist",
+      "kind": "construction",
+      "family": "design-detail",
+      "label": "Gathered waist",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-construction-gathered-waist.svg"
+    },
+    {
+      "id": "detail-construction-pleated-waist",
+      "kind": "construction",
+      "family": "design-detail",
+      "label": "Pleated waist",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-construction-pleated-waist.svg"
+    },
+    {
+      "id": "detail-construction-wrap-cut",
+      "kind": "construction",
+      "family": "design-detail",
+      "label": "Wrap cut",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-construction-wrap-cut.svg"
+    },
+    {
+      "id": "detail-pocket-no-pocket",
+      "kind": "pocket",
+      "family": "design-detail",
+      "label": "No pocket",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-pocket-no-pocket.svg"
+    },
+    {
+      "id": "detail-pocket-patch-pocket",
+      "kind": "pocket",
+      "family": "design-detail",
+      "label": "Patch pocket",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-pocket-patch-pocket.svg"
+    },
+    {
+      "id": "detail-pocket-side-seam-pocket",
+      "kind": "pocket",
+      "family": "design-detail",
+      "label": "Side seam pocket",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-pocket-side-seam-pocket.svg"
+    },
+    {
+      "id": "detail-pocket-welt-pocket",
+      "kind": "pocket",
+      "family": "design-detail",
+      "label": "Welt pocket",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-pocket-welt-pocket.svg"
+    },
+    {
+      "id": "detail-pocket-flap-pocket",
+      "kind": "pocket",
+      "family": "design-detail",
+      "label": "Flap pocket",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-pocket-flap-pocket.svg"
+    },
+    {
+      "id": "detail-pocket-kangaroo-pocket",
+      "kind": "pocket",
+      "family": "design-detail",
+      "label": "Kangaroo pocket",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-pocket-kangaroo-pocket.svg"
+    },
+    {
+      "id": "detail-cuff-plain-cuff",
+      "kind": "cuff",
+      "family": "design-detail",
+      "label": "Plain cuff",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-cuff-plain-cuff.svg"
+    },
+    {
+      "id": "detail-cuff-button-cuff",
+      "kind": "cuff",
+      "family": "design-detail",
+      "label": "Button cuff",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-cuff-button-cuff.svg"
+    },
+    {
+      "id": "detail-cuff-french-cuff",
+      "kind": "cuff",
+      "family": "design-detail",
+      "label": "French cuff",
+      "artworkStatus": "implemented-original-svg",
+      "reviewStatus": "visual-qa-complete; garment option groups remain shop-configurable",
+      "assetPath": "/design-library/v1/detail-cuff-french-cuff.svg"
+    }
+  ]
+}

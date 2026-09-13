@@ -29,6 +29,11 @@ export const garments = pgTable("sg_garments", {
   name: text().notNull(),
   illustrationId:
     text("illustration_id").$type<NonNullable<Garment["illustrationId"]>>(),
+  image: jsonb().$type<NonNullable<Garment["image"]>>(),
+  referenceImages:
+    jsonb("reference_images").$type<NonNullable<Garment["referenceImages"]>>(),
+  designConfig:
+    jsonb("design_config").$type<NonNullable<Garment["designConfig"]>>(),
   revision: integer().notNull(),
   active: boolean().notNull(),
   price: integer(),
