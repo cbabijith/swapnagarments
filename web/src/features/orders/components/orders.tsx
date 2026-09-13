@@ -6,7 +6,8 @@ import {
   nextStepName,
 } from "@/features/workflow/domain/templates";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { flushSync } from "react-dom";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -32,6 +33,9 @@ import { useDebouncedValue } from "@/shared/hooks/use-feature-query";
 import { QueryState, Pagination } from "@/shared/components/query-state";
 import { useWorkflow } from "@/features/workflow/hooks/use-workflow";
 import { useBilling } from "@/features/billing/hooks/use-billing";
+import { OrderBill } from "@/features/billing/components/order-bill";
+import { GstSummary } from "@/features/billing/components/gst-summary";
+import { ApplyOrderGst } from "@/features/billing/components/apply-order-gst";
 import { MeasurementSummary } from "@/features/measurements/components/measurement-fields";
 import { PieceMeasurementEditor } from "@/features/measurements/components/piece-measurements";
 import { PieceIllustration } from "./piece-illustration";
@@ -285,6 +289,16 @@ export function OrdersList() {
 
 export function OrderDetail({ id }: { id: string }) {
   const { deliver } = useOrders();
+  const [printLayout, setPrintLayout] = useState<"bill" | "order">("bill");
+  useEffect(() => {
+    const resetPrintLayout = () => setPrintLayout("bill");
+    window.addEventListener("afterprint", resetPrintLayout);
+    return () => window.removeEventListener("afterprint", resetPrintLayout);
+  }, []);
+  function printOrder(layout: "bill" | "order") {
+    flushSync(() => setPrintLayout(layout));
+    window.print();
+  }
   const [activityPage, setActivityPage] = useState(1);
   const read = useOrderDetail(id, activityPage);
   const data = read.data?.data;
@@ -349,7 +363,8 @@ export function OrderDetail({ id }: { id: string }) {
     );
   };
   return (
-    <>
+    <div className="order-detail" data-print-layout={printLayout}>
+      <OrderBill order={order} customer={customer} />
       <Link className="back-link" href="/orders">
         <ArrowLeft size={14} />
         Back to orders
@@ -363,9 +378,13 @@ export function OrderDetail({ id }: { id: string }) {
           <QrCode size={16} />
           QR labels
         </button>
-        <button className="button" onClick={() => window.print()}>
+        <button className="button" onClick={() => printOrder("order")}>
           <Printer size={16} />
           Print order
+        </button>
+        <button className="button primary" onClick={() => printOrder("bill")}>
+          <Printer size={16} />
+          Print bill
         </button>
       </PageHeading>
       <QueryState
@@ -564,6 +583,7 @@ export function OrderDetail({ id }: { id: string }) {
           </section>
           <section className="panel order-summary">
             <h2>Payment details</h2>
+            <GstSummary gst={order.gst} />
             <div className="summary-line">
               <span>Order total</span>
               <strong>{money(total(order))}</strong>
@@ -576,6 +596,7 @@ export function OrderDetail({ id }: { id: string }) {
               <span>Balance</span>
               <strong>{money(balance(order))}</strong>
             </div>
+            <ApplyOrderGst order={order} disabled={mutationBlocked} />
             {balance(order) > 0 && isOpen(order) && (
               <button
                 className="button primary no-print"
@@ -807,6 +828,6 @@ export function OrderDetail({ id }: { id: string }) {
           </div>
         </Dialog>
       )}
-    </>
+    </div>
   );
 }

@@ -22,6 +22,7 @@ import {
   reworkPieceSchema,
 } from "@/features/workflow/contracts/workflow";
 import { recordPaymentSchema } from "@/features/billing/contracts/payment";
+import { applyGstSchema } from "@/features/billing/contracts/gst";
 import { closeDaySchema } from "@/features/reports/contracts/report";
 
 export const mutationSchema = z.discriminatedUnion("type", [
@@ -40,6 +41,7 @@ export const mutationSchema = z.discriminatedUnion("type", [
   advancePieceSchema,
   reworkPieceSchema,
   recordPaymentSchema,
+  applyGstSchema,
   closeDaySchema,
 ]);
 export type WorkspaceMutation = z.infer<typeof mutationSchema>;

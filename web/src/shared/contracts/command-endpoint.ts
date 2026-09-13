@@ -26,6 +26,7 @@ export function commandEndpoint(action: WorkspaceMutation) {
     case "piece.rework":
       return "/api/workflow";
     case "payment.record":
+    case "billing.apply-gst":
       return "/api/billing";
     case "day.close":
       return "/api/reports";

@@ -1,5 +1,11 @@
 # Feature-driven architecture: alignment with Dolce CRM
 
+GST settings and compact customer bills are implemented in the billing
+and settings features. Shared billing domain calculations are used by intake and
+server services; per-order tax snapshots keep payment balances, SQL billing reads,
+exports and printing consistent. Migration 9 adds nullable GST columns and retains
+legacy amounts. See [the GST release record](GST-BILLING.md) for verification.
+
 Custom garment workflows extend the feature/domain/service split and preserve
 the existing workstation-based team assignments. Migration 8 stores reusable
 templates and immutable piece definitions. See [behavior and validation](CUSTOM-WORKFLOWS.md).

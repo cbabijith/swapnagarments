@@ -30,6 +30,21 @@ worker accounts with station skills, manual/automatic assignment, and private
 worker task queues. Live writes are validated and persisted in PostgreSQL;
 preview data is never inserted into the live database.
 
+On an order, **Print bill** produces a compact A5 customer bill with item prices,
+customer and delivery details, the total, amount paid, and balance. Normal bills
+fit on one small page; larger orders continue onto extra pages without dropping
+items. **Print order** keeps the full workshop details on A4, and **QR labels**
+prints garment labels separately.
+
+**Settings → GST & billing** configures GST enablement, a percentage, prices
+including or excluding GST, and an optional shop GSTIN. GST is disabled until
+configured. New orders save the selected tax details; existing open orders with
+an unpaid balance offer **Apply GST** under Payment details. Changing settings
+keeps saved bills intact. Integer-paise calculations feed order intake, advances,
+payment/delivery guards, billing balances, exports, and the compact printed bill.
+Migration 9 adds nullable settings and order GST snapshots without changing
+existing order amounts. GST data is preserved through storage rollback/cutover.
+
 The Team screen now creates worker accounts, manages availability and capacity,
 and offers equal-piece or effort-based distribution. Workers see their own
 prioritized work and can start, block, resume, and complete a stage. QR scanning

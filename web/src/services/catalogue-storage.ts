@@ -25,6 +25,7 @@ export async function readStoredCatalogue(
     .where(eq(garments.workspaceId, 1))
     .orderBy(asc(garments.position));
   return {
+    ...(settings.gst ? { gst: settings.gst } : {}),
     ...(settings.workflows ? { workflows: settings.workflows } : {}),
     revision: settings.revision,
     defaultGarmentId: settings.defaultGarmentId,
@@ -79,6 +80,7 @@ export async function writeCatalogue(
       revision: catalogue.revision,
       defaultGarmentId: catalogue.defaultGarmentId,
       leadDays: catalogue.leadDays,
+      gst: catalogue.gst ?? null,
       workflows: catalogue.workflows ?? null,
     })
     .onConflictDoUpdate({
@@ -87,6 +89,7 @@ export async function writeCatalogue(
         revision: catalogue.revision,
         defaultGarmentId: catalogue.defaultGarmentId,
         leadDays: catalogue.leadDays,
+        gst: catalogue.gst ?? null,
         workflows: catalogue.workflows ?? null,
       },
     });

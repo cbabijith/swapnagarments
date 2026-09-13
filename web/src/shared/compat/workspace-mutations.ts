@@ -11,6 +11,7 @@ import { saveCustomer } from "@/features/customers/domain/saveCustomer";
 import { createOrder } from "@/features/orders/domain/createOrder";
 import { deliverOrder } from "@/features/orders/domain/deliverOrder";
 import { recordPayment } from "@/features/billing/domain/recordPayment";
+import { applyGst } from "@/features/billing/domain/applyGst";
 import { changePiece } from "@/features/workflow/domain/changePiece";
 import { closeDay } from "@/features/reports/domain/closeDay";
 import { saveCatalogue } from "@/features/settings/domain/saveCatalogue";
@@ -78,6 +79,8 @@ export function applyMutation(
         return deliverOrder({ ...context, action });
       case "payment.record":
         return recordPayment({ ...context, action });
+      case "billing.apply-gst":
+        return applyGst({ ...context, action });
       case "piece.advance":
       case "piece.rework":
         return changePiece({ ...context, action });

@@ -62,7 +62,7 @@ test("versioned baseline preserves existing owner, sessions, measurements, payme
     assert.equal(mutations.rows[0].fingerprint, null);
     assert.equal(
       (await engine.query("SELECT * FROM sg_schema_migrations")).rows.length,
-      8,
+      9,
     );
     await engine.exec(
       "UPDATE sg_schema_migrations SET checksum = 'unexpected-change' WHERE version = 1",

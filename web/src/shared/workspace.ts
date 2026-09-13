@@ -1,3 +1,4 @@
+import { totalWithGst } from "@/features/billing/domain/gst";
 import type { Customer } from "@/features/customers/types";
 export type { Customer } from "@/features/customers/types";
 import type { Priority, OrderStatus, Order } from "@/features/orders/types";
@@ -100,7 +101,10 @@ export function initials(name: string) {
     .join("");
 }
 export function total(order: Order) {
-  return order.items.reduce((sum, item) => sum + item.price, 0);
+  return totalWithGst(
+    order.items.reduce((sum, item) => sum + item.price, 0),
+    order.gst,
+  );
 }
 export function paid(order: Order) {
   return order.payments.reduce((sum, payment) => sum + payment.amount, 0);

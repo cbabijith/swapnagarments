@@ -94,6 +94,7 @@ export async function readRelationalWorkspace(
         : {}),
     })),
     orders: orderRows.map((o) => ({
+      ...(o.gst ? { gst: o.gst } : {}),
       id: o.id,
       number: o.number,
       customerId: o.customerId,
@@ -192,6 +193,7 @@ function rowsFor(data: Workspace) {
       })),
     ),
     orders: data.orders.map((o, position) => ({
+      gst: o.gst ?? null,
       id: o.id,
       position,
       number: o.number,

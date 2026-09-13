@@ -3,6 +3,11 @@ import { WorkspaceError } from "@/shared/errors";
 import type { MutationContext } from "@/shared/domain/mutation-context";
 import { snapshotWorkflow } from "@/features/workflow/domain/templates";
 import { catalogueFor } from "@/features/settings/domain/catalogue";
+import {
+  calculateGst,
+  gstSettingsFor,
+  totalWithGst,
+} from "@/features/billing/domain/gst";
 
 export function createOrder({
   data,
@@ -15,12 +20,15 @@ export function createOrder({
     throw new WorkspaceError("Choose an existing customer.");
   if (action.dueDate < today)
     throw new WorkspaceError("The delivery date cannot be in the past.");
-  const quoted = action.items.reduce((sum, item) => sum + item.price, 0);
+  const subtotal = action.items.reduce((sum, item) => sum + item.price, 0);
+  const gst = calculateGst(subtotal, gstSettingsFor(data.catalogue));
+  const quoted = totalWithGst(subtotal, gst);
   if (!Number.isSafeInteger(quoted) || quoted > 100_000_000)
     throw new WorkspaceError("The order total is too large.");
   if (action.advance > quoted)
     throw new WorkspaceError("The advance cannot exceed the order total.");
   const order: Order = {
+    ...(gst ? { gst } : {}),
     id: crypto.randomUUID(),
     number: `SG-${Math.max(1000, ...data.orders.map((entry) => Number(entry.number.replace("SG-", "")) || 0)) + 1}`,
     customerId: action.customerId,

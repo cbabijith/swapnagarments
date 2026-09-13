@@ -6,6 +6,7 @@ import { z } from "zod";
 import { measurementGuideIds } from "@/features/measurements/contracts/guide";
 import { garmentIllustrationIds } from "./garment-illustration";
 import { workflowSettingsSchema } from "@/features/workflow/contracts/settings";
+import { gstSettingsSchema } from "@/features/billing/contracts/gst";
 
 export const fieldSchema = z.strictObject({
   id: z.string().min(1).max(100),
@@ -45,6 +46,7 @@ export const garmentSchema = z.strictObject({
 });
 export const catalogueSchema = z
   .strictObject({
+    gst: gstSettingsSchema.optional(),
     workflows: workflowSettingsSchema.optional(),
     revision: z.number().int().min(0),
     defaultGarmentId: z.string().max(100),

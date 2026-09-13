@@ -172,6 +172,7 @@ export async function executeWorkspaceCommand(
         result = workflowService({ ...context, action });
         break;
       case "payment.record":
+      case "billing.apply-gst":
         result = billingService({ ...context, action });
         break;
       case "day.close":

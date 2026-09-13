@@ -1,5 +1,7 @@
 import { designSnapshotSchema } from "@/features/design-library/contracts";
 import { pieceWorkflowSchema } from "@/features/workflow/contracts/settings";
+import { gstSnapshotSchema } from "@/features/billing/contracts/gst";
+import { calculateGst } from "@/features/billing/domain/gst";
 import "server-only";
 import { StorageMigrationError } from "./migration-error";
 import { createHash } from "node:crypto";
@@ -44,6 +46,7 @@ const workspaceSchema = z.strictObject({
   ),
   orders: z.array(
     z.strictObject({
+      gst: gstSnapshotSchema.optional(),
       id,
       number: z.string().min(1),
       customerId: id,
@@ -239,6 +242,24 @@ export function validateWorkspace(source: unknown): Workspace {
     }
   }
   for (const order of data.orders) {
+    if (order.gst) {
+      const expected = calculateGst(
+        order.items.reduce((sum, item) => sum + item.price, 0),
+        {
+          enabled: true,
+          rateBps: order.gst.rateBps,
+          priceMode: order.gst.priceMode,
+          gstin: order.gst.gstin,
+        },
+      )!;
+      if (
+        expected.amount !== order.gst.amount ||
+        expected.taxableAmount !== order.gst.taxableAmount
+      )
+        throw new StorageMigrationError(
+          "Workspace has inconsistent GST amounts.",
+        );
+    }
     for (const piece of order.items) {
       if (
         piece.work &&

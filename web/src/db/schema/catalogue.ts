@@ -12,6 +12,7 @@ import type { Garment } from "@/features/settings/contracts/catalogue";
 import type { MeasurementProfile } from "@/features/measurements/contracts/profiles";
 
 export const shopSettings = pgTable("sg_shop_settings", {
+  gst: jsonb().$type<import("@/features/billing/contracts/gst").GstSettings>(),
   workflows:
     jsonb().$type<
       import("@/features/workflow/contracts/settings").WorkflowSettings

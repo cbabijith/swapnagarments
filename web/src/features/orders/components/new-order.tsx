@@ -10,6 +10,12 @@ import { useRouter } from "next/navigation";
 import { CustomerPicker } from "@/features/customers/components/customer-picker";
 import { useCustomerDetail } from "@/features/customers/hooks/use-customer-reads";
 import { useCatalogue } from "@/features/settings/hooks/use-catalogue";
+import {
+  calculateGst,
+  gstSettingsFor,
+  totalWithGst,
+} from "@/features/billing/domain/gst";
+import { GstSummary } from "@/features/billing/components/gst-summary";
 import { GarmentPicker } from "@/features/settings/components/garment-picker";
 import { workflowForGarment } from "@/features/workflow/domain/templates";
 import type {
@@ -175,11 +181,14 @@ function OrderComposer({
     [error, setError] = useState("");
   const retry = useRef<{ body: string; id: string } | null>(null);
   const count = items.reduce((n, i) => n + i.quantity, 0);
-  const quoted = items.reduce(
+  const subtotal = items.reduce(
     (sum, item) =>
       sum + Math.round(Number(item.price || 0) * 100) * item.quantity,
     0,
   );
+  const gstSettings = gstSettingsFor(catalogue);
+  const gst = calculateGst(subtotal, gstSettings);
+  const quoted = totalWithGst(subtotal, gst);
   const payment = Math.round(Number(advance || 0) * 100);
   function update(id: string, changes: Partial<DraftPiece>) {
     setItems((current) =>
@@ -211,6 +220,7 @@ function OrderComposer({
     }
     const action: Intake = {
       type: "order.intake",
+      gstSettings,
       customer: customer
         ? { kind: "existing", id: customer.id }
         : {
@@ -776,6 +786,7 @@ function OrderComposer({
             </strong>
           </div>
         ))}
+        <GstSummary gst={gst} />
         <div className="summary-line">
           <span>Total</span>
           <strong>{money(quoted)}</strong>

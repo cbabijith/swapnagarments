@@ -27,6 +27,8 @@ export function saveCatalogue({
 }: MutationContext<"settings.save">) {
   const current = catalogueFor(data),
     next = structuredClone(action.catalogue);
+  // Older settings clients must not silently remove configured GST.
+  if (!next.gst && current.gst) next.gst = structuredClone(current.gst);
   if (next.revision !== current.revision)
     throw new WorkspaceError(
       "Settings changed on another device. Reload settings before saving again.",

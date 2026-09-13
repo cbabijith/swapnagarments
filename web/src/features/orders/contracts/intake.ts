@@ -1,9 +1,11 @@
 import { designInputSchema } from "@/features/design-library/contracts";
 import { z } from "zod";
+import { gstSettingsSchema } from "@/features/billing/contracts/gst";
 import { id, amount, method, date } from "@/shared/contracts/fields";
 import { measurementInputSchema } from "@/features/measurements/contracts/profiles";
 export const intakeSchema = z.object({
   type: z.literal("order.intake"),
+  gstSettings: gstSettingsSchema.optional(),
   customer: z.discriminatedUnion("kind", [
     z.object({ kind: z.literal("existing"), id }),
     z.object({

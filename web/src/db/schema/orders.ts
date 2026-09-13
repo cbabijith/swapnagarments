@@ -17,6 +17,9 @@ import type { OrderStatus, Priority } from "@/features/orders/types";
 export const orders = pgTable(
   "sg_orders",
   {
+    gst: jsonb().$type<
+      import("@/features/billing/contracts/gst").GstSnapshot
+    >(),
     id: text().primaryKey(),
     workspaceId: integer("workspace_id")
       .notNull()

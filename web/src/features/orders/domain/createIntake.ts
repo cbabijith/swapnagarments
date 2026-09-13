@@ -6,6 +6,12 @@ import { catalogueFor } from "@/features/settings/domain/catalogue";
 import { prepareMeasurement } from "@/features/measurements/domain/saveProfile";
 import { phoneKey } from "@/features/customers/domain/phone";
 import type { Order } from "@/features/orders/types";
+import {
+  assertGstSettings,
+  calculateGst,
+  gstSettingsFor,
+  totalWithGst,
+} from "@/features/billing/domain/gst";
 
 export function createIntake({
   data,
@@ -20,10 +26,14 @@ export function createIntake({
     throw new WorkspaceError("The delivery date cannot be in the past.");
   if (action.items.reduce((sum, item) => sum + item.quantity, 0) > 50)
     throw new WorkspaceError("An order can contain up to 50 pieces.");
-  const quoted = action.items.reduce(
+  const subtotal = action.items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
+  const settings = gstSettingsFor(data.catalogue);
+  assertGstSettings(settings, action.gstSettings);
+  const gst = calculateGst(subtotal, settings);
+  const quoted = totalWithGst(subtotal, gst);
   if (!Number.isSafeInteger(quoted) || quoted > 100_000_000)
     throw new WorkspaceError("The order total is too large.");
   if (action.advance > quoted)
@@ -98,6 +108,7 @@ export function createIntake({
   }
   data.catalogue ??= catalogueFor(data);
   const order: Order = {
+    ...(gst ? { gst } : {}),
     id: crypto.randomUUID(),
     number: `SG-${Math.max(1000, ...data.orders.map((o) => Number(o.number.replace("SG-", "")) || 0)) + 1}`,
     customerId,

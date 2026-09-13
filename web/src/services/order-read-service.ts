@@ -150,7 +150,7 @@ export const readOrder = (id: string, input: PageQuery) =>
     data.activity = await readActivity(tx, input.pageSize, offset(input), id);
     return { revision, data, page: pageInfo(input, count) };
   });
-export const orderBalance = sql`(coalesce((select sum(${orderItems.price}) from ${orderItems} where ${orderItems.orderId}=${orders.id}),0) - coalesce((select sum(${payments.amount}) from ${payments} where ${payments.orderId}=${orders.id}),0))`;
+export const orderBalance = sql`(coalesce((select sum(${orderItems.price}) from ${orderItems} where ${orderItems.orderId}=${orders.id}),0) + case when ${orders.gst}->>'priceMode' = 'exclusive' then coalesce((${orders.gst}->>'amount')::bigint,0) else 0 end - coalesce((select sum(${payments.amount}) from ${payments} where ${payments.orderId}=${orders.id}),0))`;
 export const billingWhere = (filter: BillingQuery["filter"]) =>
   and(
     sql`${orders.status} <> 'cancelled'`,

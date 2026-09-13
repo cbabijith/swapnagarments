@@ -15,6 +15,7 @@ export type OrderItem = {
   price: number;
 };
 export type Order = {
+  gst?: import("@/features/billing/contracts/gst").GstSnapshot;
   id: string;
   number: string;
   customerId: string;

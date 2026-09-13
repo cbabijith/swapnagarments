@@ -120,6 +120,7 @@ export async function hydrateOrders(
     .orderBy(asc(customers.position));
   data.customers = hydrateCustomers(customerRows);
   data.orders = rows.map((o): Order => ({
+    ...(o.gst ? { gst: o.gst } : {}),
     id: o.id,
     number: o.number,
     customerId: o.customerId,

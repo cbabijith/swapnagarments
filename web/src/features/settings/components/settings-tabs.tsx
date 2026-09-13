@@ -1,5 +1,5 @@
 "use client";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import styles from "./catalogue.module.css";
 export function SettingsTabs<T extends string>({
   id,
@@ -17,7 +17,12 @@ export function SettingsTabs<T extends string>({
   disabled?: boolean;
 }) {
   return (
-    <div className={styles.tabs} role="tablist" aria-label={label}>
+    <div
+      className={styles.tabs}
+      role="tablist"
+      aria-label={label}
+      style={{ "--settings-tab-count": items.length } as CSSProperties}
+    >
       {items.map((item, index) => (
         <button
           key={item.value}

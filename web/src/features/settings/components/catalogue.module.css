@@ -719,7 +719,7 @@
 @media (max-width: 760px) {
   .tabs {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(var(--settings-tab-count, 4), minmax(0, 1fr));
     width: 100%;
     gap: 3px;
     padding: 4px;
@@ -731,6 +731,10 @@
     padding: 8px 3px;
     font-size: 10px;
     min-height: 57px;
+  }
+  .tabs > button > span {
+    white-space: normal;
+    line-height: 1.25;
   }
   .sectionHead {
     padding: 18px 17px 14px;

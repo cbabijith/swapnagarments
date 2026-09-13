@@ -6,10 +6,12 @@ import {
   Shirt,
   SlidersHorizontal,
   FileText,
+  Percent,
 } from "lucide-react";
 import Link from "next/link";
 import { CatalogueSettings } from "./catalogue-editor";
 import { SettingsTabs } from "./settings-tabs";
+import { GstSettingsPage } from "./gst-settings";
 import { WorkflowSettings } from "@/features/workflow/components/workflow-settings";
 import { PageHeading } from "@/shared/components/ui";
 import { QueryState, Pagination } from "@/shared/components/query-state";
@@ -18,7 +20,7 @@ import type { WorkspacePage } from "@/shared/contracts/query";
 import { money, formatDate, emptyWorkspace } from "@/shared/workspace";
 import styles from "./catalogue.module.css";
 
-type Section = "garments" | "defaults" | "workflow" | "reports";
+type Section = "garments" | "defaults" | "workflow" | "gst" | "reports";
 export function SettingsPage() {
   const [section, setSection] = useState<Section>("garments");
   const id = useId();
@@ -55,6 +57,7 @@ export function SettingsPage() {
             label: "Daily reports",
             icon: <FileText size={17} />,
           },
+          { value: "gst", label: "GST & billing", icon: <Percent size={17} /> },
         ]}
       />
       {(section === "garments" || section === "defaults") && (
@@ -73,6 +76,15 @@ export function SettingsPage() {
           aria-labelledby={`${id}-tab-workflow`}
         >
           <WorkflowSettings />
+        </div>
+      )}
+      {section === "gst" && (
+        <div
+          id={`${id}-panel-gst`}
+          role="tabpanel"
+          aria-labelledby={`${id}-tab-gst`}
+        >
+          <GstSettingsPage />
         </div>
       )}
       {section === "reports" && (
