@@ -571,6 +571,23 @@
   flex-shrink: 0;
   font-variant-numeric: tabular-nums;
 }
+.fieldIllustration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  background: #f5f7ef;
+}
+.fieldIllustration > svg {
+  width: 32px;
+  height: 38px;
+}
+.fieldIllustration .rowNumber {
+  text-align: center;
+}
 .itemName {
   flex: 1;
   text-align: left;

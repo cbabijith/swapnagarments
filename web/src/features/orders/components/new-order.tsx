@@ -606,6 +606,7 @@ function OrderComposer({
                 {fields.length < 40 &&
                   item.measurements.extraFields.length < 10 && (
                     <AddMeasurementField
+                      unit={item.garment.unit}
                       existingLabels={fields.map((f) => f.label)}
                       onAdd={(field) =>
                         measures(item, {

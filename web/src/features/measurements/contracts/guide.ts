@@ -1,0 +1,26 @@
+// Existing IDs describe fixed measuring methods. Use a new ID if a method changes.
+export const measurementGuideIds = [
+  "bust",
+  "underbust",
+  "waist",
+  "hip",
+  "shoulder-width",
+  "armhole-around",
+  "armhole-depth",
+  "sleeve-length",
+  "sleeve-opening",
+  "upper-arm",
+  "wrist-around",
+  "front-neck-depth",
+  "back-neck-depth",
+  "blouse-length",
+  "front-waist-length",
+  "back-waist-length",
+  "top-length",
+  "gown-length",
+  "wearing-waist",
+  "skirt-length",
+  "bottom-length",
+  "ankle-around",
+] as const;
+export type MeasurementGuideId = (typeof measurementGuideIds)[number];

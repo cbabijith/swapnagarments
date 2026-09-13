@@ -71,6 +71,7 @@ function customCatalogue(): Catalogue {
         required: true,
         help: "Shoulder to hem",
         options: [],
+        guideId: "top-length",
       },
       {
         id: "fit",
@@ -152,6 +153,7 @@ test("custom settings, atomic intake, retries, profile history and immutable pie
     let catalogue = (await readCatalogue()).catalogue;
     assert.equal(catalogue.defaultGarmentId, "test-kurta");
     assert.equal(catalogue.garments.at(-1)?.price, 65000);
+    assert.equal(catalogue.garments.at(-1)?.fields[0].guideId, "top-length");
     assert.equal(
       catalogue.garments[0].revision,
       1,
@@ -187,6 +189,12 @@ test("custom settings, atomic intake, retries, profile history and immutable pie
     assert.equal(order.payments[0].amount, 50000);
     assert.deepEqual(order.items[0].measurement, order.items[1].measurement);
     assert.equal(order.items[0].measurement?.values["custom-cuff"], "7.5");
+    assert.equal(order.items[0].measurement?.fields[0].guideId, "top-length");
+    assert.equal(
+      order.items[0].measurement?.fields.at(-1)?.guideId,
+      "none",
+      "an unknown width does not acquire an around-body guide",
+    );
     assert.equal(
       customer.profiles?.[0].snapshot.values["custom-cuff"],
       undefined,
@@ -310,6 +318,22 @@ test("custom settings, atomic intake, retries, profile history and immutable pie
     assert.deepEqual((await readWorkspace()).data, beforeRollback);
     await transition("cutover");
     assert.deepEqual((await readWorkspace()).data, beforeRollback);
+    const remapped = (await readCatalogue()).catalogue;
+    remapped.garments.at(-1)!.fields[0].guideId = "gown-length";
+    await send({ type: "settings.save", catalogue: remapped });
+    assert.equal(
+      compatibleValues(
+        (await readCatalogue()).catalogue.garments.at(-1)!,
+        profileRead,
+      ).length,
+      undefined,
+      "a different measuring path requires fresh review instead of silent reuse",
+    );
+    assert.deepEqual(
+      (await readWorkspace()).data.orders[0],
+      order,
+      "guide changes preserve each piece's original method and values",
+    );
   } finally {
     await engine.close();
   }

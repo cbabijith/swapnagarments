@@ -7,6 +7,7 @@ import type { MutationContext } from "@/shared/domain/mutation-context";
 import { WorkspaceError } from "@/shared/errors";
 import { catalogueFor } from "@/features/settings/domain/catalogue";
 import { profileFor, validateValues } from "./values";
+import { fieldsForSnapshot } from "./guides";
 
 export function prepareMeasurement(
   data: Workspace,
@@ -67,7 +68,7 @@ export function prepareMeasurement(
     garmentRevision,
     garmentName: garment.name,
     revision: 1,
-    fields: structuredClone(fields),
+    fields: fieldsForSnapshot(fields),
     unit: garment.unit,
     values,
     source: input.source,
@@ -84,7 +85,7 @@ export function prepareMeasurement(
     const saved = {
       ...snapshot,
       revision: (profile?.revision ?? 0) + 1,
-      fields: structuredClone(garment.fields),
+      fields: fieldsForSnapshot(garment.fields),
       values: Object.fromEntries(
         garment.fields
           .filter((f) => values[f.id])

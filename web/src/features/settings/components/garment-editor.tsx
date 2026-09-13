@@ -14,6 +14,9 @@ import {
 } from "lucide-react";
 import { Dialog } from "@/shared/components/ui";
 import { MeasurementFields } from "@/features/measurements/components/measurement-fields";
+import { MeasurementGuidePicker } from "@/features/measurements/components/measurement-guide";
+import { MeasurementIllustration } from "@/features/measurements/components/measurement-illustration";
+import { resolveGuideId } from "@/features/measurements/domain/guides";
 import { validateValues } from "@/features/measurements/domain/values";
 import {
   garmentSchema,
@@ -501,8 +504,18 @@ export function GarmentEditor({
                     <ul className={styles.compactList}>
                       {draft.fields.map((field, index) => (
                         <li key={field.id}>
-                          <span className={styles.rowNumber}>
-                            {String(index + 1).padStart(2, "0")}
+                          <span className={styles.fieldIllustration}>
+                            {resolveGuideId(field) ? (
+                              <MeasurementIllustration
+                                guideId={resolveGuideId(field)!}
+                                decorative
+                                mini
+                              />
+                            ) : (
+                              <span className={styles.rowNumber}>
+                                {String(index + 1).padStart(2, "0")}
+                              </span>
+                            )}
                           </span>
                           <button
                             type="button"
@@ -839,6 +852,11 @@ export function GarmentEditor({
                     </small>
                   </span>
                 </label>
+                <MeasurementGuidePicker
+                  field={stage.value}
+                  unit={draft.unit}
+                  onChange={(value) => setStage({ ...stage, value })}
+                />
               </div>
             )}
             {stage.kind === "preset" && (

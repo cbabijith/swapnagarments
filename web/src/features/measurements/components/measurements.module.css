@@ -16,6 +16,13 @@
 .extra {
   margin-top: 16px;
 }
+.extraEditor {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
 .summary {
   margin: 18px 0;
   padding: 16px;

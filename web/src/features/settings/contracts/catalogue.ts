@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { measurementGuideIds } from "@/features/measurements/contracts/guide";
 
 export const fieldSchema = z.strictObject({
   id: z.string().min(1).max(100),
@@ -7,6 +8,7 @@ export const fieldSchema = z.strictObject({
   required: z.boolean(),
   help: z.string().max(300),
   options: z.array(z.string().trim().min(1).max(80)).max(30),
+  guideId: z.enum(["none", ...measurementGuideIds]).optional(),
 });
 export const measurementValuesSchema = z.record(
   z.string().min(1).max(100),

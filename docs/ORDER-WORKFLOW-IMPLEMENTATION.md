@@ -43,6 +43,16 @@ Focused dialogs replace the long inline forms. Their header and Save/Cancel acti
 
 This is a UI change using the existing settings command and schema; it adds no database migration. Browser verification covers add/edit of numeric, text and choice fields; preset validation and reuse; remove/undo; duplicate/archive/restore/reorder; pagination; template copying; default editing; keyboard tabs; and creating a confirmed sample order from the new settings. Layouts were inspected at 1440px, 390px and 320px, with no horizontal overflow or dialogs outside the viewport. Results and screenshots are retained in `output/qa/settings-ui-results.json` and `output/qa/settings-*.png`.
 
+## Illustrated measurement guides — 13 September 2026
+
+The [measurement-guide research](MEASUREMENT-GUIDES-RESEARCH.md) compares seven tailoring/pattern references and W3C guidance. The website now includes 22 original SVG measuring diagrams with front/back views, circumference or length labels, endpoint markers, two steps and the shop's written hint. Tap the illustration beside a numeric field or **How to measure**. Previous/Next browse the current garment's guides; **Enter value** closes help and focuses that measurement.
+
+Guides work in new orders, customer profiles, piece measurement editing, Settings previews and size presets. In **Settings → Garments → Edit → Measurements → Edit field**, choose **Visual measurement guide** to match the field name, select a method for a custom name, or hide the illustration. One-off piece fields have the same optional picker. Known names use exact matching; unknown names, text and choice fields do not receive guessed body diagrams.
+
+The optional validated `guideId` uses existing JSON field storage; no SQL migration or customer-image upload is involved. New piece/profile snapshots freeze the selected guide. Changing a measuring path prevents automatic reuse of incompatible profile values and preserves existing piece history. A rollback application must understand this optional property; use this release's storage tools when validating or transitioning records containing guide selections.
+
+Local verification passed all 18 tests, including guide selection persistence, immutable snapshots, changed-method reuse guards and JSON/relational transitions. Browser checks at 1440px, 390px and 320px covered all 22 guides, selection/opt-out, custom field saving, units, keyboard dismissal within a dialog, focus return, sample order creation and customer profiles. No page errors or horizontal overflow were found. Screenshots and results are retained in `output/qa/measurement-guide-*.png` and `output/qa/measurement-guide-results.json`.
+
 ## Later work from the research
 
 Automatic draft recovery across a browser refresh, repeating a previous order, favourites, multiple wearers under one contact, retail stock, design uploads and external messaging remain later releases. The event table stores durable identities; it does not send notifications or implement a dispatch worker. The financial CSV remains an order/billing export; complete piece measurements are available on the order and its printed work card.

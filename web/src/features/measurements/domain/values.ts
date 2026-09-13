@@ -4,6 +4,7 @@ import type {
 } from "@/features/settings/contracts/catalogue";
 import type { Customer } from "@/features/customers/types";
 import { WorkspaceError } from "@/shared/errors";
+import { resolveGuideId } from "./guides";
 
 export function validateValues(
   fields: MeasurementField[],
@@ -70,6 +71,7 @@ export function compatibleValues(
           old &&
           old.type === field.type &&
           old.help === field.help &&
+          resolveGuideId(old) === resolveGuideId(field) &&
           (field.type !== "select" ||
             field.options.includes(profile.snapshot.values[field.id]))
         );
