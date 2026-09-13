@@ -1,12 +1,15 @@
 "use client";
-import { useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
 import {
   Scissors,
   ArrowRight,
   LockKeyhole,
   Check,
   RefreshCw,
+  Eye,
+  EyeOff,
 } from "lucide-react";
+import styles from "./access-screen.module.css";
 
 export function AccessScreen({
   state,
@@ -21,6 +24,8 @@ export function AccessScreen({
 }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const passwordId = useId();
   const setup = state === "setup";
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -155,20 +160,39 @@ export function AccessScreen({
                         autoComplete="username"
                       />
                     </label>
-                    <label className="field full-width">
-                      Password
-                      <input
-                        name="password"
-                        type="password"
-                        required
-                        minLength={12}
-                        maxLength={128}
-                        autoComplete={
-                          setup ? "new-password" : "current-password"
-                        }
-                      />
+                    <div className="field full-width">
+                      <label htmlFor={passwordId}>Password</label>
+                      <div className={styles.passwordControl}>
+                        <input
+                          id={passwordId}
+                          className={styles.passwordInput}
+                          name="password"
+                          type={showPassword ? "text" : "password"}
+                          required
+                          minLength={12}
+                          maxLength={128}
+                          autoComplete={
+                            setup ? "new-password" : "current-password"
+                          }
+                        />
+                        <button
+                          className={styles.passwordToggle}
+                          type="button"
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
+                          aria-controls={passwordId}
+                          onClick={() => setShowPassword((visible) => !visible)}
+                        >
+                          {showPassword ? (
+                            <EyeOff size={19} aria-hidden="true" />
+                          ) : (
+                            <Eye size={19} aria-hidden="true" />
+                          )}
+                        </button>
+                      </div>
                       {setup && <small>Use at least 12 characters.</small>}
-                    </label>
+                    </div>
                     {setup && (
                       <label className="field full-width">
                         Owner setup code

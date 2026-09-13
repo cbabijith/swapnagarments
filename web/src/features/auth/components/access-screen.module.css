@@ -1,0 +1,39 @@
+.passwordControl {
+  position: relative;
+}
+
+.passwordControl .passwordInput {
+  min-height: 44px;
+  padding-right: 48px;
+}
+
+.passwordInput::-ms-reveal {
+  display: none;
+}
+
+.passwordToggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 100%;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  color: #66775b;
+  background: transparent;
+  cursor: pointer;
+}
+
+.passwordToggle:hover {
+  color: #31562e;
+  background: #eaf0df;
+}
+
+.passwordToggle:focus-visible {
+  outline: 2px solid #31562e;
+  outline-offset: -3px;
+}
