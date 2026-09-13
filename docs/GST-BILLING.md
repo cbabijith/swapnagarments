@@ -30,4 +30,17 @@ relational recutover.
 - Printed sample bills were checked for page count, GSTIN, tax amount, total,
   paid amount, balance, and clipping.
 
-Production deployment verification is recorded after rollout.
+## Production release
+
+Released on 2026-09-13 from commit
+`e69e12d2e7f58b49b527cdfadcb38339a1d46d6f` through the existing `main` Railway
+deployment. Deployment `b9ab0942-01c7-4c46-aac3-98fa5f0ec896` is active and
+successful at <https://swapna-garmentsweb-production.up.railway.app>.
+
+Live health reports PostgreSQL and the private bucket connected. The session
+endpoint completed schema initialization, including migration 9, and returned
+the expected unauthenticated 401 with the existing owner setup intact. Settings
+and order pages return 200; their deployed assets include GST settings, Print
+bill, and the A5 print stylesheet. Verification did not change production shop
+settings or customer orders. See `output/qa/gst-billing-release.json` for the
+release check record.

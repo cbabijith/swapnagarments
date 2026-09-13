@@ -1,0 +1,34 @@
+{
+  "verifiedAt": "2026-09-13T14:38:28.236Z",
+  "commit": "e69e12d2e7f58b49b527cdfadcb38339a1d46d6f",
+  "deployment": "b9ab0942-01c7-4c46-aac3-98fa5f0ec896",
+  "railwayStatus": "success",
+  "url": "https://swapna-garmentsweb-production.up.railway.app",
+  "localValidation": {
+    "testsPassed": 34,
+    "typecheck": "passed",
+    "lint": "passed",
+    "productionBuild": "passed",
+    "browser": "GST settings, existing-order application, six-piece intake, inclusive GST and mobile layout passed",
+    "print": "Six-piece GST sample fits one A5 page; totals and clipping verified"
+  },
+  "liveHealth": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "sessionStatus": 401,
+  "ownerSetupRequired": false,
+  "migrationCheck": "Session endpoint completed ensureSchema through migration 9 without error",
+  "livePages": {
+    "/settings": 200,
+    "/orders/release-verification": 200
+  },
+  "liveAssets": {
+    "fetchedSuccessfully": 17,
+    "gstSettings": true,
+    "printBill": true,
+    "compactA5": true
+  },
+  "productionBusinessDataModifiedDuringVerification": false
+}
