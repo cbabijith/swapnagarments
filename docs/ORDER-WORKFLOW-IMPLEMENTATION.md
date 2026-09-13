@@ -4,7 +4,7 @@ Deployed to Railway on 13 September 2026. This implements the first release in [
 
 ## Using it
 
-1. Open **Settings → Garments, measurements & defaults**. Add or rename garments/services, set an optional price, choose inches or centimetres, and configure measurement fields. Fields can be dimensions, text or choices, with help and required flags. Set the default garment and suggested delivery interval. Save shop settings.
+1. Open **Settings → Garments**. Search the compact catalogue, then **Add garment** or **Edit**. The editor has **Details**, **Measurements** and **Size presets** tabs. Add or rename services, set an optional price, and configure numeric, text or choice fields with help and required flags. Apply each field or preset to the draft, then **Save garment**. Use **Settings → Order defaults** to set the starting garment and suggested delivery interval.
 2. Open **New order**. Search by name or phone, or choose **Add new customer**. A search term carries into the name or phone field. New customers are created with the order's final save.
 3. Choose garments. Their configured fields and price appear automatically. Compatible saved customer measurements fill in with their recorded date; review them before confirming. New customers start with blank dimensions. Shop size presets are applied only when selected.
 4. Enter quantity, fabric/design notes and measurements. Duplicate a line or split a quantity to change individual pieces. **Add a measurement for this piece** adds a one-off dimension. Configure reusable dimensions in Settings. Each piece has its own saved measurement copy.
@@ -32,6 +32,14 @@ Final local validation: all 17 automated tests passed, TypeScript and ESLint pas
 the production build passed, and the browser run reported no page errors or mobile
 horizontal overflow. The pending-piece browser check also confirmed sizes and
 advanced that piece successfully afterward.
+
+## Settings interface update — 13 September 2026
+
+Settings now shows one section at a time: Garments, Order defaults, Account or Daily reports. The catalogue has name search, active/archived filters and seven-item pagination; reports load only when opened. Each garment has a compact row with price, measurement count and edit actions. Its menu supports duplication, reordering, archiving and restoring.
+
+Focused dialogs replace the long inline forms. Their header and Save/Cancel actions stay visible while the active content scrolls. Field and preset lists open one editor at a time, support removal with Undo, and keep changes in a garment draft until saved. New garments can copy an existing template. Unsaved dismissal requires an explicit discard; preview values do not get saved or block validation. Default garments cannot be archived, saved field types remain protected, and unit changes explain when presets must be re-entered. Stale saves and ambiguous retries retain the existing revision and command-ID protections.
+
+This is a UI change using the existing settings command and schema; it adds no database migration. Browser verification covers add/edit of numeric, text and choice fields; preset validation and reuse; remove/undo; duplicate/archive/restore/reorder; pagination; template copying; default editing; keyboard tabs; and creating a confirmed sample order from the new settings. Layouts were inspected at 1440px, 390px and 320px, with no horizontal overflow or dialogs outside the viewport. Results and screenshots are retained in `output/qa/settings-ui-results.json` and `output/qa/settings-*.png`.
 
 ## Later work from the research
 

@@ -1,505 +1,472 @@
 "use client";
-import { useState, type FormEvent } from "react";
-import { useWorkspace } from "@/shared/compat/workspace-provider";
-import { QueryState } from "@/shared/components/query-state";
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Search,
+  Plus,
+  Shirt,
+  Pencil,
+  Ellipsis,
+  Copy,
+  Archive,
+  ArchiveRestore,
+  ArrowUp,
+  ArrowDown,
+  CalendarDays,
+  ArrowUpRight,
+} from "lucide-react";
+import { QueryState, Pagination } from "@/shared/components/query-state";
 import { useCatalogue } from "../hooks/use-catalogue";
-import type {
-  Catalogue,
-  Garment,
-  MeasurementField,
-} from "../contracts/catalogue";
-import { MeasurementFields } from "@/features/measurements/components/measurement-fields";
+import { useSaveCatalogue } from "../hooks/use-save-catalogue";
+import type { Catalogue, Garment } from "../contracts/catalogue";
+import { money } from "@/shared/workspace";
+import { GarmentEditor } from "./garment-editor";
+import { DefaultsEditor } from "./defaults-editor";
 import styles from "./catalogue.module.css";
 
-export function CatalogueSettings() {
-  const read = useCatalogue();
+type Editor = { base: Catalogue; garment: Garment; isNew: boolean };
+export function CatalogueSettings({
+  section,
+}: {
+  section: "garments" | "defaults";
+}) {
+  const read = useCatalogue(),
+    write = useSaveCatalogue();
+  const [editor, setEditor] = useState<Editor | null>(null),
+    [defaults, setDefaults] = useState<Catalogue | null>(null);
+  const [query, setQuery] = useState(""),
+    [filter, setFilter] = useState("active"),
+    [page, setPage] = useState(1);
+  const catalogue = read.data?.catalogue;
+  const blocked = write.busy || read.isRefreshing;
+  function edit(garment: Garment, isNew = false) {
+    if (catalogue)
+      setEditor({
+        base: structuredClone(catalogue),
+        garment: structuredClone(garment),
+        isNew,
+      });
+  }
+  function add() {
+    edit(
+      {
+        id: crypto.randomUUID(),
+        revision: 1,
+        name: "",
+        active: true,
+        price: null,
+        unit: "in",
+        fields: [],
+        presets: [],
+      },
+      true,
+    );
+  }
+  function duplicate(garment: Garment) {
+    let name = `${garment.name} copy`,
+      index = 2;
+    while (
+      catalogue?.garments.some(
+        (g) => g.name.toLowerCase() === name.toLowerCase(),
+      )
+    )
+      name = `${garment.name} copy ${index++}`;
+    edit(
+      {
+        ...structuredClone(garment),
+        id: crypto.randomUUID(),
+        revision: 1,
+        name,
+        active: true,
+      },
+      true,
+    );
+  }
+  async function listChange(
+    garment: Garment,
+    action: "up" | "down" | "archive",
+  ) {
+    if (!catalogue || blocked) return;
+    const next = structuredClone(catalogue),
+      index = next.garments.findIndex((g) => g.id === garment.id);
+    if (action === "archive") next.garments[index].active = !garment.active;
+    else {
+      const to = index + (action === "up" ? -1 : 1);
+      if (to < 0 || to >= next.garments.length) return;
+      [next.garments[index], next.garments[to]] = [
+        next.garments[to],
+        next.garments[index],
+      ];
+    }
+    if (
+      !(await write.save(
+        next,
+        action === "archive"
+          ? `${garment.name} ${garment.active ? "archived" : "restored"}.`
+          : "Garment order updated.",
+      ))
+    )
+      read.reload();
+  }
+  const matches =
+    catalogue?.garments.filter(
+      (g) =>
+        g.name.toLowerCase().includes(query.trim().toLowerCase()) &&
+        (filter === "all" || g.active === (filter === "active")),
+    ) ?? [];
+  const pageSize = 7,
+    pageCount = Math.max(1, Math.ceil(matches.length / pageSize)),
+    visiblePage = Math.min(page, pageCount);
+  const defaultGarment = catalogue?.garments.find(
+    (g) => g.id === catalogue.defaultGarmentId,
+  );
   return (
-    <section className="panel padded">
-      <h2>Garments, measurements & defaults</h2>
-      <p className="muted" style={{ margin: "8px 0 20px" }}>
-        Set up what you stitch. Saved changes are available in customer profiles
-        and new orders.
-      </p>
+    <>
       <QueryState
         loading={read.isLoading}
         error={read.error}
         retry={read.reload}
       />
-      {read.data && <CatalogueEditor current={read.data.catalogue} />}
-    </section>
-  );
-}
-function CatalogueEditor({ current }: { current: Catalogue }) {
-  const { send } = useWorkspace();
-  const [draft, setDraft] = useState(() => structuredClone(current));
-  const [selected, setSelected] = useState(current.defaultGarmentId);
-  const [busy, setBusy] = useState(false),
-    [error, setError] = useState("");
-  const [preview, setPreview] = useState<Record<string, string>>({});
-  const garment =
-    draft.garments.find((g) => g.id === selected) ?? draft.garments[0];
-  function update(change: Partial<Garment>) {
-    setDraft({
-      ...draft,
-      garments: draft.garments.map((g) =>
-        g.id === garment.id ? { ...g, ...change } : g,
-      ),
-    });
-  }
-  function fieldUpdate(id: string, change: Partial<MeasurementField>) {
-    update({
-      fields: garment.fields.map((f) =>
-        f.id === id ? { ...f, ...change } : f,
-      ),
-    });
-  }
-  function moveField(index: number, step: number) {
-    const next = [...garment.fields];
-    [next[index], next[index + step]] = [next[index + step], next[index]];
-    update({ fields: next });
-  }
-  async function save(e: FormEvent) {
-    e.preventDefault();
-    if (busy) return;
-    setBusy(true);
-    setError("");
-    const normalized = {
-      ...draft,
-      garments: draft.garments.map((g) => ({
-        ...g,
-        fields: g.fields.map((f) => ({
-          ...f,
-          options: f.options.map((option) => option.trim()).filter(Boolean),
-        })),
-      })),
-    };
-    try {
-      await send(
-        { type: "settings.save", catalogue: normalized },
-        "Shop settings saved.",
-      );
-      setDraft({ ...normalized, revision: draft.revision + 1 });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not save settings.");
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <form onSubmit={save}>
-      <fieldset disabled={busy} className={styles.fieldset}>
-        {current.revision !== draft.revision && (
-          <p className="note-box">
-            Saved settings have changed. Your edits are still here. Reload
-            before making further changes.
-          </p>
-        )}
-        <div className={styles.defaults}>
-          <label className="field">
-            Default garment
-            <select
-              value={draft.defaultGarmentId}
-              onChange={(e) =>
-                setDraft({ ...draft, defaultGarmentId: e.target.value })
-              }
-            >
-              {draft.garments
-                .filter((g) => g.active)
-                .map((g) => (
-                  <option key={g.id} value={g.id}>
-                    {g.name}
-                  </option>
-                ))}
-            </select>
-          </label>
-          <label className="field">
-            Suggested delivery after (days)
-            <input
-              type="number"
-              min={0}
-              max={365}
-              required
-              value={draft.leadDays}
-              onChange={(e) =>
-                setDraft({ ...draft, leadDays: Number(e.target.value) })
-              }
-            />
-          </label>
-        </div>
-        <div className={styles.layout}>
-          <nav className={styles.list} aria-label="Garment settings">
-            {draft.garments.map((g, index) => (
-              <div className={styles.listRow} key={g.id}>
-                <button
-                  type="button"
-                  className={`${styles.garmentButton} ${g.id === garment.id ? styles.active : ""}`}
-                  onClick={() => {
-                    setSelected(g.id);
-                    setPreview({});
-                  }}
-                >
-                  {g.name || "Unnamed garment"}
-                  {!g.active && <small>Archived</small>}
-                </button>
-                <button
-                  type="button"
-                  aria-label={`Move ${g.name} up`}
-                  disabled={!index}
-                  onClick={() => {
-                    const next = [...draft.garments];
-                    [next[index - 1], next[index]] = [
-                      next[index],
-                      next[index - 1],
-                    ];
-                    setDraft({ ...draft, garments: next });
-                  }}
-                >
-                  ↑
-                </button>
+      {catalogue &&
+        (section === "defaults" ? (
+          <section className={`panel ${styles.defaultsPanel}`}>
+            <div className={styles.sectionHead}>
+              <div>
+                <h2>Start every order one step ahead</h2>
+                <p>Choose what is filled in when you create an order.</p>
               </div>
-            ))}
-            <button
-              type="button"
-              className="button"
-              disabled={draft.garments.length >= 50}
-              onClick={() => {
-                const id = crypto.randomUUID();
-                setDraft({
-                  ...draft,
-                  garments: [
-                    ...draft.garments,
-                    {
-                      id,
-                      revision: 1,
-                      name: "New garment",
-                      active: true,
-                      price: null,
-                      unit: "in",
-                      fields: [],
-                      presets: [],
-                    },
-                  ],
-                });
-                setSelected(id);
-              }}
-            >
-              + Add garment
-            </button>
-          </nav>
-          <div className={styles.editor}>
-            <div className={styles.defaults}>
-              <label className="field">
-                Garment or service name
-                <input
-                  required
-                  maxLength={100}
-                  value={garment.name}
-                  onChange={(e) => update({ name: e.target.value })}
-                />
-              </label>
-              <label className="field">
-                Default price (₹, optional)
-                <input
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  max={1000000}
-                  value={garment.price === null ? "" : garment.price / 100}
-                  onChange={(e) =>
-                    update({
-                      price: e.target.value
-                        ? Math.round(Number(e.target.value) * 100)
-                        : null,
-                    })
-                  }
-                />
-              </label>
-            </div>
-            <div className={styles.actions}>
-              <label className="field">
-                Measurement unit
-                <select
-                  value={garment.unit}
-                  onChange={(e) => {
-                    update({ unit: e.target.value as "in" | "cm" });
-                    setPreview({});
-                  }}
-                >
-                  <option value="in">Inches</option>
-                  <option value="cm">Centimetres</option>
-                </select>
-              </label>
-              <label className={styles.check}>
-                <input
-                  type="checkbox"
-                  checked={garment.active}
-                  onChange={(e) => update({ active: e.target.checked })}
-                />{" "}
-                Available for new orders
-              </label>
               <button
                 type="button"
-                className="button"
-                disabled={draft.garments.length >= 50}
-                onClick={() => {
-                  const copy = {
-                    ...structuredClone(garment),
-                    id: crypto.randomUUID(),
-                    name: `${garment.name} copy`,
-                    revision: 1,
-                  };
-                  setDraft({ ...draft, garments: [...draft.garments, copy] });
-                  setSelected(copy.id);
+                className="button primary"
+                disabled={blocked}
+                onClick={() => setDefaults(structuredClone(catalogue))}
+              >
+                <Pencil size={15} />
+                Edit defaults
+              </button>
+            </div>
+            <div className={styles.defaultCards}>
+              <div>
+                <span className={styles.tileIcon}>
+                  <Shirt size={21} />
+                </span>
+                <small>DEFAULT GARMENT</small>
+                <h3>{defaultGarment?.name}</h3>
+                <p>
+                  {defaultGarment?.price
+                    ? `${money(defaultGarment.price)} per piece`
+                    : "Price entered in each order"}
+                </p>
+              </div>
+              <div>
+                <span className={styles.tileIcon}>
+                  <CalendarDays size={21} />
+                </span>
+                <small>SUGGESTED DELIVERY</small>
+                <h3>
+                  {catalogue.leadDays === 0
+                    ? "Same day"
+                    : `${catalogue.leadDays} days later`}
+                </h3>
+                <p>You can change the date for each order.</p>
+              </div>
+            </div>
+            <p className={styles.footnote}>
+              Saved customer sizes are offered for review. Size presets are
+              applied when you choose them.
+            </p>
+          </section>
+        ) : (
+          <section
+            className={`panel ${styles.catalogue}`}
+            aria-label="Garment catalogue"
+          >
+            <div className={styles.sectionHead}>
+              <div>
+                <h2>
+                  Garments & services{" "}
+                  <span className={styles.count}>
+                    {catalogue.garments.filter((g) => g.active).length} active
+                  </span>
+                </h2>
+                <p>
+                  Names, prices and measurement templates for what you stitch.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="button primary"
+                onClick={add}
+                disabled={blocked || catalogue.garments.length >= 50}
+              >
+                <Plus size={17} />
+                Add garment
+              </button>
+            </div>
+            <div className={styles.filters}>
+              <label className={styles.search}>
+                <Search size={17} />
+                <input
+                  aria-label="Search garments"
+                  placeholder="Find a garment or service…"
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setPage(1);
+                  }}
+                />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuery("");
+                      setPage(1);
+                    }}
+                    aria-label="Clear garment search"
+                  >
+                    ×
+                  </button>
+                )}
+              </label>
+              <select
+                aria-label="Show garments"
+                value={filter}
+                onChange={(e) => {
+                  setFilter(e.target.value);
+                  setPage(1);
                 }}
               >
-                Duplicate garment
-              </button>
+                <option value="active">Active garments</option>
+                <option value="archived">Archived garments</option>
+                <option value="all">All garments</option>
+              </select>
             </div>
-            <h3>Measurement fields</h3>
-            <p className="muted">
-              Add dimensions, text instructions or choices. Empty templates are
-              allowed for services without measurements. Mark essential fields
-              as required.
-            </p>
-            {garment.fields.map((field, index) => (
-              <div className={styles.fieldRow} key={field.id}>
-                <div className={styles.defaults}>
-                  <label className="field">
-                    Field name
-                    <input
-                      required
-                      maxLength={80}
-                      value={field.label}
-                      onChange={(e) =>
-                        fieldUpdate(field.id, { label: e.target.value })
-                      }
-                    />
-                  </label>
-                  <label className="field">
-                    Type
-                    <select
-                      value={field.type}
-                      disabled={Boolean(
-                        current.garments
-                          .find((g) => g.id === garment.id)
-                          ?.fields.some((f) => f.id === field.id),
-                      )}
-                      onChange={(e) =>
-                        fieldUpdate(field.id, {
-                          type: e.target.value as MeasurementField["type"],
-                        })
-                      }
-                    >
-                      <option value="number">Measurement</option>
-                      <option value="text">Text</option>
-                      <option value="select">Choice</option>
-                    </select>
-                  </label>
-                </div>
-                <label className="field">
-                  How to measure / help (optional)
-                  <input
-                    maxLength={300}
-                    value={field.help}
-                    placeholder="e.g. Full body circumference, measured at the fullest point"
-                    onChange={(e) =>
-                      fieldUpdate(field.id, { help: e.target.value })
-                    }
-                  />
-                </label>
-                {field.type === "select" && (
-                  <label className="field">
-                    Choices (one per line)
-                    <textarea
-                      value={field.options.join("\n")}
-                      onChange={(e) =>
-                        fieldUpdate(field.id, {
-                          options: e.target.value.split("\n"),
-                        })
-                      }
-                    />
-                  </label>
-                )}
-                <div className={styles.actions}>
-                  <label className={styles.check}>
-                    <input
-                      type="checkbox"
-                      checked={field.required}
-                      onChange={(e) =>
-                        fieldUpdate(field.id, { required: e.target.checked })
-                      }
-                    />{" "}
-                    Required before cutting
-                  </label>
+            {write.error && (
+              <p className={`form-error ${styles.listError}`} role="alert">
+                {write.error}
+              </p>
+            )}
+            <div className={styles.listHeading} aria-hidden="true">
+              <span>Garment / service</span>
+              <span>Measurement template</span>
+              <span>Default price</span>
+              <span />
+            </div>
+            <ul className={styles.garmentList}>
+              {matches
+                .slice((visiblePage - 1) * pageSize, visiblePage * pageSize)
+                .map((garment) => {
+                  const index = catalogue.garments.findIndex(
+                    (g) => g.id === garment.id,
+                  );
+                  return (
+                    <li key={garment.id} className={styles.garmentRow}>
+                      <div className={styles.garmentIdentity}>
+                        <span className={styles.tileIcon}>
+                          <Shirt size={20} strokeWidth={1.5} />
+                        </span>
+                        <div>
+                          <button
+                            type="button"
+                            className={styles.nameButton}
+                            disabled={blocked}
+                            onClick={() => edit(garment)}
+                          >
+                            {garment.name}
+                          </button>
+                          <div className={styles.badges}>
+                            {garment.id === catalogue.defaultGarmentId && (
+                              <span>Default</span>
+                            )}
+                            {!garment.active && (
+                              <span className={styles.archived}>Archived</span>
+                            )}
+                            <small className={styles.mobileMeta}>
+                              {garment.fields.length
+                                ? `${garment.fields.length} fields · ${garment.unit === "in" ? "inches" : "cm"}`
+                                : "No measurements"}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                      <div className={styles.templateMeta}>
+                        <strong>
+                          {garment.fields.length
+                            ? `${garment.fields.length} fields`
+                            : "No measurements"}
+                        </strong>
+                        <small>
+                          {garment.unit === "in" ? "Inches" : "Centimetres"}
+                          {garment.presets.length
+                            ? ` · ${garment.presets.length} size presets`
+                            : ""}
+                        </small>
+                      </div>
+                      <span className={styles.price}>
+                        {garment.price ? (
+                          money(garment.price)
+                        ) : (
+                          <small>Set per order</small>
+                        )}
+                      </span>
+                      <div className={styles.rowActions}>
+                        <button
+                          type="button"
+                          className={styles.editButton}
+                          aria-label={`Edit ${garment.name}`}
+                          disabled={blocked}
+                          onClick={() => edit(garment)}
+                        >
+                          <Pencil size={15} />
+                          <span>Edit</span>
+                        </button>
+                        <details
+                          className={styles.more}
+                          onBlur={(e) => {
+                            if (!e.currentTarget.contains(e.relatedTarget))
+                              e.currentTarget.open = false;
+                          }}
+                        >
+                          <summary
+                            aria-label={`More actions for ${garment.name}`}
+                            aria-disabled={blocked}
+                            onClick={(e) => {
+                              if (blocked) e.preventDefault();
+                            }}
+                          >
+                            <Ellipsis size={19} />
+                          </summary>
+                          <div
+                            className={styles.menu}
+                            onClick={(e) => {
+                              const details =
+                                e.currentTarget.closest("details");
+                              if (details) details.open = false;
+                            }}
+                          >
+                            <button
+                              type="button"
+                              disabled={
+                                blocked || catalogue.garments.length >= 50
+                              }
+                              onClick={() => duplicate(garment)}
+                            >
+                              <Copy size={15} />
+                              Duplicate
+                            </button>
+                            <button
+                              type="button"
+                              disabled={blocked || index === 0}
+                              onClick={() => void listChange(garment, "up")}
+                            >
+                              <ArrowUp size={15} />
+                              Move up
+                            </button>
+                            <button
+                              type="button"
+                              disabled={
+                                blocked ||
+                                index === catalogue.garments.length - 1
+                              }
+                              onClick={() => void listChange(garment, "down")}
+                            >
+                              <ArrowDown size={15} />
+                              Move down
+                            </button>
+                            <button
+                              type="button"
+                              disabled={
+                                blocked ||
+                                garment.id === catalogue.defaultGarmentId
+                              }
+                              title={
+                                garment.id === catalogue.defaultGarmentId
+                                  ? "Choose another default garment first"
+                                  : undefined
+                              }
+                              onClick={() =>
+                                void listChange(garment, "archive")
+                              }
+                            >
+                              {garment.active ? (
+                                <Archive size={15} />
+                              ) : (
+                                <ArchiveRestore size={15} />
+                              )}
+                              {garment.active ? "Archive" : "Restore"}
+                            </button>
+                          </div>
+                        </details>
+                      </div>
+                    </li>
+                  );
+                })}
+            </ul>
+            {!matches.length && (
+              <div className={styles.empty}>
+                <Search size={25} />
+                <h3>
+                  {query ? "No matching garments" : "No garments in this view"}
+                </h3>
+                <p>
+                  {query
+                    ? "Try a shorter name, or add a new garment."
+                    : "Choose another view or add what you stitch."}
+                </p>
+                {query && (
                   <button
                     type="button"
-                    className="button"
-                    disabled={index === 0}
-                    aria-label={`Move ${field.label} up`}
-                    onClick={() => moveField(index, -1)}
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    className="button"
-                    disabled={index === garment.fields.length - 1}
-                    aria-label={`Move ${field.label} down`}
-                    onClick={() => moveField(index, 1)}
-                  >
-                    ↓
-                  </button>
-                  <button
-                    type="button"
-                    className="button"
+                    className="text-link"
                     onClick={() => {
-                      const fields = garment.fields.filter(
-                        (f) => f.id !== field.id,
-                      );
-                      update({
-                        fields,
-                        presets: garment.presets.map((p) => ({
-                          ...p,
-                          values: Object.fromEntries(
-                            Object.entries(p.values).filter(
-                              ([key]) => key !== field.id,
-                            ),
-                          ),
-                        })),
-                      });
+                      setQuery("");
+                      setPage(1);
                     }}
                   >
-                    Remove field
+                    Clear search
                   </button>
-                </div>
+                )}
               </div>
-            ))}
-            <button
-              type="button"
-              className="button"
-              disabled={garment.fields.length >= 30}
-              onClick={() =>
-                update({
-                  fields: [
-                    ...garment.fields,
-                    {
-                      id: `field-${crypto.randomUUID()}`,
-                      label: "New measurement",
-                      type: "number",
-                      required: false,
-                      help: "",
-                      options: [],
-                    },
-                  ],
-                })
-              }
-            >
-              + Add measurement field
-            </button>
-            <details className={styles.section}>
-              <summary>Size presets (optional)</summary>
-              <p className="muted">
-                Use your own size chart. Presets are selected explicitly in an
-                order; they never fill a new customer’s sizes automatically.
-              </p>
-              {garment.presets.map((preset) => (
-                <div key={preset.id} className={styles.fieldRow}>
-                  <label className="field">
-                    Size name
-                    <input
-                      required
-                      maxLength={80}
-                      value={preset.name}
-                      onChange={(e) =>
-                        update({
-                          presets: garment.presets.map((p) =>
-                            p.id === preset.id
-                              ? { ...p, name: e.target.value }
-                              : p,
-                          ),
-                        })
-                      }
-                    />
-                  </label>
-                  <MeasurementFields
-                    fields={garment.fields}
-                    unit={garment.unit}
-                    values={preset.values}
-                    onChange={(values) =>
-                      update({
-                        presets: garment.presets.map((p) =>
-                          p.id === preset.id ? { ...p, values } : p,
-                        ),
-                      })
-                    }
-                  />
-                  <button
-                    type="button"
-                    className="button"
-                    onClick={() =>
-                      update({
-                        presets: garment.presets.filter(
-                          (p) => p.id !== preset.id,
-                        ),
-                      })
-                    }
-                  >
-                    Remove preset
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                className="button"
-                disabled={garment.presets.length >= 20}
-                onClick={() =>
-                  update({
-                    presets: [
-                      ...garment.presets,
-                      { id: crypto.randomUUID(), name: "New size", values: {} },
-                    ],
-                  })
-                }
-              >
-                + Add size preset
-              </button>
-            </details>
-            <details className={styles.section}>
-              <summary>Preview the measurement form</summary>
-              <MeasurementFields
-                fields={garment.fields}
-                values={preview}
-                unit={garment.unit}
-                onChange={setPreview}
+            )}
+            {pageCount > 1 && (
+              <Pagination
+                page={{
+                  page: visiblePage,
+                  pageSize,
+                  total: matches.length,
+                  pageCount,
+                }}
+                onPageChange={setPage}
               />
-              <p className="muted small">Preview values are not saved.</p>
-            </details>
-          </div>
-        </div>
-        {error && (
-          <p className="form-error" role="alert">
-            {error}
-          </p>
-        )}
-        <div className={styles.save}>
-          <button className="button primary">
-            {busy ? "Saving…" : "Save shop settings"}
-          </button>
-          <button
-            className="button"
-            type="button"
-            onClick={() => {
-              setDraft(structuredClone(current));
-              setError("");
-            }}
-          >
-            Reload saved settings
-          </button>
-          <span className="muted">
-            Existing orders keep their agreed names, prices and measurements.
-          </span>
-        </div>
-      </fieldset>
-    </form>
+            )}
+            <div className={styles.catalogueFoot}>
+              <span>
+                Changes apply to new orders. Existing pieces keep their details.
+              </span>
+              <Link href="/orders/new" className="text-link">
+                Create an order
+                <ArrowUpRight size={14} />
+              </Link>
+            </div>
+          </section>
+        ))}
+      {catalogue && editor && (
+        <GarmentEditor
+          initial={editor.garment}
+          base={editor.base}
+          current={catalogue}
+          isNew={editor.isNew}
+          onClose={() => setEditor(null)}
+          onRefresh={read.reload}
+        />
+      )}
+      {catalogue && defaults && (
+        <DefaultsEditor
+          base={defaults}
+          current={catalogue}
+          onClose={() => setDefaults(null)}
+          onRefresh={read.reload}
+        />
+      )}
+    </>
   );
 }

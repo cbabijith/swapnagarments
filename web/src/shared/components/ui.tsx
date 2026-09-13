@@ -17,6 +17,7 @@ export function Dialog({
   onClose,
   wide = false,
   busy = false,
+  className = "",
 }: {
   title: string;
   subtitle?: string;
@@ -24,6 +25,7 @@ export function Dialog({
   onClose: () => void;
   wide?: boolean;
   busy?: boolean;
+  className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const id = useId();
@@ -42,7 +44,7 @@ export function Dialog({
       ref={ref}
       aria-labelledby={id}
       aria-busy={busy || undefined}
-      className={`dialog ${wide ? "dialog-wide" : ""}`}
+      className={`dialog ${wide ? "dialog-wide" : ""} ${className}`}
       onCancel={(event) => {
         event.preventDefault();
         if (!busy) onClose();

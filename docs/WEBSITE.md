@@ -154,6 +154,9 @@ desktop/mobile layouts, multi-piece intake, QR labels, and payments.
 Still outside this version: separate employee logins/permissions, staff management,
 real WhatsApp/email delivery, rate-card management, tax invoices, offline writes,
 and an installable service worker. The team page is a directory; it is not a
-permissions editor. Measurement entry currently uses one blouse profile in inches.
+permissions editor. Garment names, optional default prices, numeric/text/choice
+measurement templates and size presets are configurable in Settings. Customers
+have separate garment profiles and orders retain each piece's saved measurements;
+see [the intake and settings guide](ORDER-WORKFLOW-IMPLEMENTATION.md).
 Camera scanning needs HTTPS (or localhost), camera permission, and a real camera;
 the manual fallback remains available.
