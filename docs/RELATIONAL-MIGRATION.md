@@ -242,3 +242,19 @@ Migration 6 adds nullable `image`, `reference_images` and `design_config` garmen
 Current validation and reconciliation include image/configuration fields and immutable piece designs. The independent asset metadata/preferences table is retained through rollback and recutover. Full backups must include it and the private bucket; workspace JSON alone cannot restore uploaded images. Tests cover these transitions with custom photos, archived references and saved order snapshots. Use the updated tools for any future storage transition. See [feature details and release verification](DESIGN-LIBRARY-IMPLEMENTATION.md).
 
 Released in code commit `775def5`, deployment `ce52aa64-f250-4eba-b01f-27e8052c50fd`, verified at `2026-09-13T06:19:48.144Z`. Live handlers initialized the schema successfully; owner setup stayed closed and database/bucket health passed. No storage-mode transition or production test records were needed.
+
+## Team accounts and work extension (migration 7)
+
+Migration 7 adds nullable `sg_staff.worker` and `sg_order_items.work` fields,
+assignment settings, separate worker accounts/sessions, and an assignee lookup
+index. Existing owner credentials, shop records, and the storage model are
+preserved. Worker profiles, assignments, and settings are included in current
+rollback/recutover validation, while separate authentication records are retained.
+Use the current application and operator tools after adopting these fields.
+
+Released in code commit `601a6fa`, deployment
+`03b2d0e7-2ec8-4d50-9e0a-e1359ce237cf`, verified at
+`2026-09-13T08:38:36.019Z`. Live authentication handlers completed schema
+initialization; owner setup remained closed and database/bucket health passed.
+No production test records or storage-mode changes were made. See the
+[team release evidence](TEAM-WORKFLOW-IMPLEMENTATION.md#production-verification).

@@ -1,7 +1,8 @@
 # Team accounts, work assignment, and scanning
 
 Implemented in the active Next.js application on `shahil`, September 13, 2026.
-This change has been verified locally. It has not been deployed to Railway.
+This change is deployed to Railway and verified in production. Local workflow
+and permission checks also passed; release evidence appears below.
 
 ## Research and product decisions
 
@@ -126,3 +127,24 @@ and database backup procedure. Migration 7 runs through the existing versioned
 startup migration runner. Existing team directory entries remain intact; the
 owner can use **Set up account** on an old worker entry. Automatic assignment
 defaults to off until the owner enables it or runs a distribution pass.
+
+## Production verification
+
+Code commit `601a6faf40f50433c85dc021e8b1d1f584e82f67` was released from `shahil`
+to `main` through Railway deployment `03b2d0e7-2ec8-4d50-9e0a-e1359ce237cf`.
+Railway reported success for that exact commit. Verification completed at
+`2026-09-13T08:38:36.019Z` on the
+[live website](https://swapna-garmentsweb-production.up.railway.app).
+
+All 11 checked pages, including Team, My work, and Scan, returned HTTP 200.
+The 14 JavaScript/CSS assets referenced by those three pages also loaded.
+PostgreSQL and the private image bucket reported connected. Eight protected
+reads and unsigned Team/Work commands returned 401 with `Cache-Control: no-store`.
+Those authentication handlers completed schema initialization successfully,
+and existing owner setup remained closed.
+
+These production checks created no worker accounts, customer/order records,
+assignments, or uploads and made no storage-mode changes. Signed-in task behavior
+was verified in the isolated local environment described above; a real phone
+camera test remains outstanding. The local verification report is retained at
+`output/qa/team-workflow-production-release.json` outside source control.
