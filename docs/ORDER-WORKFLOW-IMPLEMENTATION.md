@@ -45,6 +45,8 @@ This is a UI change using the existing settings command and schema; it adds no d
 
 ## Illustrated measurement guides — 13 September 2026
 
+Deployed code commit `3276bdb2381610c7694b3c2be645d265f6aa4770` through Railway deployment `ecb7a9b9-df6e-4680-86fb-cd219203c459`. Verified at `2026-09-13T03:58:35Z`: exact-commit deployment success, all seven checked screens responding, PostgreSQL and bucket connected, and private routes requiring sign-in. Production checks made no shop-record writes. The release report is retained in `output/qa/measurement-guide-production-release.json`.
+
 The [measurement-guide research](MEASUREMENT-GUIDES-RESEARCH.md) compares seven tailoring/pattern references and W3C guidance. The website now includes 22 original SVG measuring diagrams with front/back views, circumference or length labels, endpoint markers, two steps and the shop's written hint. Tap the illustration beside a numeric field or **How to measure**. Previous/Next browse the current garment's guides; **Enter value** closes help and focuses that measurement.
 
 Guides work in new orders, customer profiles, piece measurement editing, Settings previews and size presets. In **Settings → Garments → Edit → Measurements → Edit field**, choose **Visual measurement guide** to match the field name, select a method for a custom name, or hide the illustration. One-off piece fields have the same optional picker. Known names use exact matching; unknown names, text and choice fields do not receive guessed body diagrams.
