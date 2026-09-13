@@ -193,7 +193,7 @@ Database/bucket health returned connected; six website pages returned HTTP 200;
 all five feature command APIs required authentication; owner setup stayed closed.
 Authenticated HTTP workspace reads passed on the isolated restored database.
 
-## Catalogue and measurement extension (migration 4, local implementation)
+## Catalogue and measurement extension (migration 4, deployed September 13)
 
 The configurable intake release adds `sg_shop_settings`, `sg_garments`,
 `sg_measurement_profiles`, piece measurement/history JSONB columns,
@@ -209,5 +209,8 @@ recutover. The new event ledger stays alongside retry records during transitions
 Use this release's operator tools for storage transitions after adopting the new
 fields. Continue writes with a compatible application; older JSON writers may not
 preserve fields they do not understand. The prior live cutover record above describes
-migration 3. Migration 4 has been tested in isolation and has not been applied to
-the live database by this implementation task.
+migration 3. Migration 4 was released in code commit `43df3b0`, deployment
+`ceb19c92-75ba-4466-a2db-07ed0c45f484`, on September 13. Live handlers completed
+`ensureSchema` before returning the expected 401 responses for unsigned requests;
+database/bucket health passed and owner setup remained closed. This additive
+release did not switch the live storage model or create test shop records.

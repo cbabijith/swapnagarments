@@ -10,10 +10,12 @@ unchanged and are not needed to run this version of the website.
 - Responsive desktop sidebar and mobile bottom navigation; compact tablet sidebar.
 - Owner overview with due/overdue orders, priority filters, per-station counts,
   payment totals, activity, and opening/closing views.
-- Order search, status/priority filters, multi-piece intake, garment notes,
+- Order search, status/priority filters, atomic customer/profile/order intake, garment notes,
   advance payments, order detail, and spreadsheet-safe CSV export.
-- Customer directory, create/edit forms, blouse measurements in inches, and
-  saved measurement revisions in the database.
+- Customer directory, create/edit forms, separate garment measurement profiles,
+  saved revisions, and per-piece snapshots in inches or centimetres.
+- Configurable garments/services, prices, numeric/text/choice measurement fields,
+  size presets and delivery defaults in Settings; pending sizes block piece advancement.
 - Per-piece station progress, corrections with a reason, QR labels, camera QR
   scanning with manual order-code fallback, and order print layouts.
 - Payment recording, balance validation, and delivery restricted to fully
@@ -36,6 +38,11 @@ Successful changes are persisted before the UI displays success; refreshes happe
 every 30 seconds while visible and when the window regains focus.
 
 ## Existing Railway resources
+
+Latest release verified on September 13: code `43df3b0`, deployment
+`ceb19c92-75ba-4466-a2db-07ed0c45f484`. Configurable intake and migration 4 are live.
+Database/bucket health and protected feature routes passed. See the
+[workflow release record](ORDER-WORKFLOW-IMPLEMENTATION.md#production-verification).
 
 Verified through the owner's browser on 2026-09-12:
 

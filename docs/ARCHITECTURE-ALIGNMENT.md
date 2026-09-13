@@ -257,7 +257,7 @@ reject unsigned requests with 401 and `Cache-Control: no-store`; owner setup
 remains closed. The isolated browser and PostgreSQL test services were stopped
 after validation. Both `main` and `shahil` contain the release.
 
-## Implemented locally: configurable order intake
+## Deployed: configurable order intake
 
 The September 13 implementation adds feature contracts and pure rules for shop
 catalogues, customer garment profiles and atomic `order.intake`. Thin authenticated
@@ -277,4 +277,8 @@ Old orders keep their names, prices, units and measurement definitions. Settings
 archive garments, configure fields/presets/prices and set intake defaults. Pending
 pieces cannot advance until measurements are confirmed. See
 [implementation details and verification](ORDER-WORKFLOW-IMPLEMENTATION.md).
-This stage is local work, not a new Railway release.
+Railway deployment `ceb19c92-75ba-4466-a2db-07ed0c45f484` succeeded on September 13
+for code commit `43df3b06f3122b01e9769f31ab5f22a7000f8fec`. Live database/bucket
+health, seven page responses and new route authentication checks passed at
+02:33 UTC. The deployed handlers completed schema initialization successfully;
+existing owner setup remains closed. Verification did not add real shop records.

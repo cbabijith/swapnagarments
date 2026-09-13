@@ -1,6 +1,6 @@
 # Order creation, measurements and shop settings
 
-Implemented locally on `shahil`, 13 September 2026. This implements the first release in [the research](ORDER-WORKFLOW-RESEARCH.md), plus profile history, quantities with individual overrides, phone matching and optional size presets. It has not been deployed by this task.
+Deployed to Railway on 13 September 2026. This implements the first release in [the research](ORDER-WORKFLOW-RESEARCH.md), plus profile history, quantities with individual overrides, phone matching and optional size presets. Code commit `43df3b06f3122b01e9769f31ab5f22a7000f8fec` is on `main` and `shahil`.
 
 ## Using it
 
@@ -35,7 +35,12 @@ advanced that piece successfully afterward.
 
 ## Later work from the research
 
-
 Automatic draft recovery across a browser refresh, repeating a previous order, favourites, multiple wearers under one contact, retail stock, design uploads and external messaging remain later releases. The event table stores durable identities; it does not send notifications or implement a dispatch worker. The financial CSV remains an order/billing export; complete piece measurements are available on the order and its printed work card.
 
-Deployment should use this migration-aware release. Use this release's storage tools for any rollback and retain an application that understands the new fields while continuing shop writes. This task makes no production deployment or storage-model switch.
+Use this release's storage tools for any rollback and retain an application that understands the new fields while continuing shop writes. This release did not switch the existing storage model.
+
+## Production verification
+
+Railway deployment `ceb19c92-75ba-4466-a2db-07ed0c45f484` succeeded for the exact code commit above. Verified at `2026-09-13T02:33:00Z` (08:03 IST). The [live website](https://swapna-garmentsweb-production.up.railway.app) returned 200 for all seven checked screens, including New Order and Settings. Health reports both PostgreSQL and bucket connected.
+
+The new settings and measurement routes require sign-in and return `Cache-Control: no-store`. Their authentication handlers complete `ensureSchema` before returning 401, verifying the migration path ran without error on the deployed app. Existing owner setup remains closed. These were anonymous production checks; no customer, measurement or order test records were written to the real shop. Detailed results are retained locally in `output/qa/production-release.json`.
