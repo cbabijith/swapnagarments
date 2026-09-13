@@ -9,7 +9,6 @@ import {
   Plus,
   Search,
   Download,
-  Shirt,
   Printer,
   Check,
   RotateCcw,
@@ -29,6 +28,7 @@ import { useWorkflow } from "@/features/workflow/hooks/use-workflow";
 import { useBilling } from "@/features/billing/hooks/use-billing";
 import { MeasurementSummary } from "@/features/measurements/components/measurement-fields";
 import { PieceMeasurementEditor } from "@/features/measurements/components/piece-measurements";
+import { PieceIllustration } from "./piece-illustration";
 import {
   Avatar,
   Dialog,
@@ -222,7 +222,7 @@ export function OrdersList() {
           </table>
         </div>
         <div className="mobile-order-cards">
-          {orders.map((order, index) => (
+          {orders.map((order) => (
             <Link
               className="mobile-order-card"
               key={order.id}
@@ -230,11 +230,7 @@ export function OrdersList() {
             >
               <div className="mobile-order-card-top">
                 <div className="order-identity">
-                  <span
-                    className={`garment-icon ${index % 2 ? "sage" : "rose"}`}
-                  >
-                    <Shirt size={22} strokeWidth={1.3} />
-                  </span>
+                  <PieceIllustration item={order.items[0]} />
                   <div>
                     <strong>
                       {
@@ -397,9 +393,7 @@ export function OrderDetail({ id }: { id: string }) {
               <div key={item.id} className="detail-item">
                 <div className="detail-item-top">
                   <div className="inline-row">
-                    <span className="garment-icon rose">
-                      <Shirt size={23} />
-                    </span>
+                    <PieceIllustration item={item} />
                     <div>
                       <h3>{item.garment}</h3>
                       <p>{item.material || "No fabric notes"}</p>

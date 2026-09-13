@@ -24,6 +24,7 @@ import {
 import { useReports } from "@/features/reports/hooks/use-reports";
 import { useDashboard } from "@/features/dashboard/hooks/use-dashboard";
 import { QueryState } from "@/shared/components/query-state";
+import { PieceIllustration } from "@/features/orders/components/piece-illustration";
 import {
   PageHeading,
   SectionHeading,
@@ -278,7 +279,7 @@ export function Overview() {
                   <span>DUE DATE</span>
                   <span />
                 </div>
-                {tasks.slice(0, 5).map((order, index) => {
+                {tasks.slice(0, 5).map((order) => {
                   const customer = taskCustomers.find(
                     (entry) => entry.id === order.customerId,
                   );
@@ -289,11 +290,7 @@ export function Overview() {
                       href={`/orders/${order.id}`}
                     >
                       <div className="order-identity">
-                        <span
-                          className={`garment-icon ${["rose", "sand", "sage", "lilac", "peach"][index % 5]}`}
-                        >
-                          <Shirt size={23} strokeWidth={1.3} />
-                        </span>
+                        <PieceIllustration item={order.items[0]} />
                         <div>
                           <strong>{customer?.name}</strong>
                           <span>

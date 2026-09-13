@@ -60,6 +60,7 @@ function customCatalogue(): Catalogue {
     id: "test-kurta",
     revision: 1,
     name: "Custom kurta",
+    illustrationId: "kurta",
     active: true,
     price: 65000,
     unit: "in",
@@ -153,6 +154,8 @@ test("custom settings, atomic intake, retries, profile history and immutable pie
     let catalogue = (await readCatalogue()).catalogue;
     assert.equal(catalogue.defaultGarmentId, "test-kurta");
     assert.equal(catalogue.garments.at(-1)?.price, 65000);
+    assert.equal(catalogue.garments.at(-1)?.illustrationId, "kurta");
+    assert.equal(Object.hasOwn(catalogue.garments[0], "illustrationId"), false);
     assert.equal(catalogue.garments.at(-1)?.fields[0].guideId, "top-length");
     assert.equal(
       catalogue.garments[0].revision,
@@ -188,6 +191,7 @@ test("custom settings, atomic intake, retries, profile history and immutable pie
     assert.notEqual(order.items[0].id, order.items[1].id);
     assert.equal(order.payments[0].amount, 50000);
     assert.deepEqual(order.items[0].measurement, order.items[1].measurement);
+    assert.equal(order.items[0].measurement?.illustrationId, "kurta");
     assert.equal(order.items[0].measurement?.values["custom-cuff"], "7.5");
     assert.equal(order.items[0].measurement?.fields[0].guideId, "top-length");
     assert.equal(
@@ -300,6 +304,7 @@ test("custom settings, atomic intake, retries, profile history and immutable pie
       /settings changed/,
     );
     const renamed = (await readCatalogue()).catalogue;
+    assert.equal(renamed.garments.at(-1)?.illustrationId, "kurta");
     assert.equal(renamed.garments.at(-1)?.revision, 2);
     assert.equal(
       compatibleValues(renamed.garments.at(-1)!, profileRead).length,
@@ -319,7 +324,13 @@ test("custom settings, atomic intake, retries, profile history and immutable pie
     await transition("cutover");
     assert.deepEqual((await readWorkspace()).data, beforeRollback);
     const remapped = (await readCatalogue()).catalogue;
+    assert.equal(
+      remapped.garments.at(-1)?.illustrationId,
+      "kurta",
+      "chosen image survives rollback and recutover",
+    );
     remapped.garments.at(-1)!.fields[0].guideId = "gown-length";
+    remapped.garments.at(-1)!.illustrationId = "shirt";
     await send({ type: "settings.save", catalogue: remapped });
     assert.equal(
       compatibleValues(
@@ -334,6 +345,21 @@ test("custom settings, atomic intake, retries, profile history and immutable pie
       order,
       "guide changes preserve each piece's original method and values",
     );
+    const automatic = (await readCatalogue()).catalogue;
+    delete automatic.garments.at(-1)!.illustrationId;
+    await send({ type: "settings.save", catalogue: automatic });
+    assert.equal(
+      Object.hasOwn(
+        (await readCatalogue()).catalogue.garments.at(-1)!,
+        "illustrationId",
+      ),
+      false,
+      "Automatic clears the stored choice without adding a null to the contract",
+    );
+    const beforeImageRollback = (await readWorkspace()).data;
+    await transition("rollback");
+    await transition("cutover");
+    assert.deepEqual((await readWorkspace()).data, beforeImageRollback);
   } finally {
     await engine.close();
   }

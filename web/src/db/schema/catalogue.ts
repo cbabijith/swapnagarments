@@ -27,6 +27,8 @@ export const garments = pgTable("sg_garments", {
     .references(() => workspaces.id),
   position: integer().notNull(),
   name: text().notNull(),
+  illustrationId:
+    text("illustration_id").$type<NonNullable<Garment["illustrationId"]>>(),
   revision: integer().notNull(),
   active: boolean().notNull(),
   price: integer(),

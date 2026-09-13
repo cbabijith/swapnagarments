@@ -3,6 +3,7 @@ import type {
   MeasurementInput,
   MeasurementSnapshot,
 } from "../contracts/profiles";
+import { resolveGarmentIllustration } from "@/features/settings/domain/garment-illustrations";
 import type { MutationContext } from "@/shared/domain/mutation-context";
 import { WorkspaceError } from "@/shared/errors";
 import { catalogueFor } from "@/features/settings/domain/catalogue";
@@ -67,6 +68,7 @@ export function prepareMeasurement(
     garmentId,
     garmentRevision,
     garmentName: garment.name,
+    illustrationId: resolveGarmentIllustration(garment),
     revision: 1,
     fields: fieldsForSnapshot(fields),
     unit: garment.unit,

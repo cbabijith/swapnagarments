@@ -4,7 +4,6 @@ import Link from "next/link";
 import {
   Search,
   Plus,
-  Shirt,
   Pencil,
   Ellipsis,
   Copy,
@@ -22,6 +21,8 @@ import type { Catalogue, Garment } from "../contracts/catalogue";
 import { money } from "@/shared/workspace";
 import { GarmentEditor } from "./garment-editor";
 import { DefaultsEditor } from "./defaults-editor";
+import { GarmentIllustration } from "./garment-illustration";
+import { resolveGarmentIllustration } from "../domain/garment-illustrations";
 import styles from "./catalogue.module.css";
 
 type Editor = { base: Catalogue; garment: Garment; isNew: boolean };
@@ -74,6 +75,7 @@ export function CatalogueSettings({
     edit(
       {
         ...structuredClone(garment),
+        illustrationId: resolveGarmentIllustration(garment),
         id: crypto.randomUUID(),
         revision: 1,
         name,
@@ -147,9 +149,11 @@ export function CatalogueSettings({
             </div>
             <div className={styles.defaultCards}>
               <div>
-                <span className={styles.tileIcon}>
-                  <Shirt size={21} />
-                </span>
+                <GarmentIllustration
+                  illustrationId={resolveGarmentIllustration(
+                    defaultGarment ?? { name: "" },
+                  )}
+                />
                 <small>DEFAULT GARMENT</small>
                 <h3>{defaultGarment?.name}</h3>
                 <p>
@@ -262,9 +266,10 @@ export function CatalogueSettings({
                   return (
                     <li key={garment.id} className={styles.garmentRow}>
                       <div className={styles.garmentIdentity}>
-                        <span className={styles.tileIcon}>
-                          <Shirt size={20} strokeWidth={1.5} />
-                        </span>
+                        <GarmentIllustration
+                          illustrationId={resolveGarmentIllustration(garment)}
+                          size={44}
+                        />
                         <div>
                           <button
                             type="button"

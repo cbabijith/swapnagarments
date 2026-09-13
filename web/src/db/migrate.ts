@@ -4,6 +4,7 @@ import type { Pool } from "pg";
 import { baseline } from "./migrations/0001-baseline";
 import { relationalTables } from "./migrations/0003-relational-tables";
 import { catalogueMeasurements } from "./migrations/0004-catalogue-measurements";
+import { garmentIllustrations } from "./migrations/0005-garment-illustrations";
 import { emptyWorkspace } from "@/shared/workspace";
 
 const migrations = [
@@ -19,6 +20,7 @@ const migrations = [
     name: "catalogue_and_order_measurements",
     sql: catalogueMeasurements,
   },
+  { version: 5, name: "garment_illustrations", sql: garmentIllustrations },
 ];
 
 /** Every migration and its ledger entry commit together under the original schema lock. */

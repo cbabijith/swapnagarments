@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { measurementGuideIds } from "@/features/measurements/contracts/guide";
+import { garmentIllustrationIds } from "./garment-illustration";
 
 export const fieldSchema = z.strictObject({
   id: z.string().min(1).max(100),
@@ -18,6 +19,7 @@ export const garmentSchema = z.strictObject({
   id: z.string().min(1).max(100),
   revision: z.number().int().min(1),
   name: z.string().trim().min(1).max(100),
+  illustrationId: z.enum(garmentIllustrationIds).optional(),
   active: z.boolean(),
   price: z.number().int().min(1).max(100_000_000).nullable(),
   unit: z.enum(["in", "cm"]),

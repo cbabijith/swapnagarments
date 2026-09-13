@@ -3,6 +3,9 @@ import { useState } from "react";
 import { Dialog } from "@/shared/components/ui";
 import type { Catalogue } from "../contracts/catalogue";
 import { useSaveCatalogue } from "../hooks/use-save-catalogue";
+import { GarmentIllustration } from "./garment-illustration";
+import { resolveGarmentIllustration } from "../domain/garment-illustrations";
+import visualStyles from "./garment-visuals.module.css";
 import styles from "./catalogue.module.css";
 
 export function DefaultsEditor({
@@ -76,19 +79,29 @@ export function DefaultsEditor({
           >
             <label className="field">
               Default garment
-              <select
-                autoFocus
-                value={garmentId}
-                onChange={(e) => setGarmentId(e.target.value)}
-              >
-                {base.garments
-                  .filter((g) => g.active)
-                  .map((g) => (
-                    <option value={g.id} key={g.id}>
-                      {g.name}
-                    </option>
-                  ))}
-              </select>
+              <span className={visualStyles.selectRow}>
+                <GarmentIllustration
+                  illustrationId={resolveGarmentIllustration(
+                    base.garments.find(
+                      (garment) => garment.id === garmentId,
+                    ) ?? { name: "" },
+                  )}
+                  size={44}
+                />
+                <select
+                  autoFocus
+                  value={garmentId}
+                  onChange={(e) => setGarmentId(e.target.value)}
+                >
+                  {base.garments
+                    .filter((g) => g.active)
+                    .map((g) => (
+                      <option value={g.id} key={g.id}>
+                        {g.name}
+                      </option>
+                    ))}
+                </select>
+              </span>
               <small>
                 Selected automatically for the first piece in a new order.
               </small>

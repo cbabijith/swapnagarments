@@ -55,6 +55,41 @@ The optional validated `guideId` uses existing JSON field storage; no SQL migrat
 
 Local verification passed all 18 tests, including guide selection persistence, immutable snapshots, changed-method reuse guards and JSON/relational transitions. Browser checks at 1440px, 390px and 320px covered all 22 guides, selection/opt-out, custom field saving, units, keyboard dismissal within a dialog, focus return, sample order creation and customer profiles. No page errors or horizontal overflow were found. Screenshots and results are retained in `output/qa/measurement-guide-*.png` and `output/qa/measurement-guide-results.json`.
 
+## Garment illustrations — 13 September 2026
+
+The catalogue now includes 12 original SVG garment illustrations: blouse,
+churidar/salwar set, gown/dress, skirt/petticoat, pavada/davani, saree,
+kurta/kurti, shirt, trousers, lehenga, alteration and other/service. Existing
+recognised garment names receive their matching image automatically; custom
+names can choose one in **Settings → Garments → Add/Edit → Details → Change
+image**. The chooser stays collapsed until opened. Duplication retains the
+source picture, and explicit choices survive renaming and archiving.
+
+New orders show the selected garment thumbnail and a compact **Choose by image**
+action. Its searchable dialog shows active garments with names and default
+prices; the native select remains available. Picking the already-selected image
+keeps entered measurements. Customer profile buttons, default settings, saved
+piece details, mobile order cards and dashboard order rows use the same artwork.
+New piece/profile snapshots freeze the image so later catalogue edits do not
+change an existing order's illustration. Older pieces render from their recorded
+garment name. Labels remain visible alongside decorative images.
+
+Migration 5 adds only the nullable `sg_garments.illustration_id` column. A validated
+optional `illustrationId` is also supported in garment definitions and existing
+JSONB snapshots. Missing choices stay absent in API/workspace data, and choosing
+Automatic clears a stored override. Existing records and storage mode are not
+rewritten. Use this release's tools when transitioning records containing the
+new property.
+
+Local validation passed all 20 database/domain tests, TypeScript, ESLint, the production build, and
+browser checks at 1440px, 390px and 320px. Checks cover all 12 pictures, custom
+choice persistence, renaming, copying, archiving, defaults, search, keyboard
+dismissal/focus return, order creation, customer profiles and original images
+retained after catalogue edits. The migration test upgrades a populated version
+4 catalogue twice without changing its existing columns, settings or workspace;
+integration tests cover clearing an override and lossless rollback/recutover.
+Browser results and screenshots are retained in `output/qa/garment-*`.
+
 ## Later work from the research
 
 Automatic draft recovery across a browser refresh, repeating a previous order, favourites, multiple wearers under one contact, retail stock, design uploads and external messaging remain later releases. The event table stores durable identities; it does not send notifications or implement a dispatch worker. The financial CSV remains an order/billing export; complete piece measurements are available on the order and its printed work card.

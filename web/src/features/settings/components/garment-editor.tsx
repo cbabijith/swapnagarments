@@ -27,6 +27,7 @@ import {
 } from "../contracts/catalogue";
 import { useSaveCatalogue } from "../hooks/use-save-catalogue";
 import { SettingsTabs } from "./settings-tabs";
+import { GarmentIllustrationPicker } from "./garment-illustration-picker";
 import styles from "./catalogue.module.css";
 
 type Tab = "details" | "fields" | "presets";
@@ -348,6 +349,12 @@ export function GarmentEditor({
                         placeholder="e.g. Designer blouse or Alteration"
                       />
                     </label>
+                    <GarmentIllustrationPicker
+                      garment={draft}
+                      onChange={(illustrationId) =>
+                        change({ ...draft, illustrationId })
+                      }
+                    />
                     <div className={styles.twoColumns}>
                       <label className="field">
                         Default price (₹)

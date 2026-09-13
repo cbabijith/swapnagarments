@@ -214,3 +214,17 @@ migration 3. Migration 4 was released in code commit `43df3b0`, deployment
 `ensureSchema` before returning the expected 401 responses for unsigned requests;
 database/bucket health passed and owner setup remained closed. This additive
 release did not switch the live storage model or create test shop records.
+
+## Garment illustration extension (migration 5)
+
+Migration 5 adds a nullable `illustration_id` to `sg_garments`. It does not backfill
+rows, change catalogue/workspace revisions, touch owner/session data, or change
+the storage model. The service omits null image choices when reconstructing the
+workspace, preserving the checksum of existing records. Choosing Automatic
+clears an explicit image selection. New measurement snapshots also retain an
+optional validated illustration ID in their existing JSONB storage.
+
+The isolated tests upgrade a populated version 4 catalogue, verify migration
+idempotency and unchanged data, and exercise saved image selection/clearing,
+immutable order pictures, JSON rollback and relational recutover. Storage
+transitions involving these properties require the updated validation/tools.

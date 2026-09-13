@@ -28,11 +28,13 @@ export async function readStoredCatalogue(
     revision: settings.revision,
     defaultGarmentId: settings.defaultGarmentId,
     leadDays: settings.leadDays,
-    garments: rows.map(({ workspaceId: _shop, position: _position, ...g }) => {
-      void _shop;
-      void _position;
-      return g;
-    }),
+    garments: rows.map(
+      ({ workspaceId: _shop, position: _position, illustrationId, ...g }) => {
+        void _shop;
+        void _position;
+        return { ...g, ...(illustrationId === null ? {} : { illustrationId }) };
+      },
+    ),
   };
 }
 export const readCatalogue = () =>
@@ -70,7 +72,11 @@ export async function writeCatalogue(
       },
     });
   for (const [position, garment] of catalogue.garments.entries()) {
-    const row = { ...garment, position };
+    const row = {
+      ...garment,
+      illustrationId: garment.illustrationId ?? null,
+      position,
+    };
     await tx
       .insert(garments)
       .values(row)

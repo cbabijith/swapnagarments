@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { CustomerPicker } from "@/features/customers/components/customer-picker";
 import { useCustomerDetail } from "@/features/customers/hooks/use-customer-reads";
 import { useCatalogue } from "@/features/settings/hooks/use-catalogue";
+import { GarmentPicker } from "@/features/settings/components/garment-picker";
 import type {
   Catalogue,
   Garment,
@@ -360,45 +361,27 @@ function OrderComposer({
                   )}
                 </div>
                 <div className="form-grid">
-                  <label className="field">
-                    Garment
-                    <select
-                      value={item.garment.id}
-                      onChange={(e) => {
-                        const next = catalogue.garments.find(
-                          (g) => g.id === e.target.value,
-                        )!;
-                        update(item.id, {
-                          ...draftPiece(
-                            next,
-                            customer,
-                            !profileFor(customer, next.id) &&
-                              !items.some(
-                                (row) =>
-                                  row.id !== item.id &&
-                                  row.garment.id === next.id &&
-                                  row.measurements.saveProfile,
-                              ),
-                          ),
-                          id: item.id,
-                          material: item.material,
-                        });
-                      }}
-                    >
-                      {!current?.active && (
-                        <option value={item.garment.id}>
-                          {item.garment.name} (archived)
-                        </option>
-                      )}
-                      {catalogue.garments
-                        .filter((g) => g.active)
-                        .map((g) => (
-                          <option value={g.id} key={g.id}>
-                            {g.name}
-                          </option>
-                        ))}
-                    </select>
-                  </label>
+                  <GarmentPicker
+                    selected={item.garment}
+                    garments={catalogue.garments}
+                    onChange={(next) => {
+                      update(item.id, {
+                        ...draftPiece(
+                          next,
+                          customer,
+                          !profileFor(customer, next.id) &&
+                            !items.some(
+                              (row) =>
+                                row.id !== item.id &&
+                                row.garment.id === next.id &&
+                                row.measurements.saveProfile,
+                            ),
+                        ),
+                        id: item.id,
+                        material: item.material,
+                      });
+                    }}
+                  />
                   <label className="field">
                     Price per piece (₹)
                     <input
