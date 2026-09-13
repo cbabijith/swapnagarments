@@ -215,7 +215,7 @@ migration 3. Migration 4 was released in code commit `43df3b0`, deployment
 database/bucket health passed and owner setup remained closed. This additive
 release did not switch the live storage model or create test shop records.
 
-## Garment illustration extension (migration 5)
+## Garment illustration extension (migration 5, deployed September 13)
 
 Migration 5 adds a nullable `illustration_id` to `sg_garments`. It does not backfill
 rows, change catalogue/workspace revisions, touch owner/session data, or change
@@ -228,3 +228,9 @@ The isolated tests upgrade a populated version 4 catalogue, verify migration
 idempotency and unchanged data, and exercise saved image selection/clearing,
 immutable order pictures, JSON rollback and relational recutover. Storage
 transitions involving these properties require the updated validation/tools.
+
+Released in code commit `574745b`, deployment
+`a1961913-2716-4e24-86e1-cdfa63387de1`, verified at `2026-09-13T04:31:58Z`.
+Live handlers completed schema initialization before returning their expected
+unsigned-request responses; database/bucket health passed and owner setup
+remained closed. No shop test records or storage-mode changes were made.

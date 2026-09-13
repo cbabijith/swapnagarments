@@ -57,6 +57,13 @@ Local verification passed all 18 tests, including guide selection persistence, i
 
 ## Garment illustrations — 13 September 2026
 
+Deployed code commit `574745bede21cac820f8154a17633936dc3dc2e3` through
+Railway deployment `a1961913-2716-4e24-86e1-cdfa63387de1`. Verified at
+`2026-09-13T04:31:58Z`: successful deployment of that commit, all seven checked
+screens responding, PostgreSQL and bucket connected, private routes requiring
+sign-in and owner setup closed. Production checks made no shop-record writes.
+The report is retained in `output/qa/garment-illustrations-production-release.json`.
+
 The catalogue now includes 12 original SVG garment illustrations: blouse,
 churidar/salwar set, gown/dress, skirt/petticoat, pavada/davani, saree,
 kurta/kurti, shirt, trousers, lehenga, alteration and other/service. Existing
