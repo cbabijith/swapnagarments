@@ -41,8 +41,10 @@ After reviewing a check, `--delete-orphans` removes qualifying objects. It only 
 
 - All 23 automated tests pass. Coverage includes 150 distinct local drawings, original-schema preservation, authentication before validation, pagination and aliases, upload processing/limits, interrupted storage/retries, stale preferences, canonical labels, immutable per-piece designs, archive behavior, rollback/recutover, and seven-day orphan cleanup using an isolated database and an in-memory S3 test adapter.
 - Browser verification covers library search/favourites/archive/restore/enlarge, sample photo upload, garment image/configuration/preset saves, two-piece intake with reference photos, and preservation after image replacement/archive. Desktop, 390px and 320px flows have no horizontal overflow or browser errors. Saved reference enlargement and print layout were inspected.
-- TypeScript, ESLint and the production Next.js build are release checks. Browser uploads use the isolated sample workspace; persistence/media transport logic uses isolated integration tests. Live deployment verification checks database/bucket connectivity, exact-commit deployment status, public SVG availability and unauthenticated route protection without creating shop test records.
+- TypeScript, ESLint and the production Next.js build pass. Browser uploads use the isolated sample workspace; persistence/media transport logic uses isolated integration tests. Live deployment verification checks database/bucket connectivity, exact-commit deployment status, public SVG availability and unauthenticated route protection without creating shop test records.
 
 ## Deployment
 
-Pending release verification.
+Code commit `775def5de1399af96ce18261364b489750ef74ae` deployed successfully as Railway deployment `ce52aa64-f250-4eba-b01f-27e8052c50fd`. Verification completed at `2026-09-13T06:19:48.144Z`.
+
+All 150 public SVGs returned the correct content type and matched local SHA-256 hashes. Eight app pages returned HTTP 200; database and bucket health were connected. Session/setup protection remained intact, and new library/image/upload/preferences routes rejected unsigned requests with 401 and `no-store`. No production customer/order test records, uploads, storage-mode changes or cleanup were performed. Both `main` and `shahil` contain the release.
