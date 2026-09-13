@@ -9,6 +9,7 @@ import {
   foreignKey,
   unique,
   check,
+  jsonb,
 } from "drizzle-orm/pg-core";
 import { orderItems } from "./orders";
 import { mutations } from "./workspace";
@@ -23,6 +24,16 @@ export const workflowHistory = pgTable(
     kind: text()
       .$type<"baseline" | "created" | "advance" | "rework">()
       .notNull(),
+    fromStep: jsonb("from_step").$type<{
+      id: string;
+      name: string;
+      position: number;
+    }>(),
+    toStep: jsonb("to_step").$type<{
+      id: string;
+      name: string;
+      position: number;
+    }>(),
     fromStation: integer("from_station"),
     toStation: integer("to_station").notNull(),
     reason: text().notNull(),

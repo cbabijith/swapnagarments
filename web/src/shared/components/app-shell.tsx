@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { WorkerShell } from "@/features/team/components/worker-shell";
+import { AccountMenu } from "@/features/auth/components/account-menu";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -233,7 +234,7 @@ function OwnerShell({ children }: { children: React.ReactNode }) {
               <i />
             </button>
             <span className="topbar-divider" />
-            <Avatar name={owner.name} small />
+            <AccountMenu />
           </div>
         </header>
         {mode === "preview" && (

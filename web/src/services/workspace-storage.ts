@@ -1,4 +1,5 @@
 import "server-only";
+import { workflowHistoryStep } from "@/features/workflow/domain/templates";
 import { asc, eq, sql } from "drizzle-orm";
 import type { DatabaseTransaction } from "@/db";
 import {
@@ -105,6 +106,7 @@ export async function readRelationalWorkspace(
       items: (itemsByOrder.get(o.id) ?? []).map((i) => ({
         id: i.id,
         ...(i.work ? { work: i.work } : {}),
+        ...(i.workflow ? { workflow: i.workflow } : {}),
         garment: i.garment,
         material: i.material,
         station: i.station,
@@ -368,6 +370,7 @@ export async function recordWorkflowHistory(
         kind: "created",
         fromStation: null,
         toStation: item.station,
+        toStep: workflowHistoryStep(item),
         reason: "",
         actor,
         occurredAt,
@@ -393,6 +396,8 @@ export async function recordWorkflowHistory(
       kind: action.type === "piece.rework" ? "rework" : "advance",
       fromStation: oldPiece.station,
       toStation: newPiece.station,
+      fromStep: workflowHistoryStep(oldPiece),
+      toStep: workflowHistoryStep(newPiece),
       reason: action.type === "piece.rework" ? action.reason : "",
       actor,
       occurredAt,

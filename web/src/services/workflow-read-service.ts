@@ -81,6 +81,7 @@ export const readWorkflow = (
                 measurementsPending: sql<boolean>`coalesce((${orderItems.measurement}->>'confirmed')::boolean = false, false)`,
                 item: {
                   id: orderItems.id,
+                  workflow: orderItems.workflow,
                   garment: orderItems.garment,
                   material: orderItems.material,
                   station: orderItems.station,
@@ -118,7 +119,10 @@ export const readWorkflow = (
           input,
           Number(totals.find((r) => r.station === station)?.total ?? 0),
         ),
-        pieces,
+        pieces: pieces.map((piece) => ({
+          ...piece,
+          item: { ...piece.item, workflow: piece.item.workflow ?? undefined },
+        })),
       });
     }
     return { revision, today, columns };

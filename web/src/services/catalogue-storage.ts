@@ -25,6 +25,7 @@ export async function readStoredCatalogue(
     .where(eq(garments.workspaceId, 1))
     .orderBy(asc(garments.position));
   return {
+    ...(settings.workflows ? { workflows: settings.workflows } : {}),
     revision: settings.revision,
     defaultGarmentId: settings.defaultGarmentId,
     leadDays: settings.leadDays,
@@ -36,12 +37,14 @@ export async function readStoredCatalogue(
         image,
         referenceImages,
         designConfig,
+        workflowId,
         ...g
       }) => {
         void _shop;
         void _position;
         return {
           ...g,
+          ...(workflowId ? { workflowId } : {}),
           ...(illustrationId === null ? {} : { illustrationId }),
           ...(image ? { image } : {}),
           ...(referenceImages ? { referenceImages } : {}),
@@ -76,6 +79,7 @@ export async function writeCatalogue(
       revision: catalogue.revision,
       defaultGarmentId: catalogue.defaultGarmentId,
       leadDays: catalogue.leadDays,
+      workflows: catalogue.workflows ?? null,
     })
     .onConflictDoUpdate({
       target: shopSettings.workspaceId,
@@ -83,11 +87,13 @@ export async function writeCatalogue(
         revision: catalogue.revision,
         defaultGarmentId: catalogue.defaultGarmentId,
         leadDays: catalogue.leadDays,
+        workflows: catalogue.workflows ?? null,
       },
     });
   for (const [position, garment] of catalogue.garments.entries()) {
     const row = {
       ...garment,
+      workflowId: garment.workflowId ?? null,
       illustrationId: garment.illustrationId ?? null,
       image: garment.image ?? null,
       referenceImages: garment.referenceImages ?? null,

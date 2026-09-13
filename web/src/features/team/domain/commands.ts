@@ -176,6 +176,7 @@ export function teamCommand(
         orderId: order.id,
         pieceId: item.id,
         expectedStation: item.station,
+        expectedWorkflowVersion: item.workflow?.version,
       },
     });
   }

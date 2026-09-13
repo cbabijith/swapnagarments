@@ -1,5 +1,9 @@
 # Feature-driven architecture: alignment with Dolce CRM
 
+Custom garment workflows extend the feature/domain/service split and preserve
+the existing workstation-based team assignments. Migration 8 stores reusable
+templates and immutable piece definitions. See [behavior and validation](CUSTOM-WORKFLOWS.md).
+
 The deployed team/work implementation adds worker accounts, scoped task
 queries, assignment rules, and exact-piece QR navigation through feature domain
 modules and server services. Migration 7 is additive. See

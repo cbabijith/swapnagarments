@@ -205,6 +205,7 @@ export const readWork = (input: WorkQuery, user: SessionUser) =>
           material: orderItems.material,
           station: orderItems.station,
           work: orderItems.work,
+          workflow: orderItems.workflow,
           measurement: orderItems.measurement,
           design: orderItems.design,
         },
@@ -252,6 +253,7 @@ export const readWork = (input: WorkQuery, user: SessionUser) =>
         item: {
           ...r.item,
           work: r.item.work ?? undefined,
+          workflow: r.item.workflow ?? undefined,
           measurement: r.item.measurement ?? undefined,
           design: r.item.design ?? undefined,
         },

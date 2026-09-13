@@ -10,6 +10,7 @@ export function useWorkflow() {
       orderId: string,
       pieceId: string,
       expectedStation: number,
+      expectedWorkflowVersion?: number,
     ) => {
       await workspace.send(
         {
@@ -17,6 +18,7 @@ export function useWorkflow() {
           orderId,
           pieceId,
           expectedStation,
+          expectedWorkflowVersion,
         } satisfies WorkspaceMutation,
         "Garment progress saved.",
       );
@@ -26,9 +28,19 @@ export function useWorkflow() {
       pieceId: string,
       station: number,
       reason: string,
+      stepId?: string,
+      expectedWorkflowVersion?: number,
     ) => {
       await workspace.send(
-        { type: "piece.rework", orderId, pieceId, station, reason },
+        {
+          type: "piece.rework",
+          orderId,
+          pieceId,
+          station,
+          reason,
+          stepId,
+          expectedWorkflowVersion,
+        },
         "Correction requested.",
       );
     },

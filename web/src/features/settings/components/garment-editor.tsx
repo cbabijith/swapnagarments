@@ -29,6 +29,7 @@ import { useSaveCatalogue } from "../hooks/use-save-catalogue";
 import { SettingsTabs } from "./settings-tabs";
 import { GarmentImageSetup } from "@/features/design-library/components/garment-image-setup";
 import { GarmentDesignSetup } from "@/features/design-library/components/garment-design-setup";
+import { workflowForGarment } from "@/features/workflow/domain/templates";
 import styles from "./catalogue.module.css";
 
 type Tab = "details" | "fields" | "presets" | "designs";
@@ -364,6 +365,35 @@ export function GarmentEditor({
                       onChange={change}
                       onEditing={setInnerEditor}
                     />
+                    <label className="field">
+                      Workflow
+                      <select
+                        value={draft.workflowId ?? ""}
+                        onChange={(e) =>
+                          change({
+                            ...draft,
+                            workflowId: e.target.value || undefined,
+                          })
+                        }
+                      >
+                        <option value="">
+                          Shop default · {workflowForGarment(base).name}
+                        </option>
+                        {(base.workflows?.templates ?? [])
+                          .filter((t) => t.active)
+                          .map((t) => (
+                            <option value={t.id} key={t.id}>
+                              {t.name}
+                            </option>
+                          ))}
+                      </select>
+                      <small>
+                        {workflowForGarment(base, draft)
+                          .steps.map((s) => s.name)
+                          .join(" → ")}
+                        . Manage these steps in Settings → Workflow.
+                      </small>
+                    </label>
                     <div className={styles.twoColumns}>
                       <label className="field">
                         Default price (₹)

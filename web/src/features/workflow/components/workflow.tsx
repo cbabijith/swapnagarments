@@ -8,6 +8,11 @@ import { useWorkflowColumn } from "@/features/workflow/hooks/use-workflow-column
 import { PageHeading, PriorityBadge } from "@/shared/components/ui";
 import { QueryState, Pagination } from "@/shared/components/query-state";
 import { STATIONS, formatDate } from "@/shared/workspace";
+import {
+  currentStepName,
+  nextStepName,
+  piecePosition,
+} from "../domain/templates";
 
 function WorkflowColumn({ station }: { station: number }) {
   const { advancePiece } = useWorkflow();
@@ -48,8 +53,8 @@ function WorkflowColumn({ station }: { station: number }) {
           const pending =
             measurementsPending || item.measurement?.confirmed === false;
           const overdue = order.dueDate < query.data!.today;
-          const actionLabel = STATIONS[item.station + 1]
-            ? `Move to ${STATIONS[item.station + 1]}`
+          const actionLabel = nextStepName(item)
+            ? `Move to ${nextStepName(item)}`
             : "Mark ready";
           return (
             <article className="workflow-card" key={item.id}>
@@ -69,6 +74,14 @@ function WorkflowColumn({ station }: { station: number }) {
               <p>
                 {order.number} · {item.garment}
               </p>
+              {item.workflow && (
+                <p className="note-box">
+                  <strong>{currentStepName(item)}</strong>
+                  <br />
+                  {item.workflow.name} · Step {piecePosition(item) + 1} of{" "}
+                  {item.workflow.steps.length}
+                </p>
+              )}
               <p className="small muted">
                 {assigneeName ?? "Unassigned"}
                 {workStatus === "in_progress"
@@ -112,7 +125,12 @@ function WorkflowColumn({ station }: { station: number }) {
                   setBusy(item.id);
                   setError("");
                   try {
-                    await advancePiece(order.id, item.id, item.station);
+                    await advancePiece(
+                      order.id,
+                      item.id,
+                      item.station,
+                      item.workflow?.version,
+                    );
                   } catch (error) {
                     setError(
                       error instanceof Error

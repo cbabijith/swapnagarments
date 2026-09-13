@@ -1,0 +1,57 @@
+.menu {
+  position: relative;
+}
+.menu > summary {
+  list-style: none;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #eef3e6;
+  color: #48633f;
+  cursor: pointer;
+}
+.menu > summary::-webkit-details-marker {
+  display: none;
+}
+.menu > summary:focus-visible {
+  outline: 2px solid #31562e;
+  outline-offset: 2px;
+}
+.panel {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  z-index: 50;
+  display: grid;
+  gap: 8px;
+  width: 250px;
+  max-width: calc(100vw - 32px);
+  padding: 18px;
+  background: white;
+  border: 1px solid #dfe7d7;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px #213b2920;
+}
+.panel strong,
+.panel small {
+  overflow-wrap: anywhere;
+}
+.panel small {
+  color: #73846a;
+  font-size: 11px;
+}
+.panel button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 7px;
+  padding: 8px 10px;
+  margin-top: 4px;
+  background: #f2f5ec;
+  color: #31562e;
+  cursor: pointer;
+}

@@ -11,6 +11,7 @@ import { CustomerPicker } from "@/features/customers/components/customer-picker"
 import { useCustomerDetail } from "@/features/customers/hooks/use-customer-reads";
 import { useCatalogue } from "@/features/settings/hooks/use-catalogue";
 import { GarmentPicker } from "@/features/settings/components/garment-picker";
+import { workflowForGarment } from "@/features/workflow/domain/templates";
 import type {
   Catalogue,
   Garment,
@@ -763,6 +764,12 @@ function OrderComposer({
           <div className="summary-line" key={item.id}>
             <span>
               {item.quantity} × {item.garment.name}
+              <small style={{ display: "block", marginTop: 5 }}>
+                {workflowForGarment(catalogue, item.garment).name}:{" "}
+                {workflowForGarment(catalogue, item.garment)
+                  .steps.map((s) => s.name)
+                  .join(" → ")}
+              </small>
             </span>
             <strong>
               {money(Math.round(Number(item.price || 0) * 100) * item.quantity)}

@@ -4,6 +4,7 @@ export type OrderStatus =
   "received" | "in_progress" | "ready" | "delivered" | "cancelled";
 export type OrderItem = {
   work?: import("@/features/team/contracts/team").PieceWork;
+  workflow?: import("@/features/workflow/contracts/settings").PieceWorkflow;
   design?: import("@/features/design-library/contracts").DesignSnapshot;
   measurement?: import("@/features/measurements/contracts/profiles").MeasurementSnapshot;
   measurementHistory?: import("@/features/measurements/contracts/profiles").MeasurementSnapshot[];

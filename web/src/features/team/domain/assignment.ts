@@ -154,6 +154,7 @@ export function safeWorkPiece(order: Order, item: OrderItem) {
       garment: item.garment,
       material: item.material,
       station: item.station,
+      workflow: item.workflow,
       work: item.work,
       measurement: item.measurement,
       design: item.design,

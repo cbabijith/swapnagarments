@@ -1,5 +1,10 @@
 "use client";
 import { DesignSummary } from "@/features/design-library/components/design-summary";
+import {
+  pieceSteps,
+  piecePosition,
+  nextStepName,
+} from "@/features/workflow/domain/templates";
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
@@ -40,7 +45,6 @@ import {
   PriorityBadge,
 } from "@/shared/components/ui";
 import {
-  STATIONS,
   STATUS_LABEL,
   type OrderItem,
   isOpen,
@@ -415,20 +419,28 @@ export function OrderDetail({ id }: { id: string }) {
                     ))}
                   </details>
                 ) : null}
-                <div className="progress-steps">
-                  {STATIONS.map((station, index) => (
+                {item.workflow && (
+                  <p className="small muted">{item.workflow.name}</p>
+                )}
+                <div
+                  className="progress-steps"
+                  style={{
+                    gridTemplateColumns: "repeat(auto-fit, minmax(85px, 1fr))",
+                  }}
+                >
+                  {pieceSteps(item).map((step, index) => (
                     <div
-                      key={station}
-                      className={`progress-step ${item.station > index ? "done" : item.station === index ? "current" : ""}`}
+                      key={step.id}
+                      className={`progress-step ${piecePosition(item) > index ? "done" : piecePosition(item) === index ? "current" : ""}`}
                     >
                       <span />
-                      {station}
+                      {step.name}
                     </div>
                   ))}
                 </div>
                 {isOpen(order) && (
                   <div className="detail-item-actions">
-                    {item.measurement && item.station === 0 && (
+                    {item.measurement && piecePosition(item) === 0 && (
                       <button
                         type="button"
                         className="button"
@@ -452,14 +464,19 @@ export function OrderDetail({ id }: { id: string }) {
                         className="button primary small-button"
                         onClick={() =>
                           void mutate(() =>
-                            advancePiece(id, item.id, item.station),
+                            advancePiece(
+                              id,
+                              item.id,
+                              item.station,
+                              item.workflow?.version,
+                            ),
                           )
                         }
                       >
                         <Check size={14} />
-                        {item.station === 4
-                          ? "Mark ready"
-                          : `Move to ${STATIONS[item.station + 1]}`}
+                        {nextStepName(item)
+                          ? `Move to ${nextStepName(item)}`
+                          : "Mark ready"}
                       </button>
                     )}
                     <button
@@ -700,19 +717,29 @@ export function OrderDetail({ id }: { id: string }) {
                 rework(
                   id,
                   piece.id,
-                  Number(form.get("station")),
+                  pieceSteps(piece)[Number(form.get("station"))].station,
                   String(form.get("reason")),
+                  piece.workflow
+                    ? pieceSteps(piece)[Number(form.get("station"))].id
+                    : undefined,
+                  piece.workflow?.version,
                 ),
               );
             }}
           >
             <div className="dialog-body form-grid">
               <label className="field full-width">
-                Return to station
+                Return to step
                 <select name="station">
-                  {STATIONS.map((station, index) => (
-                    <option key={station} value={index}>
-                      {station}
+                  {pieceSteps(piece).map((step, index) => (
+                    <option
+                      key={step.id}
+                      value={index}
+                      disabled={
+                        Boolean(piece.workflow) && index > piecePosition(piece)
+                      }
+                    >
+                      {step.name}
                     </option>
                   ))}
                 </select>

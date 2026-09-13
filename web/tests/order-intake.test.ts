@@ -417,7 +417,7 @@ test("pending measurements block production and require old template values even
     await send(advance);
     await assert.rejects(
       send({ ...edit, expectedRevision: 2 }),
-      /before this piece leaves cutting/,
+      /before this piece leaves its first step/,
     );
     const updated = (await readWorkspace()).data.orders[0];
     assert.equal(updated.items[0].station, 1);

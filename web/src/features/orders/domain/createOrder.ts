@@ -1,6 +1,8 @@
 import { type Workspace, type Order } from "@/shared/workspace";
 import { WorkspaceError } from "@/shared/errors";
 import type { MutationContext } from "@/shared/domain/mutation-context";
+import { snapshotWorkflow } from "@/features/workflow/domain/templates";
+import { catalogueFor } from "@/features/settings/domain/catalogue";
 
 export function createOrder({
   data,
@@ -22,11 +24,19 @@ export function createOrder({
     id: crypto.randomUUID(),
     number: `SG-${Math.max(1000, ...data.orders.map((entry) => Number(entry.number.replace("SG-", "")) || 0)) + 1}`,
     customerId: action.customerId,
-    items: action.items.map((item) => ({
-      ...item,
-      id: crypto.randomUUID(),
-      station: 0,
-    })),
+    items: action.items.map((item) => {
+      const catalogue = catalogueFor(data);
+      const garment = catalogue.garments.find(
+        (g) => g.active && g.name.toLowerCase() === item.garment.toLowerCase(),
+      );
+      const workflow = snapshotWorkflow(catalogue, garment);
+      return {
+        ...item,
+        id: crypto.randomUUID(),
+        station: workflow?.steps[0].station ?? 0,
+        ...(workflow ? { workflow } : {}),
+      };
+    }),
     priority: action.priority,
     dueDate: action.dueDate,
     notes: action.notes,

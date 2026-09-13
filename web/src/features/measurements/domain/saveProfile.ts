@@ -140,9 +140,12 @@ export function savePieceMeasurements({
   const item = order?.items.find((p) => p.id === action.pieceId);
   if (!order || !item?.measurement)
     throw new WorkspaceError("Piece measurement record not found.", 404);
-  if (item.station !== 0 || !["received", "in_progress"].includes(order.status))
+  if (
+    (item.workflow?.position ?? item.station) !== 0 ||
+    !["received", "in_progress"].includes(order.status)
+  )
     throw new WorkspaceError(
-      "Measurements can only be confirmed before this piece leaves cutting.",
+      "Measurements can only be confirmed before this piece leaves its first step.",
       409,
     );
   if (item.measurement.revision !== action.expectedRevision)

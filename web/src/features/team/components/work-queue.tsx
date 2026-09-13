@@ -26,6 +26,10 @@ import {
 } from "@/shared/components/ui";
 import { QueryState, Pagination } from "@/shared/components/query-state";
 import { STATIONS, formatDate } from "@/shared/workspace";
+import {
+  currentStepName,
+  nextStepName,
+} from "@/features/workflow/domain/templates";
 import { previewWork } from "../domain/queries";
 import type { WorkRead, WorkPiece, WorkQuery } from "../types/queries";
 import { useTeam } from "../hooks/use-team";
@@ -71,7 +75,7 @@ function AssignDialog({
   return (
     <Dialog
       title="Assign this piece"
-      subtitle={`${piece.order.number} · ${piece.item.garment} · ${STATIONS[piece.item.station]}`}
+      subtitle={`${piece.order.number} · ${piece.item.garment} · ${currentStepName(piece.item)}`}
       onClose={onClose}
       busy={busy}
     >
@@ -220,7 +224,7 @@ export function WorkQueue({
           reason,
         },
         operation === "complete"
-          ? `${STATIONS[piece.item.station]} completed`
+          ? `${currentStepName(piece.item)} completed`
           : `Work ${operation === "start" ? "started" : operation === "resume" ? "resumed" : "blocked"}`,
       );
       setConfirm(null);
@@ -419,7 +423,7 @@ export function WorkQueue({
               </p>
               <h2>
                 {item.garment}
-                <span>{STATIONS[item.station]}</span>
+                <span>{currentStepName(item)}</span>
               </h2>
               <p className="work-material">
                 {item.material || "No material notes"}
@@ -590,7 +594,7 @@ export function WorkQueue({
         <Dialog
           title={
             confirm.operation === "complete"
-              ? `Complete ${STATIONS[confirm.piece.item.station]}?`
+              ? `Complete ${currentStepName(confirm.piece.item)}?`
               : "What is blocking this work?"
           }
           subtitle={`${confirm.piece.order.number} · ${confirm.piece.item.garment}`}
@@ -627,8 +631,7 @@ export function WorkQueue({
                 <p>
                   This piece will move to{" "}
                   <strong>
-                    {STATIONS[confirm.piece.item.station + 1] ??
-                      "ready for pickup"}
+                    {nextStepName(confirm.piece.item) ?? "ready for pickup"}
                   </strong>
                   . Confirm the current stage is finished before handing it
                   over.

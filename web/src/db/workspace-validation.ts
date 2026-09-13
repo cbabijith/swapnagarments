@@ -1,4 +1,5 @@
 import { designSnapshotSchema } from "@/features/design-library/contracts";
+import { pieceWorkflowSchema } from "@/features/workflow/contracts/settings";
 import "server-only";
 import { StorageMigrationError } from "./migration-error";
 import { createHash } from "node:crypto";
@@ -64,6 +65,7 @@ const workspaceSchema = z.strictObject({
             id,
             garment: z.string(),
             work: pieceWorkSchema.optional(),
+            workflow: pieceWorkflowSchema.optional(),
             material: z.string(),
             station: z.number().int().min(0).max(5),
             price: money,
@@ -258,10 +260,18 @@ export function validateWorkspace(source: unknown): Workspace {
       if (
         piece.measurement &&
         !piece.measurement.confirmed &&
-        piece.station > 0
+        (piece.workflow?.position ?? piece.station) > 0
       )
         throw new StorageMigrationError(
           "Workspace has a piece in production without confirmed measurements.",
+        );
+      if (
+        piece.workflow &&
+        (piece.workflow.steps[piece.workflow.position]?.station ?? 5) !==
+          piece.station
+      )
+        throw new StorageMigrationError(
+          "Workspace has inconsistent workflow progress.",
         );
     }
     if (!customerIds.has(order.customerId))

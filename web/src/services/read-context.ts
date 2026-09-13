@@ -134,6 +134,7 @@ export async function hydrateOrders(
       .map((i) => ({
         id: i.id,
         ...(i.work ? { work: i.work } : {}),
+        ...(i.workflow ? { workflow: i.workflow } : {}),
         garment: i.garment,
         material: i.material,
         station: i.station,

@@ -1,4 +1,5 @@
 import { snapshotDesign } from "@/features/design-library/domain/designs";
+import { snapshotWorkflow } from "@/features/workflow/domain/templates";
 import type { MutationContext } from "@/shared/domain/mutation-context";
 import { WorkspaceError } from "@/shared/errors";
 import { catalogueFor } from "@/features/settings/domain/catalogue";
@@ -71,13 +72,15 @@ export function createIntake({
       (g) => g.id === item.garmentId,
     )!;
     const design = snapshotDesign(garment, item.design, assets);
+    const workflow = snapshotWorkflow(catalogueFor(data), garment);
     if (item.measurements.saveProfile) saved.add(item.garmentId);
     return Array.from({ length: item.quantity }, () => ({
       id: crypto.randomUUID(),
       garment: measurement.garmentName,
       price: item.price,
       material: item.material,
-      station: 0,
+      station: workflow?.steps[0].station ?? 0,
+      ...(workflow ? { workflow: structuredClone(workflow) } : {}),
       measurement: structuredClone(measurement),
       design: structuredClone(design),
     }));

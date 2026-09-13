@@ -1,4 +1,8 @@
 import { validateGarmentDesigns } from "@/features/design-library/domain/designs";
+import {
+  validateWorkflowSettings,
+  workflowForGarment,
+} from "@/features/workflow/domain/templates";
 import type { MutationContext } from "@/shared/domain/mutation-context";
 import { WorkspaceError } from "@/shared/errors";
 import { catalogueFor } from "./catalogue";
@@ -47,6 +51,7 @@ export function saveCatalogue({
       );
   if (!next.garments.some((g) => g.active && g.id === next.defaultGarmentId))
     throw new WorkspaceError("Choose an active default garment.");
+  validateWorkflowSettings(next, current);
   next.garments = next.garments.map((garment) => {
     const old = current.garments.find((g) => g.id === garment.id);
     validateGarmentDesigns(garment, old, assets);
@@ -95,7 +100,10 @@ export function saveCatalogue({
     void _revision;
     const previous = old ? { ...old, revision: undefined } : null;
     const unchanged =
-      previous && definitionKey(definition) === definitionKey(previous);
+      previous &&
+      definitionKey(definition) === definitionKey(previous) &&
+      definitionKey(workflowForGarment(next, garment)) ===
+        definitionKey(workflowForGarment(current, old));
     return {
       ...garment,
       revision: old ? old.revision + (unchanged ? 0 : 1) : 1,

@@ -6,11 +6,14 @@ export const advancePieceSchema = z.object({
   orderId: id,
   pieceId: id,
   expectedStation: z.number().int().min(0).max(4),
+  expectedWorkflowVersion: z.number().int().min(0).optional(),
 });
 export const reworkPieceSchema = z.object({
   type: z.literal("piece.rework"),
   orderId: id,
   pieceId: id,
   station: z.number().int().min(0).max(4),
+  stepId: id.optional(),
+  expectedWorkflowVersion: z.number().int().min(0).optional(),
   reason: z.string().trim().min(3).max(500),
 });

@@ -1,5 +1,6 @@
 import { designLibrary } from "./migrations/0006-design-library";
 import { teamWork } from "./migrations/0007-team-work";
+import { customWorkflows } from "./migrations/0008-custom-workflows";
 import "server-only";
 import { createHash } from "node:crypto";
 import type { Pool } from "pg";
@@ -25,6 +26,7 @@ const migrations = [
   { version: 5, name: "garment_illustrations", sql: garmentIllustrations },
   { version: 6, name: "design_image_library", sql: designLibrary },
   { version: 7, name: "team_accounts_and_work", sql: teamWork },
+  { version: 8, name: "custom_garment_workflows", sql: customWorkflows },
 ];
 
 /** Every migration and its ledger entry commit together under the original schema lock. */

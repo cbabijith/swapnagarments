@@ -12,6 +12,10 @@ import type { Garment } from "@/features/settings/contracts/catalogue";
 import type { MeasurementProfile } from "@/features/measurements/contracts/profiles";
 
 export const shopSettings = pgTable("sg_shop_settings", {
+  workflows:
+    jsonb().$type<
+      import("@/features/workflow/contracts/settings").WorkflowSettings
+    >(),
   workspaceId: integer("workspace_id")
     .primaryKey()
     .references(() => workspaces.id),
@@ -20,6 +24,7 @@ export const shopSettings = pgTable("sg_shop_settings", {
   leadDays: integer("lead_days").notNull(),
 });
 export const garments = pgTable("sg_garments", {
+  workflowId: text("workflow_id"),
   id: text().primaryKey(),
   workspaceId: integer("workspace_id")
     .notNull()

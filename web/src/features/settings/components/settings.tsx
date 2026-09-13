@@ -1,11 +1,8 @@
 "use client";
 import { useId, useState } from "react";
 import {
-  Check,
   Scissors,
-  Database,
-  ShieldCheck,
-  CircleAlert,
+  GitBranch,
   Shirt,
   SlidersHorizontal,
   FileText,
@@ -13,7 +10,7 @@ import {
 import Link from "next/link";
 import { CatalogueSettings } from "./catalogue-editor";
 import { SettingsTabs } from "./settings-tabs";
-import { useWorkspace } from "@/shared/compat/workspace-provider";
+import { WorkflowSettings } from "@/features/workflow/components/workflow-settings";
 import { PageHeading } from "@/shared/components/ui";
 import { QueryState, Pagination } from "@/shared/components/query-state";
 import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
@@ -21,7 +18,7 @@ import type { WorkspacePage } from "@/shared/contracts/query";
 import { money, formatDate, emptyWorkspace } from "@/shared/workspace";
 import styles from "./catalogue.module.css";
 
-type Section = "garments" | "defaults" | "account" | "reports";
+type Section = "garments" | "defaults" | "workflow" | "reports";
 export function SettingsPage() {
   const [section, setSection] = useState<Section>("garments");
   const id = useId();
@@ -49,9 +46,9 @@ export function SettingsPage() {
             icon: <SlidersHorizontal size={17} />,
           },
           {
-            value: "account",
-            label: "Account",
-            icon: <ShieldCheck size={17} />,
+            value: "workflow",
+            label: "Workflow",
+            icon: <GitBranch size={17} />,
           },
           {
             value: "reports",
@@ -69,13 +66,13 @@ export function SettingsPage() {
           <CatalogueSettings section={section} />
         </div>
       )}
-      {section === "account" && (
+      {section === "workflow" && (
         <div
-          id={`${id}-panel-account`}
+          id={`${id}-panel-workflow`}
           role="tabpanel"
-          aria-labelledby={`${id}-tab-account`}
+          aria-labelledby={`${id}-tab-workflow`}
         >
-          <AccountSettings />
+          <WorkflowSettings />
         </div>
       )}
       {section === "reports" && (
@@ -88,48 +85,6 @@ export function SettingsPage() {
         </div>
       )}
     </>
-  );
-}
-
-function AccountSettings() {
-  const { mode, owner, signOut } = useWorkspace();
-  return (
-    <div className={styles.accountGrid}>
-      <section className="panel settings-card">
-        <ShieldCheck size={24} strokeWidth={1.5} />
-        <h2>Owner account</h2>
-        <p>
-          {mode === "live"
-            ? `Signed in as ${owner.name}.`
-            : "You are viewing a sample account."}
-        </p>
-        {mode === "live" && (
-          <>
-            <p>{owner.email}</p>
-            <button className="button" onClick={() => void signOut()}>
-              Sign out
-            </button>
-          </>
-        )}
-      </section>
-      <section className="panel settings-card">
-        <Database size={24} strokeWidth={1.5} />
-        <h2>Shop data</h2>
-        <p>
-          Customers, measurements, orders and payments stay together in your
-          shop.
-        </p>
-        <div className="connection-status">
-          {mode === "live" ? <Check size={17} /> : <CircleAlert size={17} />}
-          {mode === "live" ? "Live workspace" : "Preview · sample data"}
-        </div>
-        <p>
-          {mode === "live"
-            ? "Other devices refresh every 30 seconds and when you return to the app."
-            : "Sample changes do not affect your real shop records."}
-        </p>
-      </section>
-    </div>
   );
 }
 

@@ -5,6 +5,7 @@ import {
 import { z } from "zod";
 import { measurementGuideIds } from "@/features/measurements/contracts/guide";
 import { garmentIllustrationIds } from "./garment-illustration";
+import { workflowSettingsSchema } from "@/features/workflow/contracts/settings";
 
 export const fieldSchema = z.strictObject({
   id: z.string().min(1).max(100),
@@ -20,6 +21,7 @@ export const measurementValuesSchema = z.record(
   z.string().max(500),
 );
 export const garmentSchema = z.strictObject({
+  workflowId: z.string().min(1).max(100).optional(),
   id: z.string().min(1).max(100),
   revision: z.number().int().min(1),
   name: z.string().trim().min(1).max(100),
@@ -41,12 +43,25 @@ export const garmentSchema = z.strictObject({
     )
     .max(20),
 });
-export const catalogueSchema = z.strictObject({
-  revision: z.number().int().min(0),
-  defaultGarmentId: z.string().max(100),
-  leadDays: z.number().int().min(0).max(365),
-  garments: z.array(garmentSchema).min(1).max(50),
-});
+export const catalogueSchema = z
+  .strictObject({
+    workflows: workflowSettingsSchema.optional(),
+    revision: z.number().int().min(0),
+    defaultGarmentId: z.string().max(100),
+    leadDays: z.number().int().min(0).max(365),
+    garments: z.array(garmentSchema).min(1).max(50),
+  })
+  .refine(
+    (catalogue) =>
+      catalogue.garments.every(
+        (g) =>
+          !g.workflowId ||
+          catalogue.workflows?.templates.some(
+            (t) => t.id === g.workflowId && t.active,
+          ),
+      ),
+    "Choose an active workflow for each garment, or use the shop default.",
+  );
 export const saveCatalogueSchema = z.object({
   type: z.literal("settings.save"),
   catalogue: catalogueSchema,
