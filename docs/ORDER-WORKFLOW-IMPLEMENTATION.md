@@ -35,6 +35,8 @@ advanced that piece successfully afterward.
 
 ## Settings interface update — 13 September 2026
 
+Deployed code commit `906c6e01e606c2fbb56cb31691b1a69887689c7e` through Railway deployment `76aaf77b-f056-4822-8681-21f15623cb53`. Verified at `2026-09-13T03:21:22Z`: the exact commit has a successful deployment status, all seven checked screens return 200, PostgreSQL and bucket health are connected, and private APIs still require sign-in. Local validation passed all 17 tests, TypeScript, ESLint and the production build. The live checks made no shop-record writes; results are retained in `output/qa/settings-production-release.json`.
+
 Settings now shows one section at a time: Garments, Order defaults, Account or Daily reports. The catalogue has name search, active/archived filters and seven-item pagination; reports load only when opened. Each garment has a compact row with price, measurement count and edit actions. Its menu supports duplication, reordering, archiving and restoring.
 
 Focused dialogs replace the long inline forms. Their header and Save/Cancel actions stay visible while the active content scrolls. Field and preset lists open one editor at a time, support removal with Undo, and keep changes in a garment draft until saved. New garments can copy an existing template. Unsaved dismissal requires an explicit discard; preview values do not get saved or block validation. Default garments cannot be archived, saved field types remain protected, and unit changes explain when presets must be re-entered. Stale saves and ambiguous retries retain the existing revision and command-ID protections.
