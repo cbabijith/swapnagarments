@@ -3,6 +3,8 @@ import { randomBytes } from "node:crypto";
 import { and, eq, gt, lt, sql } from "drizzle-orm";
 import { db, ensureSchema } from "@/db";
 import { owners, sessions, authLimits, workspaces } from "@/db/schema";
+import { workerAccounts, workerSessions } from "@/db/schema/team";
+import type { SessionUser } from "@/features/team/contracts/team";
 import { hashPassword, hashToken, secureEqual } from "@/shared/server/crypto";
 import { WorkspaceError } from "@/shared/errors";
 import type { Credentials } from "@/features/auth/contracts/credentials";
@@ -37,6 +39,33 @@ export async function setupStatus() {
     setupRequired: existing.length === 0,
     setupAvailable: Boolean(process.env.SETUP_TOKEN),
   };
+}
+
+export async function getUserSession(
+  token?: string,
+): Promise<SessionUser | null> {
+  const owner = await getOwnerSession(token);
+  if (owner) return owner;
+  if (!token || !/^[a-f0-9]{64}$/.test(token)) return null;
+  const [worker] = await db()
+    .select({
+      name: workerAccounts.name,
+      email: workerAccounts.email,
+      staffId: workerAccounts.staffId,
+    })
+    .from(workerSessions)
+    .innerJoin(
+      workerAccounts,
+      eq(workerAccounts.staffId, workerSessions.staffId),
+    )
+    .where(
+      and(
+        eq(workerSessions.tokenHash, hashToken(token)),
+        gt(workerSessions.expiresAt, sql`now()`),
+        eq(workerAccounts.active, true),
+      ),
+    );
+  return worker ? { ...worker, role: "worker" } : null;
 }
 
 export async function checkRateLimit() {
@@ -117,6 +146,31 @@ export async function authenticate(input: Credentials) {
     });
   } else {
     const [owner] = await db().select().from(owners).where(eq(owners.id, 1));
+    if (owner?.email.toLowerCase() !== input.email.toLowerCase()) {
+      const [worker] = await db()
+        .select()
+        .from(workerAccounts)
+        .where(eq(workerAccounts.email, input.email.toLowerCase()));
+      const passwordHash = await hashPassword(
+        input.password,
+        worker?.salt ?? "invalid-account-fixed-salt",
+      );
+      if (
+        !worker ||
+        !worker.active ||
+        !secureEqual(passwordHash, worker.passwordHash)
+      )
+        throw new WorkspaceError("The email or password is incorrect.", 401);
+      const token = randomBytes(32).toString("hex");
+      await db()
+        .insert(workerSessions)
+        .values({
+          tokenHash: hashToken(token),
+          staffId: worker.staffId,
+          expiresAt: sql`now() + interval '7 days'`,
+        });
+      return token;
+    }
     const passwordHash = await hashPassword(
       input.password,
       owner?.salt ?? "invalid-account-fixed-salt",
@@ -142,6 +196,9 @@ export async function authenticate(input: Credentials) {
 export async function revokeSession(token?: string) {
   if (!token) return;
   await ensureSchema();
+  await db()
+    .delete(workerSessions)
+    .where(eq(workerSessions.tokenHash, hashToken(token)));
   await db()
     .delete(sessions)
     .where(eq(sessions.tokenHash, hashToken(token)));

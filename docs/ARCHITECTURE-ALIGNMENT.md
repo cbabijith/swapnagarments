@@ -1,5 +1,11 @@
 # Feature-driven architecture: alignment with Dolce CRM
 
+The locally verified team/work implementation adds worker accounts, scoped task
+queries, assignment rules, and exact-piece QR navigation through feature domain
+modules and server services. Migration 7 is additive. See
+[research, behavior, and validation](TEAM-WORKFLOW-IMPLEMENTATION.md). It is not
+yet deployed; the historical deployment records below remain unchanged.
+
 The garment/design image library now follows these boundaries in `features/design-library`, `services/design-library-service.ts`, and `integrations/storage`. Migration 6 is additive. See [implementation and validation](DESIGN-LIBRARY-IMPLEMENTATION.md).
 
 ## Decision and status

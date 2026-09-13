@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { setupStatus } from "@/services/auth-service";
-import { ownerSession } from "@/shared/server/auth";
+import { userSession } from "@/shared/server/auth";
 import { json, failure } from "@/shared/server/responses";
 
 export const runtime = "nodejs";
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
         },
         503,
       );
-    const owner = await ownerSession(request);
+    const owner = await userSession(request);
     if (!owner)
       return json({ error: "Please sign in.", ...(await setupStatus()) }, 401);
     return json({ owner });

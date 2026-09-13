@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, ScanLine, Camera, X } from "lucide-react";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { PageHeading } from "@/shared/components/ui";
+import { parseWorkCode } from "../domain/code";
+import { previewWork } from "@/features/team/domain/queries";
 
 export function Scan() {
-  const { data: preview, mode, onUnauthorized } = useWorkspace();
+  const { data: preview, mode, onUnauthorized, owner } = useWorkspace();
   const router = useRouter();
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
@@ -34,6 +36,56 @@ export function Scan() {
     setBusy(true);
     setError("");
     try {
+      if (!parseWorkCode(cleaned))
+        throw new Error(
+          "Scan a Swapna garment label or enter its printed order number.",
+        );
+      const worker = owner.role === "worker";
+      const workResult =
+        mode === "preview"
+          ? previewWork(
+              preview,
+              {
+                page: 1,
+                pageSize: 1,
+                status: "all",
+                station: "all",
+                code: cleaned,
+              },
+              worker ? owner.staffId : undefined,
+            )
+          : await (async () => {
+              const controller = new AbortController();
+              request.current = controller;
+              const response = await fetch(
+                `/api/work?code=${encodeURIComponent(cleaned)}&pageSize=1`,
+                {
+                  cache: "no-store",
+                  signal: AbortSignal.any([
+                    controller.signal,
+                    AbortSignal.timeout(15000),
+                  ]),
+                },
+              );
+              const result = await response.json();
+              if (response.status === 401) onUnauthorized();
+              if (!response.ok)
+                throw new Error(result.error || "Could not find this piece.");
+              return result;
+            })();
+      if (workResult.pieces.length) {
+        if (mounted.current) {
+          setCamera(false);
+          router.push(
+            `${worker ? "/my-work?" : "/team?view=work&"}code=${encodeURIComponent(cleaned)}`,
+          );
+        }
+        return;
+      }
+      if (worker)
+        throw new Error(
+          "No unfinished work for this label is assigned to you. The piece may be completed or assigned to another worker.",
+        );
       let orderId: string | undefined;
       if (mode === "preview") {
         orderId = preview.orders.find(
@@ -41,7 +93,8 @@ export function Scan() {
             entry.number.toLowerCase() === cleaned.toLowerCase() ||
             entry.id === cleaned ||
             (cleaned.startsWith("swapna:") &&
-              cleaned.split(":")[1] === entry.id),
+              cleaned.split(":")[1] === entry.id &&
+              entry.items.some((i) => i.id === cleaned.split(":")[2])),
         )?.id;
       } else {
         const controller = new AbortController();
@@ -131,9 +184,9 @@ export function Scan() {
   return (
     <>
       <PageHeading
-        eyebrow="QR SCAN OR ORDER NUMBER"
-        title="Find an order"
-        description="Scan a garment’s QR label or enter its order number."
+        eyebrow="QR SCAN OR PRINTED CODE"
+        title="Scan a piece"
+        description="Open a piece’s current task, check the details, then choose what to do."
       />
       <section className="panel scan-panel">
         {camera ? (
@@ -156,7 +209,10 @@ export function Scan() {
               <ScanLine size={64} strokeWidth={1} />
             </div>
             <h2>Scan a garment label</h2>
-            <p>Open the camera and point it at a QR label to view the order.</p>
+            <p>
+              Point the camera at a garment label. Scanning opens its details;
+              you confirm any work update.
+            </p>
             <button
               className="button primary"
               onClick={() => {
@@ -176,7 +232,7 @@ export function Scan() {
           }}
         >
           <label className="field">
-            Or enter the order number
+            Or enter an order number / scan with a handheld reader
             <input
               value={code}
               required
@@ -186,7 +242,7 @@ export function Scan() {
             />
           </label>
           <button className="button" type="submit" disabled={busy}>
-            {busy ? "Finding order…" : "Find order"}
+            {busy ? "Finding piece…" : "Find piece"}
             <ArrowRight size={16} />
           </button>
         </form>

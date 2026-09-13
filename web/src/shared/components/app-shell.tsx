@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { WorkerShell } from "@/features/team/components/worker-shell";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -45,6 +46,14 @@ const navigation = [
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const { owner } = useWorkspace();
+  return owner.role === "worker" ? (
+    <WorkerShell />
+  ) : (
+    <OwnerShell>{children}</OwnerShell>
+  );
+}
+function OwnerShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { notice, notify, mode, owner } = useWorkspace();
   const [searchOpen, setSearchOpen] = useState(false);

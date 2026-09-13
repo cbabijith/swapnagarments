@@ -16,6 +16,10 @@ export function useWorkflowColumn(station: number, page: number) {
           order.items
             .filter((item) => item.station === station)
             .map((item) => ({
+              assigneeName: workspace.staff.find(
+                (p) => p.id === item.work?.assigneeId,
+              )?.name,
+              workStatus: item.work?.status,
               item,
               order,
               customer: {

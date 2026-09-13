@@ -26,8 +26,15 @@ endpoint. Never put database credentials in `NEXT_PUBLIC_*` variables.
 Overview and daily reports, customer records and blouse measurements, multi-piece
 orders, priority queues, per-piece station progress and corrections, QR labels
 and camera/manual lookup, advances/balances, delivery, CSV export, owner sign-in,
-and a team directory. Live writes are validated and persisted in PostgreSQL;
+worker accounts with station skills, manual/automatic assignment, and private
+worker task queues. Live writes are validated and persisted in PostgreSQL;
 preview data is never inserted into the live database.
+
+The Team screen now creates worker accounts, manages availability and capacity,
+and offers equal-piece or effort-based distribution. Workers see their own
+prioritized work and can start, block, resume, and complete a stage. QR scanning
+opens the exact piece for review. This team implementation is verified locally;
+see [research, behavior, validation, and release notes](../docs/TEAM-WORKFLOW-IMPLEMENTATION.md).
 
 Order intake uses one customer search with up to five name/phone matches.
 Select a customer with one click, change the selection, or add a new customer

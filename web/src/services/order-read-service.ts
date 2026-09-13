@@ -1,4 +1,5 @@
 import "server-only";
+import { parseWorkCode } from "@/features/qr-tags/domain/code";
 import { and, asc, eq, ilike, or, sql, type SQL } from "drizzle-orm";
 import { orders, customers, orderItems, payments, activity } from "@/db/schema";
 import type { PageQuery } from "@/shared/contracts/query-input";
@@ -214,7 +215,9 @@ export const readBilling = (input: BillingQuery) =>
   });
 export const lookupOrder = ({ code }: { code: string }) =>
   withRead(async ({ tx, legacy }) => {
-    const key = code.startsWith("swapna:") ? code.split(":")[1] : code;
+    const parsed = parseWorkCode(code);
+    if (!parsed) throw new WorkspaceError("No order matches this code.", 404);
+    const key = parsed.orderKey;
     const order = legacy
       ? legacy.orders.find(
           (o) => o.id === key || o.number.toLowerCase() === key.toLowerCase(),
@@ -232,6 +235,26 @@ export const lookupOrder = ({ code }: { code: string }) =>
             .limit(1)
         )[0];
     if (!order) throw new WorkspaceError("No order matches this code.", 404);
+    if (parsed.pieceId) {
+      const exists = legacy
+        ? legacy.orders
+            .find((o) => o.id === order.id)
+            ?.items.some((i) => i.id === parsed.pieceId)
+        : (
+            await tx
+              .select({ id: orderItems.id })
+              .from(orderItems)
+              .where(
+                and(
+                  eq(orderItems.id, parsed.pieceId),
+                  eq(orderItems.orderId, order.id),
+                ),
+              )
+              .limit(1)
+          ).length > 0;
+      if (!exists)
+        throw new WorkspaceError("No order matches this piece code.", 404);
+    }
     return { orderId: order.id };
   });
 /** All matching rows are exported, independently of the visible page. Hydration is bounded per batch. */

@@ -31,6 +31,7 @@ export const GARMENTS = [
   "Other",
 ] as const;
 export type Workspace = {
+  assignmentSettings?: import("@/features/team/contracts/team").AssignmentSettings;
   catalogue?: import("@/features/settings/contracts/catalogue").Catalogue;
   customers: Customer[];
   orders: Order[];

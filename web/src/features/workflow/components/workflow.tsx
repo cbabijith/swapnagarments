@@ -36,74 +36,102 @@ function WorkflowColumn({ station }: { station: number }) {
           {error}
         </p>
       )}
-      {column?.pieces.map(({ order, item, customer, measurementsPending }) => {
-        const pending =
-          measurementsPending || item.measurement?.confirmed === false;
-        const overdue = order.dueDate < query.data!.today;
-        const actionLabel = STATIONS[item.station + 1]
-          ? `Move to ${STATIONS[item.station + 1]}`
-          : "Mark ready";
-        return (
-          <article className="workflow-card" key={item.id}>
-            <div
-              className="inline-row"
-              style={{ justifyContent: "space-between" }}
-            >
-              <PriorityBadge priority={order.priority} />
-              <Link
-                href={`/orders/${order.id}`}
-                aria-label={`Open order ${order.number} for ${customer.name}`}
+      {column?.pieces.map(
+        ({
+          order,
+          item,
+          customer,
+          measurementsPending,
+          assigneeName,
+          workStatus,
+        }) => {
+          const pending =
+            measurementsPending || item.measurement?.confirmed === false;
+          const overdue = order.dueDate < query.data!.today;
+          const actionLabel = STATIONS[item.station + 1]
+            ? `Move to ${STATIONS[item.station + 1]}`
+            : "Mark ready";
+          return (
+            <article className="workflow-card" key={item.id}>
+              <div
+                className="inline-row"
+                style={{ justifyContent: "space-between" }}
               >
-                <ArrowUpRight size={15} />
-              </Link>
-            </div>
-            <h3>{customer.name}</h3>
-            <p>
-              {order.number} · {item.garment}
-            </p>
-            <div className="workflow-card-foot">
-              <span className={overdue ? "overdue-text" : ""}>
-                {overdue ? "Overdue · " : "Due "}
-                {order.dueDate === query.data!.today
-                  ? "today"
-                  : formatDate(order.dueDate)}
-              </span>
-            </div>
-            {pending && (
-              <p className="note-box">
-                Measurements pending.{" "}
-                <Link className="text-link" href={`/orders/${order.id}`}>
-                  Confirm sizes in the order
+                <PriorityBadge priority={order.priority} />
+                <Link
+                  href={`/orders/${order.id}`}
+                  aria-label={`Open order ${order.number} for ${customer.name}`}
+                >
+                  <ArrowUpRight size={15} />
                 </Link>
+              </div>
+              <h3>{customer.name}</h3>
+              <p>
+                {order.number} · {item.garment}
               </p>
-            )}
-            <button
-              className="button subtle small-button"
-              aria-label={`${actionLabel} for ${item.garment}, ${order.number}, ${customer.name}`}
-              disabled={Boolean(busy) || query.isRefreshing || pending}
-              onClick={async () => {
-                setBusy(item.id);
-                setError("");
-                try {
-                  await advancePiece(order.id, item.id, item.station);
-                } catch (error) {
-                  setError(
-                    error instanceof Error
-                      ? error.message
-                      : "Could not update the garment.",
-                  );
-                  query.reload();
-                } finally {
-                  setBusy("");
+              <p className="small muted">
+                {assigneeName ?? "Unassigned"}
+                {workStatus === "in_progress"
+                  ? " · In progress"
+                  : workStatus === "blocked"
+                    ? " · Blocked"
+                    : ""}
+              </p>
+              <Link
+                className="text-link small"
+                href={`/team?view=work&code=${encodeURIComponent(`swapna:${order.id}:${item.id}`)}`}
+              >
+                Manage work →
+              </Link>
+              <div className="workflow-card-foot">
+                <span className={overdue ? "overdue-text" : ""}>
+                  {overdue ? "Overdue · " : "Due "}
+                  {order.dueDate === query.data!.today
+                    ? "today"
+                    : formatDate(order.dueDate)}
+                </span>
+              </div>
+              {pending && (
+                <p className="note-box">
+                  Measurements pending.{" "}
+                  <Link className="text-link" href={`/orders/${order.id}`}>
+                    Confirm sizes in the order
+                  </Link>
+                </p>
+              )}
+              <button
+                className="button subtle small-button"
+                aria-label={`${actionLabel} for ${item.garment}, ${order.number}, ${customer.name}`}
+                disabled={
+                  Boolean(busy) ||
+                  query.isRefreshing ||
+                  pending ||
+                  workStatus === "blocked"
                 }
-              }}
-            >
-              <Check size={13} />
-              {busy === item.id ? "Saving…" : actionLabel}
-            </button>
-          </article>
-        );
-      })}
+                onClick={async () => {
+                  setBusy(item.id);
+                  setError("");
+                  try {
+                    await advancePiece(order.id, item.id, item.station);
+                  } catch (error) {
+                    setError(
+                      error instanceof Error
+                        ? error.message
+                        : "Could not update the garment.",
+                    );
+                    query.reload();
+                  } finally {
+                    setBusy("");
+                  }
+                }}
+              >
+                <Check size={13} />
+                {busy === item.id ? "Saving…" : actionLabel}
+              </button>
+            </article>
+          );
+        },
+      )}
       {column && !column.pieces.length && !query.isLoading && !query.error && (
         <p className="workflow-empty">
           {column.page.total

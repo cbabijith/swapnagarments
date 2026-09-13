@@ -25,6 +25,11 @@ export function changePiece({
       409,
     );
   if (action.type === "piece.advance") {
+    if (piece.work?.status === "blocked")
+      throw new WorkspaceError(
+        "Resume blocked work before completing this station.",
+        409,
+      );
     if (
       piece.station !== action.expectedStation ||
       piece.station >= STATIONS.length
@@ -48,6 +53,8 @@ export function changePiece({
       action.reason,
     );
   }
+  if (piece.work)
+    piece.work = { version: piece.work.version + 1, status: "pending" };
   order.status = order.items.every((item) => item.station === STATIONS.length)
     ? "ready"
     : "in_progress";

@@ -1,6 +1,6 @@
 import "server-only";
 import { and, asc, eq, sql } from "drizzle-orm";
-import { orders, customers, orderItems } from "@/db/schema";
+import { orders, customers, orderItems, staff } from "@/db/schema";
 import type {
   WorkflowRead,
   WorkflowPiece,
@@ -41,6 +41,10 @@ export const readWorkflow = (
             o.items
               .filter((i) => i.station === station)
               .map((item): WorkflowPiece => ({
+                assigneeName: legacy.staff.find(
+                  (p) => p.id === item.work?.assigneeId,
+                )?.name,
+                workStatus: item.work?.status,
                 item,
                 order: {
                   id: o.id,
@@ -72,6 +76,8 @@ export const readWorkflow = (
         input.station === "all" || Number(input.station) === station
           ? await tx
               .select({
+                assigneeName: staff.name,
+                workStatus: sql<string | null>`${orderItems.work}->>'status'`,
                 measurementsPending: sql<boolean>`coalesce((${orderItems.measurement}->>'confirmed')::boolean = false, false)`,
                 item: {
                   id: orderItems.id,
@@ -93,6 +99,10 @@ export const readWorkflow = (
               .from(orderItems)
               .innerJoin(orders, eq(orders.id, orderItems.orderId))
               .innerJoin(customers, eq(customers.id, orders.customerId))
+              .leftJoin(
+                staff,
+                sql`${staff.id}=${orderItems.work}->>'assigneeId'`,
+              )
               .where(and(openOrder, eq(orderItems.station, station)))
               .orderBy(
                 ...orderSorting,

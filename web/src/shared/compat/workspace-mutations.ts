@@ -1,4 +1,6 @@
 import type { AssetMap } from "@/features/design-library/domain/designs";
+import { teamCommand } from "@/features/team/domain/commands";
+import { distribute } from "@/features/team/domain/assignment";
 import {
   mutationSchema,
   type WorkspaceMutation,
@@ -52,27 +54,38 @@ export function applyMutation(
       });
     },
   };
-  switch (action.type) {
-    case "settings.save":
-      return saveCatalogue({ ...context, action });
-    case "order.intake":
-      return createIntake({ ...context, action });
-    case "measurement.save":
-      return saveProfile({ ...context, action });
-    case "piece.measurements":
-      return savePieceMeasurements({ ...context, action });
-    case "customer.save":
-      return saveCustomer({ ...context, action });
-    case "order.create":
-      return createOrder({ ...context, action });
-    case "order.deliver":
-      return deliverOrder({ ...context, action });
-    case "payment.record":
-      return recordPayment({ ...context, action });
-    case "piece.advance":
-    case "piece.rework":
-      return changePiece({ ...context, action });
-    case "day.close":
-      return closeDay({ ...context, action });
-  }
+  const result = (() => {
+    switch (action.type) {
+      case "team.save":
+      case "team.settings":
+      case "team.distribute":
+      case "work.assign":
+      case "work.update":
+        return teamCommand({ ...context, action });
+      case "settings.save":
+        return saveCatalogue({ ...context, action });
+      case "order.intake":
+        return createIntake({ ...context, action });
+      case "measurement.save":
+        return saveProfile({ ...context, action });
+      case "piece.measurements":
+        return savePieceMeasurements({ ...context, action });
+      case "customer.save":
+        return saveCustomer({ ...context, action });
+      case "order.create":
+        return createOrder({ ...context, action });
+      case "order.deliver":
+        return deliverOrder({ ...context, action });
+      case "payment.record":
+        return recordPayment({ ...context, action });
+      case "piece.advance":
+      case "piece.rework":
+        return changePiece({ ...context, action });
+      case "day.close":
+        return closeDay({ ...context, action });
+    }
+  })();
+  if (result.data.assignmentSettings?.automatic)
+    distribute(result.data, timestamp, context.event);
+  return result;
 }

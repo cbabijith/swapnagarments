@@ -15,15 +15,17 @@ export function AssetImage({
   size = 64,
   full = false,
   decorative = true,
+  workCode,
 }: {
   asset: AssetRef;
   size?: number;
   full?: boolean;
   decorative?: boolean;
+  workCode?: string;
 }) {
   const src = asset.id.startsWith("upload-")
     ? (previewImage(asset.id) ??
-      `/api/design-library/${encodeURIComponent(asset.id)}/image?size=${full ? "full" : "thumb"}`)
+      `/api/design-library/${encodeURIComponent(asset.id)}/image?size=${full ? "full" : "thumb"}${workCode ? `&work=${encodeURIComponent(workCode)}` : ""}`)
     : (builtinArtwork[asset.id] ??
       `/design-library/v1/${encodeURIComponent(asset.id)}.svg`);
   const [failed, setFailed] = useState("");

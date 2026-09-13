@@ -133,6 +133,7 @@ export async function hydrateOrders(
       .filter((i) => i.orderId === o.id)
       .map((i) => ({
         id: i.id,
+        ...(i.work ? { work: i.work } : {}),
         garment: i.garment,
         material: i.material,
         station: i.station,

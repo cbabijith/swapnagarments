@@ -3,6 +3,13 @@ import type { WorkspaceMutation } from "./command";
 /** Feature commands share one retry identity across transport retries. */
 export function commandEndpoint(action: WorkspaceMutation) {
   switch (action.type) {
+    case "team.save":
+    case "team.settings":
+    case "team.distribute":
+    case "work.assign":
+      return "/api/team";
+    case "work.update":
+      return "/api/work";
     case "settings.save":
       return "/api/settings";
     case "measurement.save":

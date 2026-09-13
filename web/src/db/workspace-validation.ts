@@ -3,6 +3,11 @@ import "server-only";
 import { StorageMigrationError } from "./migration-error";
 import { createHash } from "node:crypto";
 import { z } from "zod";
+import {
+  workerSchema,
+  pieceWorkSchema,
+  assignmentSettingsSchema,
+} from "@/features/team/contracts/team";
 import { date, id } from "@/shared/contracts/fields";
 import { total, paid, type Workspace } from "@/shared/workspace";
 import { catalogueSchema } from "@/features/settings/contracts/catalogue";
@@ -20,6 +25,7 @@ const money = z.number().int().min(1).max(100_000_000);
 const count = z.number().int().min(0).max(2_147_483_647);
 const reportMoney = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const workspaceSchema = z.strictObject({
+  assignmentSettings: assignmentSettingsSchema.optional(),
   catalogue: catalogueSchema.optional(),
   customers: z.array(
     z.strictObject({
@@ -57,6 +63,7 @@ const workspaceSchema = z.strictObject({
           z.strictObject({
             id,
             garment: z.string(),
+            work: pieceWorkSchema.optional(),
             material: z.string(),
             station: z.number().int().min(0).max(5),
             price: money,
@@ -81,6 +88,7 @@ const workspaceSchema = z.strictObject({
       id,
       name: z.string(),
       role: z.string(),
+      worker: workerSchema.optional(),
       station: z.string(),
       color: z.string(),
     }),
@@ -169,6 +177,13 @@ export function validateWorkspace(source: unknown): Workspace {
     "staff IDs",
   );
   unique(
+    data.staff.flatMap((p) => (p.worker ? [p.worker.email] : [])),
+    "worker login emails",
+  );
+  const workerIds = new Set(
+    data.staff.filter((p) => p.worker).map((p) => p.id),
+  );
+  unique(
     data.activity.map((a) => a.id),
     "activity IDs",
   );
@@ -223,6 +238,15 @@ export function validateWorkspace(source: unknown): Workspace {
   }
   for (const order of data.orders) {
     for (const piece of order.items) {
+      if (
+        piece.work &&
+        ((piece.work.assigneeId &&
+          (!workerIds.has(piece.work.assigneeId) || piece.station >= 5)) ||
+          (piece.work.status !== "pending" && !piece.work.assigneeId))
+      )
+        throw new StorageMigrationError(
+          "Workspace has work without a valid worker or active station.",
+        );
       if (
         piece.measurement &&
         (!garmentIds.has(piece.measurement.garmentId) ||

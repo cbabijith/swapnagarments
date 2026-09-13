@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
-import { requireOwner } from "@/shared/server/auth";
+import { requireUser } from "@/shared/server/auth";
 import { failure } from "@/shared/server/responses";
-import { readDesignImage } from "@/services/design-library-service";
+import { readAccessibleWorkImage } from "@/services/work-image-service";
 import { assetId } from "@/features/design-library/contracts";
 import { WorkspaceError } from "@/shared/errors";
 export async function GET(
@@ -9,12 +9,14 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    await requireOwner(request);
+    const user = await requireUser(request);
     const parsed = assetId.safeParse((await params).id);
     if (!parsed.success) throw new WorkspaceError("Image not found.", 404);
-    const bytes = await readDesignImage(
+    const bytes = await readAccessibleWorkImage(
       parsed.data,
       request.nextUrl.searchParams.get("size") !== "full",
+      request.nextUrl.searchParams.get("work"),
+      user,
     );
     return new Response(new Uint8Array(bytes), {
       headers: {

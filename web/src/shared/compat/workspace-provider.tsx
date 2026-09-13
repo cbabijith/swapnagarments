@@ -16,7 +16,7 @@ import { mutationSchema } from "@/shared/contracts/command";
 import { commandEndpoint } from "@/shared/contracts/command-endpoint";
 import { AccessScreen } from "@/features/auth/components/access-screen";
 
-type Owner = { name: string; email: string };
+type Owner = import("@/features/team/contracts/team").SessionUser;
 type WorkspaceContext = {
   data: Workspace;
   today: string;

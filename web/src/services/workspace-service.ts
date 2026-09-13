@@ -3,6 +3,13 @@ import {
   resolveDesignAssets,
 } from "./design-library-service";
 import "server-only";
+import {
+  teamService,
+  distributeWork,
+  authorizeWorkCommand,
+  saveWorkerAccount,
+} from "./team-service";
+import type { SessionUser } from "@/features/team/contracts/team";
 import { eq } from "drizzle-orm";
 import { createHash } from "node:crypto";
 import { db, ensureSchema } from "@/db";
@@ -12,6 +19,7 @@ import {
   type WorkspaceMutation,
 } from "@/shared/contracts/command";
 import { WorkspaceError } from "@/shared/errors";
+import { hashPassword } from "@/shared/server/crypto";
 import { shopDate, type Workspace } from "@/shared/workspace";
 import { customerService } from "./customer-service";
 import { orderService } from "./order-service";
@@ -60,12 +68,26 @@ function canonical(value: unknown): string {
 /** Compatibility transaction coordinator. Feature services own the actual rules. */
 export async function executeWorkspaceCommand(
   input: { mutationId: string; action: WorkspaceMutation },
-  owner: { name: string; email: string },
+  owner: SessionUser,
 ) {
   await ensureSchema();
   const action = mutationSchema.parse(input.action);
+  // A retry fingerprint must not become a fast offline password verifier.
+  const fingerprintAction =
+    action.type === "team.save" && action.password
+      ? {
+          ...action,
+          password: await hashPassword(action.password, input.mutationId),
+        }
+      : action;
   const fingerprint = createHash("sha256")
-    .update(canonical(action))
+    .update(
+      canonical(
+        owner.role === "worker"
+          ? { staffId: owner.staffId, action: fingerprintAction }
+          : fingerprintAction,
+      ),
+    )
     .digest("hex");
   return db().transaction(async (tx) => {
     const [header] = await tx
@@ -77,6 +99,9 @@ export async function executeWorkspaceCommand(
       revision: header.revision,
       data: await readStoredWorkspace(tx, header),
     };
+    // Enforce ownership even on retries; never return another worker's receipt or shop snapshot.
+    if (owner.role === "worker" && action.type !== "work.update")
+      throw new WorkspaceError("Only the owner can manage the shop.", 403);
     const [existing] = await tx
       .select()
       .from(mutations)
@@ -90,6 +115,7 @@ export async function executeWorkspaceCommand(
       return { ...snapshot, resultId: existing.resultId ?? undefined };
     }
     const data = structuredClone(snapshot.data);
+    authorizeWorkCommand(data, action, owner);
     const now = new Date();
     const assets =
       action.type === "settings.save" || action.type === "order.intake"
@@ -117,6 +143,13 @@ export async function executeWorkspaceCommand(
     };
     let result: { data: Workspace; resultId?: string };
     switch (action.type) {
+      case "team.save":
+      case "team.settings":
+      case "team.distribute":
+      case "work.assign":
+      case "work.update":
+        result = teamService({ ...context, action });
+        break;
       case "settings.save":
         result = settingsService({ ...context, action });
         break;
@@ -145,6 +178,10 @@ export async function executeWorkspaceCommand(
         result = reportService({ ...context, action });
         break;
     }
+    if (result.data.assignmentSettings?.automatic)
+      distributeWork(result.data, context.timestamp, context.event);
+    if (action.type === "team.save")
+      await saveWorkerAccount(tx, action, result.resultId!);
     const updated = await persistStoredWorkspace(
       tx,
       header,

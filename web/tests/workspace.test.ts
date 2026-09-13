@@ -19,6 +19,8 @@ import { POST as billingPost } from "../src/app/api/billing/route";
 import { POST as reportsPost } from "../src/app/api/reports/route";
 import { POST as settingsPost } from "../src/app/api/settings/route";
 import { POST as measurementsPost } from "../src/app/api/measurements/route";
+import { POST as teamPost } from "../src/app/api/team/route";
+import { POST as workPost } from "../src/app/api/work/route";
 import { commandEndpoint } from "../src/shared/contracts/command-endpoint";
 import { mutationSchema } from "../src/shared/contracts/command";
 import {
@@ -223,6 +225,8 @@ test("protected PostgreSQL lifecycle: setup, intake, retries, payment, delivery,
   async function mutate(action: unknown, mutationId = crypto.randomUUID()) {
     const endpoint = commandEndpoint(mutationSchema.parse(action));
     const handlers = {
+      "/api/team": teamPost,
+      "/api/work": workPost,
       "/api/settings": settingsPost,
       "/api/measurements": measurementsPost,
       "/api/customers": customersPost,

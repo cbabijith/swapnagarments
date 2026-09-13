@@ -13,6 +13,7 @@ import {
   closedDays,
   workspaces,
   workflowHistory,
+  assignmentSettings,
 } from "@/db/schema";
 import { iso, stableJson } from "@/db/workspace-validation";
 import type { Workspace } from "@/shared/workspace";
@@ -68,7 +69,12 @@ export async function readRelationalWorkspace(
     itemsByOrder = group(items, (row) => row.orderId),
     paymentsByOrder = group(paymentRows, (row) => row.orderId);
   const catalogue = await readStoredCatalogue(tx);
+  const [assignment] = await tx
+    .select()
+    .from(assignmentSettings)
+    .where(eq(assignmentSettings.workspaceId, 1));
   const data: Workspace = {
+    ...(assignment ? { assignmentSettings: assignment.settings } : {}),
     ...(catalogue ? { catalogue } : {}),
     customers: customerRows.map((c) => ({
       id: c.id,
@@ -98,6 +104,7 @@ export async function readRelationalWorkspace(
       ...(o.deliveredAt ? { deliveredAt: iso(o.deliveredAt) } : {}),
       items: (itemsByOrder.get(o.id) ?? []).map((i) => ({
         id: i.id,
+        ...(i.work ? { work: i.work } : {}),
         garment: i.garment,
         material: i.material,
         station: i.station,
@@ -117,6 +124,7 @@ export async function readRelationalWorkspace(
     })),
     staff: people.map((p) => ({
       id: p.id,
+      ...(p.worker ? { worker: p.worker } : {}),
       name: p.name,
       role: p.role,
       station: p.station,
@@ -247,6 +255,14 @@ export async function writeRelationalWorkspace(
   before: Workspace,
   after: Workspace,
 ) {
+  if (after.assignmentSettings)
+    await tx
+      .insert(assignmentSettings)
+      .values({ workspaceId: 1, settings: after.assignmentSettings })
+      .onConflictDoUpdate({
+        target: assignmentSettings.workspaceId,
+        set: { settings: after.assignmentSettings },
+      });
   await writeCatalogue(tx, before, after);
   const a = rowsFor(before),
     b = rowsFor(after);
@@ -358,7 +374,8 @@ export async function recordWorkflowHistory(
       });
   } else if (
     action.type === "piece.advance" ||
-    action.type === "piece.rework"
+    action.type === "piece.rework" ||
+    (action.type === "work.update" && action.operation === "complete")
   ) {
     const oldPiece = before.orders
       .find((o) => o.id === action.orderId)
@@ -373,7 +390,7 @@ export async function recordWorkflowHistory(
       orderId: action.orderId,
       pieceId: action.pieceId,
       mutationId,
-      kind: action.type === "piece.advance" ? "advance" : "rework",
+      kind: action.type === "piece.rework" ? "rework" : "advance",
       fromStation: oldPiece.station,
       toStation: newPiece.station,
       reason: action.type === "piece.rework" ? action.reason : "",

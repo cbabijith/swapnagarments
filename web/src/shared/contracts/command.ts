@@ -1,4 +1,11 @@
 import { z } from "zod";
+import {
+  saveMemberSchema,
+  saveAssignmentSettingsSchema,
+  distributeSchema,
+  assignWorkSchema,
+  updateWorkSchema,
+} from "@/features/team/contracts/team";
 import { intakeSchema } from "@/features/orders/contracts/intake";
 import { saveCatalogueSchema } from "@/features/settings/contracts/catalogue";
 import {
@@ -18,6 +25,11 @@ import { recordPaymentSchema } from "@/features/billing/contracts/payment";
 import { closeDaySchema } from "@/features/reports/contracts/report";
 
 export const mutationSchema = z.discriminatedUnion("type", [
+  saveMemberSchema,
+  saveAssignmentSettingsSchema,
+  distributeSchema,
+  assignWorkSchema,
+  updateWorkSchema,
   intakeSchema,
   saveCatalogueSchema,
   saveProfileSchema,
