@@ -1,0 +1,106 @@
+{
+  "complete": true,
+  "checks": [
+    "Section tabs, keyboard navigation, existing field type protection and responsive list",
+    "Numeric, text and choice field creation; duplicate validation; reorder; remove/undo; preview isolation; preset add/edit/remove/undo; preset value protection; dirty close",
+    "Duplicate, archive, restore, list reorder, pagination, protected default and template copying with discard",
+    "Default garment and price carry into intake, presets require explicit choice, all field types preserved in saved order"
+  ],
+  "errors": [],
+  "geometry": [
+    {
+      "name": "settings-compact-desktop",
+      "width": 1440,
+      "content": 1440,
+      "height": 1001,
+      "dialog": null
+    },
+    {
+      "name": "settings-fields-desktop",
+      "width": 1440,
+      "content": 1440,
+      "height": 1001,
+      "dialog": {
+        "top": 105,
+        "bottom": 895,
+        "height": 790
+      }
+    },
+    {
+      "name": "settings-fields-mobile",
+      "width": 390,
+      "content": 390,
+      "height": 1189,
+      "dialog": {
+        "top": 12,
+        "bottom": 832,
+        "height": 820
+      }
+    },
+    {
+      "name": "settings-compact-mobile",
+      "width": 390,
+      "content": 390,
+      "height": 1189,
+      "dialog": null
+    },
+    {
+      "name": "settings-preset-desktop",
+      "width": 1440,
+      "content": 1440,
+      "height": 1001,
+      "dialog": {
+        "top": 236.46875,
+        "bottom": 763.515625,
+        "height": 527.046875
+      }
+    },
+    {
+      "name": "settings-preset-mobile",
+      "width": 390,
+      "content": 390,
+      "height": 1189,
+      "dialog": {
+        "top": 102.21875,
+        "bottom": 741.765625,
+        "height": 639.546875
+      }
+    },
+    {
+      "name": "settings-defaults-desktop",
+      "width": 1440,
+      "content": 1440,
+      "height": 1000,
+      "dialog": null
+    },
+    {
+      "name": "settings-defaults-small-mobile",
+      "width": 320,
+      "content": 320,
+      "height": 963,
+      "dialog": null
+    },
+    {
+      "name": "settings-defaults-editor-small-mobile",
+      "width": 320,
+      "content": 320,
+      "height": 963,
+      "dialog": {
+        "top": 74.65625,
+        "bottom": 565.34375,
+        "height": 490.6875
+      }
+    },
+    {
+      "name": "settings-add-small-mobile",
+      "width": 320,
+      "content": 320,
+      "height": 1367,
+      "dialog": {
+        "top": 12,
+        "bottom": 628,
+        "height": 616
+      }
+    }
+  ]
+}

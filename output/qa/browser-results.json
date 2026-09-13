@@ -1,0 +1,23 @@
+{
+  "errors": [],
+  "overflows": [
+    {
+      "screen": "intake-mobile",
+      "width": 390,
+      "content": 390
+    },
+    {
+      "screen": "detail-mobile",
+      "width": 390,
+      "content": 390
+    },
+    {
+      "screen": "settings-mobile",
+      "width": 390,
+      "content": 390
+    }
+  ],
+  "orderUrl": "http://127.0.0.1:3105/orders/de51981b-f295-498a-8d1a-b279f7ff15be",
+  "orderText": "Back to orders\n\nORDER SG-1053\n\nQA Tailoring Customer\n\n2 pieces · Due 20 September\n\nQR labels\nPrint order\nReceived\n− Normal\nEvery piece, every step\n\nFollow each garment through the studio.\n\nBlouse\n\nNo fabric notes\n\n₹650\n\nConfirmed measurements · Inches\n\nBust\n36.5 in\nWaist\n—\nShoulder\n—\nArmhole\n—\nSleeve length\n—\nSleeve opening\n—\nBlouse length\n—\nFront neck depth\n—\nBack neck depth\n—\nCuff width\n7.5 in\n\nRecorded 13/9/2026 · Shop owner\n\nCutting\nSizing\nHandloom\nStitching\nIroning\nEdit piece measurements\nMove to Sizing\nRequest correction\nBlouse\n\nNo fabric notes\n\n₹650\n\nConfirmed measurements · Inches\n\nBust\n36.5 in\nWaist\n—\nShoulder\n—\nArmhole\n—\nSleeve length\n—\nSleeve opening\n—\nBlouse length\n—\nFront neck depth\n—\nBack neck depth\n—\nCuff width\n7.5 in\n\nRecorded 13/9/2026 · Shop owner\n\nCutting\nSizing\nHandloom\nStitching\nIroning\nEdit piece measurements\nMove to Sizing\nRequest correction\nA note for the team\n\nNo special instructions for this order.\n\nOrder activity\nOrder created\n\nSG-1053 was added to the queue.\n\n13 Sept 2026, 7:47 am\n1–1 of 1\nQT\nCustomer details\n\nQA Tailoring Customer\n\nPhone\n9000000088\nView measurements & profile\nPayment details\nOrder total\n₹1,300\nAmount paid\n₹300\nBalance\n₹1,000\nRecord payment\nCash\n13 Sept\n₹300",
+  "pendingOrderText": "Back to orders\n\nORDER SG-1054\n\nQA Tailoring Customer\n\n1 piece · Due 20 September\n\nQR labels\nPrint order\nIn progress\n− Normal\nEvery piece, every step\n\nFollow each garment through the studio.\n\nQA Custom Kurta\n\nNo fabric notes\n\n₹750\n\nConfirmed measurements · Inches\n\nFinished length\n41.25 in\n\nRecorded 13/9/2026 · Shop owner\n\nEarlier measurements for this piece\nCutting\nSizing\nHandloom\nStitching\nIroning\nMove to Handloom\nRequest correction\nA note for the team\n\nNo special instructions for this order.\n\nOrder activity\nCutting complete\n\nSG-1054 · QA Custom Kurta\n\n13 Sept 2026, 7:47 am\nMeasurements confirmed\n\nSG-1054 · QA Custom Kurta\n\n13 Sept 2026, 7:47 am\nOrder created\n\nSG-1054 was added to the queue.\n\n13 Sept 2026, 7:47 am\n1–3 of 3\nQT\nCustomer details\n\nQA Tailoring Customer\n\nPhone\n9000000088\nView measurements & profile\nPayment details\nOrder total\n₹750\nAmount paid\n₹0\nBalance\n₹750\nRecord payment"
+}

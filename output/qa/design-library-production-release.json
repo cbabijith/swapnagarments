@@ -1,0 +1,123 @@
+{
+  "verifiedAt": "2026-09-13T06:19:48.144Z",
+  "commit": "775def5de1399af96ce18261364b489750ef74ae",
+  "deployment": {
+    "state": "success",
+    "description": "Success - swapna-garmentsweb-production.up.railway.app",
+    "url": "https://railway.com/project/a5c1e06b-847f-4242-8896-7c2056ceb6a7/service/01603962-f84e-4bb6-8b30-a483ca8e8842?id=ce52aa64-f250-4eba-b01f-27e8052c50fd&environmentId=88f679c9-2cac-431b-b3fe-8951112d0759"
+  },
+  "publicSvgFilesVerified": 150,
+  "results": [
+    {
+      "path": "/api/health",
+      "status": 200,
+      "cache": "no-store",
+      "body": {
+        "status": "ok",
+        "database": "connected",
+        "bucket": "connected"
+      }
+    },
+    {
+      "path": "/api/session",
+      "status": 401,
+      "cache": "no-store",
+      "body": {
+        "error": "Please sign in.",
+        "setupRequired": false,
+        "setupAvailable": false
+      }
+    },
+    {
+      "path": "/api/settings",
+      "status": 401,
+      "cache": "no-store",
+      "body": {
+        "error": "Please sign in again."
+      }
+    },
+    {
+      "path": "/api/design-library",
+      "status": 401,
+      "cache": "no-store",
+      "body": {
+        "error": "Please sign in again."
+      }
+    },
+    {
+      "path": "/api/design-library/upload-test/image",
+      "status": 401,
+      "cache": "no-store",
+      "body": {
+        "error": "Please sign in again."
+      }
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/orders/new",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/orders",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/customers",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/workflow",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/settings",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/settings/designs",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/billing",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    }
+  ],
+  "writes": [
+    {
+      "path": "/api/design-library",
+      "method": "PATCH",
+      "status": 401,
+      "cache": "no-store"
+    },
+    {
+      "path": "/api/design-library/upload",
+      "method": "POST",
+      "status": 401,
+      "cache": "no-store"
+    },
+    {
+      "path": "/api/settings",
+      "method": "POST",
+      "status": 401,
+      "cache": "no-store"
+    },
+    {
+      "path": "/api/orders",
+      "method": "POST",
+      "status": 401,
+      "cache": "no-store"
+    }
+  ],
+  "scope": "Exact-commit Railway success, all 150 SVG hashes, database/bucket health, page responses, owner protection and private endpoint checks. Full authoring/order/upload behavior was tested in local preview and isolated PostgreSQL/S3 integration fixtures. No production shop test records, uploads or cleanup were created."
+}

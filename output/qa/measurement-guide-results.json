@@ -1,0 +1,47 @@
+{
+  "complete": true,
+  "checks": [
+    "All 22 guides render, settings field thumbnails, selectable/disabled guides, preview, Escape closes help without closing the editor",
+    "Saved piece keeps its custom and one-off guides when confirming an updated measurement",
+    "Custom field guide and shop hint save, correct centimetres in intake and one-off picker, Enter value focus, guided order creation",
+    "Saved customer profile retains values and uses the same configured visual guide",
+    "Mobile guide heading visible, next/previous navigation, entered values preserved, 320px layout and focus return"
+  ],
+  "errors": [],
+  "geometry": [
+    {
+      "name": "measurement-settings-fields-desktop",
+      "width": 1440,
+      "content": 1440,
+      "dialog": {
+        "top": 105,
+        "bottom": 895,
+        "width": 730,
+        "scrollWidth": 728
+      }
+    },
+    {
+      "name": "measurement-guide-picker-desktop",
+      "width": 1440,
+      "content": 1440,
+      "dialog": {
+        "top": 105,
+        "bottom": 895,
+        "width": 730,
+        "scrollWidth": 728
+      }
+    },
+    {
+      "name": "measurement-guide-picker-mobile",
+      "width": 390,
+      "content": 390,
+      "dialog": {
+        "top": 12,
+        "bottom": 832,
+        "width": 358,
+        "scrollWidth": 356
+      }
+    }
+  ],
+  "guideCount": 22
+}

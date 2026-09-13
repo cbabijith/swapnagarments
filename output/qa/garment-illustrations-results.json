@@ -1,0 +1,99 @@
+{
+  "complete": true,
+  "illustrationCount": 12,
+  "checks": [
+    "Six existing garment thumbnails, all 12 selectable illustrations, Automatic reset, 390/320px chooser layout",
+    "Custom image saves, remains after rename/duplicate/archive, and appears beside the selected default",
+    "Default/native/image garment selection; searchable chooser; archived items excluded; Escape/focus return; mobile layouts; Enter in search does not submit an order; selected price/template produces a saved order",
+    "Customer measurement buttons show the chosen image and open the correct saved profile",
+    "Saved orders retain their original custom illustration after catalogue image changes; mobile order cards and piece details use it"
+  ],
+  "errors": [],
+  "consoleErrors": [],
+  "geometry": [
+    {
+      "name": "garment-catalogue-desktop",
+      "width": 1440,
+      "content": 1440,
+      "dialog": null
+    },
+    {
+      "name": "garment-image-picker-desktop",
+      "width": 1440,
+      "content": 1440,
+      "dialog": {
+        "top": 105,
+        "bottom": 895,
+        "width": 730,
+        "scrollWidth": 728
+      }
+    },
+    {
+      "name": "garment-image-picker-390",
+      "width": 390,
+      "content": 390,
+      "dialog": {
+        "top": 12,
+        "bottom": 832,
+        "width": 358,
+        "scrollWidth": 356
+      }
+    },
+    {
+      "name": "garment-image-picker-320",
+      "width": 320,
+      "content": 320,
+      "dialog": {
+        "top": 12,
+        "bottom": 628,
+        "width": 288,
+        "scrollWidth": 286
+      }
+    },
+    {
+      "name": "garment-order-chooser-desktop",
+      "width": 1440,
+      "content": 1440,
+      "dialog": {
+        "top": 141.25,
+        "bottom": 858.75,
+        "width": 650,
+        "scrollWidth": 648
+      }
+    },
+    {
+      "name": "garment-order-chooser-390",
+      "width": 390,
+      "content": 390,
+      "dialog": {
+        "top": 16,
+        "bottom": 828,
+        "width": 362,
+        "scrollWidth": 360
+      }
+    },
+    {
+      "name": "garment-order-chooser-320",
+      "width": 320,
+      "content": 320,
+      "dialog": {
+        "top": 16,
+        "bottom": 624,
+        "width": 292,
+        "scrollWidth": 290
+      }
+    },
+    {
+      "name": "garment-customer-profiles",
+      "width": 1440,
+      "content": 1440,
+      "dialog": null
+    },
+    {
+      "name": "garment-saved-order-mobile",
+      "width": 390,
+      "content": 390,
+      "dialog": null
+    }
+  ]
+}

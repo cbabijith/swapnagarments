@@ -1,0 +1,297 @@
+{
+  "commit": "601a6faf40f50433c85dc021e8b1d1f584e82f67",
+  "deployment": "03b2d0e7-2ec8-4d50-9e0a-e1359ce237cf",
+  "deploymentStatus": "success",
+  "origin": "https://swapna-garmentsweb-production.up.railway.app",
+  "startedAt": "2026-09-13T08:38:32.182Z",
+  "api": [
+    {
+      "path": "/api/health",
+      "status": 200,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "body": {
+        "status": "ok",
+        "database": "connected",
+        "bucket": "connected"
+      }
+    },
+    {
+      "path": "/api/session",
+      "status": 401,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "body": {
+        "error": "Please sign in.",
+        "setupRequired": false,
+        "setupAvailable": false
+      }
+    },
+    {
+      "path": "/api/team",
+      "status": 401,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "body": {
+        "error": "Please sign in again."
+      }
+    },
+    {
+      "path": "/api/work",
+      "status": 401,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "body": {
+        "error": "Please sign in again."
+      }
+    },
+    {
+      "path": "/api/work?code=SG-1001",
+      "status": 401,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "body": {
+        "error": "Please sign in again."
+      }
+    },
+    {
+      "path": "/api/workspace",
+      "status": 401,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "body": {
+        "error": "Please sign in.",
+        "setupRequired": false,
+        "setupAvailable": false
+      }
+    },
+    {
+      "path": "/api/workflow",
+      "status": 401,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "body": {
+        "error": "Please sign in again."
+      }
+    },
+    {
+      "path": "/api/orders",
+      "status": 401,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "body": {
+        "error": "Please sign in again."
+      }
+    },
+    {
+      "path": "/api/design-library/local-verification/image",
+      "status": 401,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "body": {
+        "error": "Please sign in again."
+      }
+    }
+  ],
+  "pages": [
+    {
+      "path": "/",
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "contentType": "text/html; charset=utf-8",
+      "hasDocument": true
+    },
+    {
+      "path": "/team",
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "contentType": "text/html; charset=utf-8",
+      "hasDocument": true
+    },
+    {
+      "path": "/my-work",
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "contentType": "text/html; charset=utf-8",
+      "hasDocument": true
+    },
+    {
+      "path": "/workflow",
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "contentType": "text/html; charset=utf-8",
+      "hasDocument": true
+    },
+    {
+      "path": "/scan",
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "contentType": "text/html; charset=utf-8",
+      "hasDocument": true
+    },
+    {
+      "path": "/orders",
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "contentType": "text/html; charset=utf-8",
+      "hasDocument": true
+    },
+    {
+      "path": "/orders/new",
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "contentType": "text/html; charset=utf-8",
+      "hasDocument": true
+    },
+    {
+      "path": "/customers",
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "contentType": "text/html; charset=utf-8",
+      "hasDocument": true
+    },
+    {
+      "path": "/billing",
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "contentType": "text/html; charset=utf-8",
+      "hasDocument": true
+    },
+    {
+      "path": "/settings",
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "contentType": "text/html; charset=utf-8",
+      "hasDocument": true
+    },
+    {
+      "path": "/settings/designs",
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "contentType": "text/html; charset=utf-8",
+      "hasDocument": true
+    }
+  ],
+  "assets": [
+    {
+      "path": "/_next/static/chunks/3jznn-yv4tprc.css",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "text/css; charset=UTF-8",
+      "bytes": 50175
+    },
+    {
+      "path": "/_next/static/chunks/1rm21sv1_svhi.css",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "text/css; charset=UTF-8",
+      "bytes": 43496
+    },
+    {
+      "path": "/_next/static/chunks/1627oe_1jd6at.css",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "text/css; charset=UTF-8",
+      "bytes": 8661
+    },
+    {
+      "path": "/_next/static/chunks/310vm2bl3xxpt.js",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 5364
+    },
+    {
+      "path": "/_next/static/chunks/3ca3-bs3jddia.js",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 28907
+    },
+    {
+      "path": "/_next/static/chunks/27b1n7jiwiq6m.js",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 229156
+    },
+    {
+      "path": "/_next/static/chunks/2-rtuqsgzmno4.js",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 165743
+    },
+    {
+      "path": "/_next/static/chunks/turbopack-37fu1nzy6m6um.js",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 10946
+    },
+    {
+      "path": "/_next/static/chunks/10_sdt0bv858g.js",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 14478
+    },
+    {
+      "path": "/_next/static/chunks/0o20fmaz_1hrn.js",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 48443
+    },
+    {
+      "path": "/_next/static/chunks/0uqpiblz5f8-h.js",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 185656
+    },
+    {
+      "path": "/_next/static/chunks/3u3takk0l7rlx.js",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 486113
+    },
+    {
+      "path": "/_next/static/chunks/0o_0lk8y0phe-.js",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 12683
+    },
+    {
+      "path": "/_next/static/chunks/0cz1d0mv5g_q7.js",
+      "status": 200,
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentType": "application/javascript; charset=UTF-8",
+      "bytes": 112594
+    }
+  ],
+  "unsignedCommands": [
+    {
+      "path": "/api/team",
+      "status": 401,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "body": {
+        "error": "Please sign in again."
+      }
+    },
+    {
+      "path": "/api/work",
+      "status": 401,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "body": {
+        "error": "Please sign in again."
+      }
+    }
+  ],
+  "failures": [],
+  "verifiedAt": "2026-09-13T08:38:36.019Z"
+}

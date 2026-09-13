@@ -1,0 +1,92 @@
+{
+  "verifiedAt": "2026-09-13T03:58:35.346Z",
+  "commit": "3276bdb2381610c7694b3c2be645d265f6aa4770",
+  "deployment": {
+    "state": "success",
+    "description": "Success - swapna-garmentsweb-production.up.railway.app",
+    "url": "https://railway.com/project/a5c1e06b-847f-4242-8896-7c2056ceb6a7/service/01603962-f84e-4bb6-8b30-a483ca8e8842?id=ecb7a9b9-df6e-4680-86fb-cd219203c459&environmentId=88f679c9-2cac-431b-b3fe-8951112d0759"
+  },
+  "results": [
+    {
+      "path": "/api/health",
+      "status": 200,
+      "cache": "no-store",
+      "body": {
+        "status": "ok",
+        "database": "connected",
+        "bucket": "connected"
+      }
+    },
+    {
+      "path": "/api/session",
+      "status": 401,
+      "cache": "no-store",
+      "body": {
+        "error": "Please sign in.",
+        "setupRequired": false,
+        "setupAvailable": false
+      }
+    },
+    {
+      "path": "/api/settings",
+      "status": 401,
+      "cache": "no-store",
+      "body": {
+        "error": "Please sign in again."
+      }
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/orders/new",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/orders",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/customers",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/workflow",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/settings",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "path": "/billing",
+      "status": 200,
+      "cache": "private, no-cache, no-store, max-age=0, must-revalidate"
+    }
+  ],
+  "posts": [
+    {
+      "path": "/api/settings",
+      "status": 401,
+      "cache": "no-store"
+    },
+    {
+      "path": "/api/measurements",
+      "status": 401,
+      "cache": "no-store"
+    },
+    {
+      "path": "/api/orders",
+      "status": 401,
+      "cache": "no-store"
+    }
+  ],
+  "verificationScope": "Exact-commit Railway success status and anonymous page, database/bucket health and private-route checks. No live customer, measurement or order writes were performed. Illustrated flows were exercised in the local sample workspace; persistence was checked separately in isolated database tests."
+}

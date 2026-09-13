@@ -1,0 +1,105 @@
+{
+  "complete": true,
+  "checks": [
+    "All 150 image entries available; alias search, category search, enlarge, favourite, archive/restore and custom image upload work",
+    "Custom garment image persists; allowed design options and a reusable design preset save; Enter in image search does not submit; settings fits 390px and 320px",
+    "Order creation reuses allowed preset, selects sleeve length and uploads reference; quantity expands to two immutable design snapshots",
+    "Catalogue image replacement and archive preserve both saved order pictures and details, including mobile cards and print view"
+  ],
+  "geometry": [
+    {
+      "name": "design-library-desktop",
+      "width": 1440,
+      "content": 1440,
+      "dialogs": []
+    },
+    {
+      "name": "design-back-enlarged",
+      "width": 1440,
+      "content": 1440,
+      "dialogs": []
+    },
+    {
+      "name": "design-upload-preview",
+      "width": 1440,
+      "content": 1440,
+      "dialogs": []
+    },
+    {
+      "name": "design-garment-setup-390",
+      "width": 390,
+      "content": 390,
+      "dialogs": [
+        {
+          "top": 12,
+          "bottom": 832,
+          "width": 358,
+          "scrollWidth": 356
+        }
+      ]
+    },
+    {
+      "name": "design-garment-setup-320",
+      "width": 320,
+      "content": 320,
+      "dialogs": [
+        {
+          "top": 12,
+          "bottom": 628,
+          "width": 288,
+          "scrollWidth": 286
+        }
+      ]
+    },
+    {
+      "name": "design-order-desktop",
+      "width": 1440,
+      "content": 1440,
+      "dialogs": []
+    },
+    {
+      "name": "design-order-chooser-390",
+      "width": 390,
+      "content": 390,
+      "dialogs": []
+    },
+    {
+      "name": "design-order-chooser-320",
+      "width": 320,
+      "content": 320,
+      "dialogs": []
+    },
+    {
+      "name": "design-saved-order",
+      "width": 1440,
+      "content": 1440,
+      "dialogs": []
+    },
+    {
+      "name": "design-saved-order-mobile",
+      "width": 390,
+      "content": 390,
+      "dialogs": []
+    },
+    {
+      "name": "design-saved-reference-enlarged",
+      "width": 390,
+      "content": 390,
+      "dialogs": [
+        {
+          "top": 207.75,
+          "bottom": 636.25,
+          "width": 358,
+          "scrollWidth": 356
+        }
+      ]
+    },
+    {
+      "name": "design-saved-order-print",
+      "width": 390,
+      "content": 390,
+      "dialogs": []
+    }
+  ],
+  "errors": []
+}

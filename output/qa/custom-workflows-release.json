@@ -1,0 +1,30 @@
+{
+  "lint": "passed",
+  "verifiedAt": "2026-09-13T08:48:46.2069787Z",
+  "typecheck": "passed",
+  "commit": "d038ad08ccd43d3292208e584307e6d16ad10edb",
+  "deployment": "3e35bdfc-1e3a-4a59-a7b8-7f4682a9530a",
+  "railwayStatus": "success",
+  "productionBuild": "passed",
+  "testsPassed": 31,
+  "browser": {
+    "sameWorkstationProgress": "passed",
+    "duplicateArchiveRestore": "passed",
+    "reloadPersistence": "passed",
+    "environment": "deployed bundle with isolated API fixtures",
+    "pageErrors": 0,
+    "defaultAndGarmentSelection": "passed",
+    "widths": [
+      1440,
+      390
+    ],
+    "addEditReorderRemove": "passed",
+    "signOut": "passed"
+  },
+  "liveHealth": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "sessionStatus": 401
+}
