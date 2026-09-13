@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import {
   pgTable,
+  jsonb,
   text,
   integer,
   timestamp,
@@ -58,6 +59,13 @@ export const orders = pgTable(
 export const orderItems = pgTable(
   "sg_order_items",
   {
+    measurement:
+      jsonb().$type<
+        import("@/features/measurements/contracts/profiles").MeasurementSnapshot
+      >(),
+    measurementHistory: jsonb("measurement_history").$type<
+      import("@/features/measurements/contracts/profiles").MeasurementSnapshot[]
+    >(),
     id: text().primaryKey(),
     orderId: text("order_id")
       .notNull()

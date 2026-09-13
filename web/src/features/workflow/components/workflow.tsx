@@ -36,7 +36,9 @@ function WorkflowColumn({ station }: { station: number }) {
           {error}
         </p>
       )}
-      {column?.pieces.map(({ order, item, customer }) => {
+      {column?.pieces.map(({ order, item, customer, measurementsPending }) => {
+        const pending =
+          measurementsPending || item.measurement?.confirmed === false;
         const overdue = order.dueDate < query.data!.today;
         const actionLabel = STATIONS[item.station + 1]
           ? `Move to ${STATIONS[item.station + 1]}`
@@ -67,10 +69,18 @@ function WorkflowColumn({ station }: { station: number }) {
                   : formatDate(order.dueDate)}
               </span>
             </div>
+            {pending && (
+              <p className="note-box">
+                Measurements pending.{" "}
+                <Link className="text-link" href={`/orders/${order.id}`}>
+                  Confirm sizes in the order
+                </Link>
+              </p>
+            )}
             <button
               className="button subtle small-button"
               aria-label={`${actionLabel} for ${item.garment}, ${order.number}, ${customer.name}`}
-              disabled={Boolean(busy) || query.isRefreshing}
+              disabled={Boolean(busy) || query.isRefreshing || pending}
               onClick={async () => {
                 setBusy(item.id);
                 setError("");

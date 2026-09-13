@@ -2,7 +2,7 @@ import "server-only";
 import { eq } from "drizzle-orm";
 import { createHash } from "node:crypto";
 import { db, ensureSchema } from "@/db";
-import { workspaces, mutations } from "@/db/schema";
+import { workspaces, mutations, domainEvents } from "@/db/schema";
 import {
   mutationSchema,
   type WorkspaceMutation,
@@ -14,6 +14,9 @@ import { orderService } from "./order-service";
 import { workflowService } from "./workflow-service";
 import { billingService } from "./billing-service";
 import { reportService } from "./report-service";
+import { settingsService } from "./settings-service";
+import { measurementService } from "./measurement-service";
+import { intakeService } from "./intake-service";
 import {
   readStoredWorkspace,
   persistStoredWorkspace,
@@ -102,6 +105,16 @@ export async function executeWorkspaceCommand(
     };
     let result: { data: Workspace; resultId?: string };
     switch (action.type) {
+      case "settings.save":
+        result = settingsService({ ...context, action });
+        break;
+      case "order.intake":
+        result = intakeService({ ...context, action });
+        break;
+      case "measurement.save":
+      case "piece.measurements":
+        result = measurementService({ ...context, action });
+        break;
       case "customer.save":
         result = customerService({ ...context, action });
         break;
@@ -130,6 +143,17 @@ export async function executeWorkspaceCommand(
       id: input.mutationId,
       resultId: result.resultId ?? null,
       fingerprint,
+    });
+    // Durable event identity commits with the state and retry receipt. No external side effects here.
+    const eventType =
+      action.type === "order.intake" || action.type === "order.create"
+        ? "order.created"
+        : action.type;
+    await tx.insert(domainEvents).values({
+      id: crypto.randomUUID(),
+      mutationId: input.mutationId,
+      type: eventType,
+      resultId: result.resultId ?? null,
     });
     if (header.storageModel === "relational")
       await recordWorkflowHistory(

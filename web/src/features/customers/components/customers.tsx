@@ -6,7 +6,6 @@ import {
   Search,
   ArrowUpRight,
   ArrowLeft,
-  Ruler,
   Pencil,
   Check,
 } from "lucide-react";
@@ -25,6 +24,7 @@ import {
   SectionHeading,
   StatusBadge,
 } from "@/shared/components/ui";
+import { CustomerMeasurements } from "@/features/measurements/components/customer-measurements";
 import { type Customer, money, total, formatDate } from "@/shared/workspace";
 
 function CustomerForm({
@@ -218,13 +218,9 @@ export function CustomersList() {
 }
 
 export function CustomerDetail({ id }: { id: string }) {
-  const { saveCustomer } = useCustomers();
   const [page, setPage] = useState(1);
   const read = useCustomerDetail(id, page);
   const [edit, setEdit] = useState(false);
-  const [measurements, setMeasurements] = useState(false);
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
   const customer = read.data?.data.customers.find((entry) => entry.id === id);
   if (!customer && (read.isLoading || read.error))
     return (
@@ -269,31 +265,7 @@ export function CustomerDetail({ id }: { id: string }) {
       />
       <div className="detail-columns">
         <div className="stack">
-          <section className="panel">
-            <SectionHeading
-              title="Blouse measurements"
-              subtitle="Saved in inches. Confirm the fit with the customer for each new order."
-            />
-            <div className="padded" style={{ paddingTop: 0 }}>
-              <div className="measurement-grid">
-                {Object.entries(customer.measurements).map(([label, value]) => (
-                  <div className="measurement-box" key={label}>
-                    <span>{label}</span>
-                    <strong>{value}″</strong>
-                  </div>
-                ))}
-              </div>
-              {!Object.keys(customer.measurements).length && (
-                <p className="note-box">No measurements saved yet.</p>
-              )}
-              <button className="button" onClick={() => setMeasurements(true)}>
-                <Ruler size={16} />
-                {Object.keys(customer.measurements).length
-                  ? "Update measurements"
-                  : "Add measurements"}
-              </button>
-            </div>
-          </section>
+          <CustomerMeasurements customer={customer} />
           <section className="panel">
             <SectionHeading
               title="Order history"
@@ -345,75 +317,6 @@ export function CustomerDetail({ id }: { id: string }) {
       </div>
       {edit && (
         <CustomerForm customer={customer} onClose={() => setEdit(false)} />
-      )}
-      {measurements && (
-        <Dialog
-          title="Blouse measurements"
-          subtitle="Enter measurements in inches. Leave unused fields blank."
-          busy={busy}
-          onClose={() => setMeasurements(false)}
-        >
-          <form
-            onSubmit={async (event) => {
-              event.preventDefault();
-              setError("");
-              setBusy(true);
-              const form = new FormData(event.currentTarget);
-              const values = Object.fromEntries(
-                [...form.entries()]
-                  .map(([key, value]) => [key, String(value)])
-                  .filter(([, value]) => value !== ""),
-              );
-              try {
-                await saveCustomer({ ...customer, measurements: values });
-                setMeasurements(false);
-              } catch (error) {
-                setError(
-                  error instanceof Error
-                    ? error.message
-                    : "Could not save measurements.",
-                );
-              } finally {
-                setBusy(false);
-              }
-            }}
-          >
-            <div className="dialog-body form-grid">
-              {[
-                "Bust",
-                "Waist",
-                "Shoulder",
-                "Sleeve length",
-                "Blouse length",
-                "Neck depth",
-              ].map((label) => (
-                <label className="field" key={label}>
-                  {label} (in)
-                  <input
-                    name={label}
-                    defaultValue={customer.measurements[label]}
-                    type="number"
-                    min="0.25"
-                    max="150"
-                    step="0.25"
-                    inputMode="decimal"
-                    placeholder="—"
-                  />
-                </label>
-              ))}
-              {error && (
-                <p className="form-error full-width" role="alert">
-                  {error}
-                </p>
-              )}
-            </div>
-            <div className="dialog-actions">
-              <button className="button primary" disabled={busy}>
-                {busy ? "Saving…" : "Save measurements"}
-              </button>
-            </div>
-          </form>
-        </Dialog>
       )}
     </>
   );

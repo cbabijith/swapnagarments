@@ -1,5 +1,6 @@
 import { type Workspace, type Customer } from "@/shared/workspace";
 import { WorkspaceError } from "@/shared/errors";
+import { phoneKey } from "./phone";
 import type { MutationContext } from "@/shared/domain/mutation-context";
 
 export function saveCustomer({
@@ -13,8 +14,7 @@ export function saveCustomer({
   const duplicate = data.customers.find(
     (entry) =>
       entry.id !== action.customer.id &&
-      entry.phone.replace(/\D/g, "") ===
-        action.customer.phone.replace(/\D/g, ""),
+      phoneKey(entry.phone) === phoneKey(action.customer.phone),
   );
   if (duplicate)
     throw new WorkspaceError(
@@ -22,6 +22,7 @@ export function saveCustomer({
     );
   const updated: Customer = {
     ...action.customer,
+    ...(existing?.profiles ? { profiles: existing.profiles } : {}),
     measurementHistory: existing?.measurementHistory ?? [],
   };
   if (

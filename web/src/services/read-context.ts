@@ -93,6 +93,7 @@ export function hydrateCustomers(
     email: c.email,
     notes: c.notes,
     measurements: c.measurements,
+    ...(c.hasProfiles ? { profiles: [] } : {}),
   }));
 }
 export async function hydrateOrders(
@@ -136,6 +137,10 @@ export async function hydrateOrders(
         material: i.material,
         station: i.station,
         price: i.price,
+        ...(i.measurement ? { measurement: i.measurement } : {}),
+        ...(i.measurementHistory
+          ? { measurementHistory: i.measurementHistory }
+          : {}),
       })),
     payments: paymentRows
       .filter((p) => p.orderId === o.id)

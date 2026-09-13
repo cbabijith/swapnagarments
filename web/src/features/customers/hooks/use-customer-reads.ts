@@ -3,6 +3,7 @@
 import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
 import { emptyWorkspace, prioritySort } from "@/shared/workspace";
 import type { CustomerRead } from "@/features/customers/types/queries";
+import { matchesCustomer } from "../domain/phone";
 
 export function useCustomerDirectory(query: string, page = 1, pageSize = 20) {
   const params = new URLSearchParams({
@@ -14,9 +15,7 @@ export function useCustomerDirectory(query: string, page = 1, pageSize = 20) {
     `/api/customers?${params}`,
     (workspace) => {
       const matches = workspace.customers.filter((customer) =>
-        `${customer.name} ${customer.phone}`
-          .toLowerCase()
-          .includes(query.trim().toLowerCase()),
+        matchesCustomer(customer, query),
       );
       const customers = matches.slice((page - 1) * pageSize, page * pageSize);
       return {

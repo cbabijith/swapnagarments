@@ -19,6 +19,11 @@ export function changePiece({
     );
   const piece = order.items.find((item) => item.id === action.pieceId);
   if (!piece) throw new WorkspaceError("Garment not found.", 404);
+  if (piece.measurement && !piece.measurement.confirmed)
+    throw new WorkspaceError(
+      "Confirm this piece's measurements in the order before starting production.",
+      409,
+    );
   if (action.type === "piece.advance") {
     if (
       piece.station !== action.expectedStation ||

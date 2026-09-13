@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import type { Pool } from "pg";
 import { baseline } from "./migrations/0001-baseline";
 import { relationalTables } from "./migrations/0003-relational-tables";
+import { catalogueMeasurements } from "./migrations/0004-catalogue-measurements";
 import { emptyWorkspace } from "@/shared/workspace";
 
 const migrations = [
@@ -13,6 +14,11 @@ const migrations = [
     sql: "ALTER TABLE sg_mutations ADD COLUMN IF NOT EXISTS fingerprint text;",
   },
   { version: 3, name: "relational_shop_tables", sql: relationalTables },
+  {
+    version: 4,
+    name: "catalogue_and_order_measurements",
+    sql: catalogueMeasurements,
+  },
 ];
 
 /** Every migration and its ledger entry commit together under the original schema lock. */

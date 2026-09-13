@@ -5,6 +5,8 @@ import type { CustomerRead } from "@/features/customers/types/queries";
 import type { PageQuery } from "@/shared/contracts/query-input";
 import { emptyWorkspace, prioritySort } from "@/shared/workspace";
 import { WorkspaceError } from "@/shared/errors";
+import { attachProfiles } from "./catalogue-storage";
+import { matchesCustomer, phoneKey } from "@/features/customers/domain/phone";
 import {
   withRead,
   countRows,
@@ -22,12 +24,15 @@ export const readCustomers = (input: PageQuery & { q: string }) =>
   withRead(async ({ tx, revision, legacy }): Promise<CustomerRead> => {
     const data = emptyWorkspace();
     if (legacy) {
-      const rows = legacy.customers.filter((c) =>
-        `${c.name} ${c.phone}`.toLowerCase().includes(input.q.toLowerCase()),
-      );
+      const rows = legacy.customers.filter((c) => matchesCustomer(c, input.q));
       data.customers = slicePage(rows, input).map(
-        ({ measurementHistory: _history, ...customer }) => {
+        ({
+          measurementHistory: _history,
+          profiles: _profiles,
+          ...customer
+        }) => {
           void _history;
+          void _profiles;
           return customer;
         },
       );
@@ -45,7 +50,13 @@ export const readCustomers = (input: PageQuery & { q: string }) =>
     }
     const pattern = literalPattern(input.q),
       where = input.q
-        ? or(ilike(customers.name, pattern), ilike(customers.phone, pattern))
+        ? or(
+            ilike(customers.name, pattern),
+            ilike(customers.phone, pattern),
+            /^[+\d\s-]+$/.test(input.q) && phoneKey(input.q)
+              ? ilike(customers.phoneKey, literalPattern(phoneKey(input.q)))
+              : undefined,
+          )
         : undefined;
     const count = await countRows(tx, customers, where);
     const rows = await tx
@@ -117,6 +128,7 @@ export const readCustomer = (id: string, input: PageQuery) =>
       .offset(offset(input));
     const data = await hydrateOrders(tx, rows);
     data.customers = hydrateCustomers(customerRows);
+    await attachProfiles(tx, data.customers);
     return {
       revision,
       data,

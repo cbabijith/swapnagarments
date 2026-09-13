@@ -17,6 +17,12 @@ import {
 import { iso, stableJson } from "@/db/workspace-validation";
 import type { Workspace } from "@/shared/workspace";
 import type { WorkspaceMutation } from "@/shared/contracts/command";
+import {
+  readStoredCatalogue,
+  writeCatalogue,
+  attachProfiles,
+  writeProfiles,
+} from "./catalogue-storage";
 
 export type StorageHeader = typeof workspaces.$inferSelect;
 
@@ -61,7 +67,9 @@ export async function readRelationalWorkspace(
   const versionsByCustomer = group(versions, (row) => row.customerId),
     itemsByOrder = group(items, (row) => row.orderId),
     paymentsByOrder = group(paymentRows, (row) => row.orderId);
-  return {
+  const catalogue = await readStoredCatalogue(tx);
+  const data: Workspace = {
+    ...(catalogue ? { catalogue } : {}),
     customers: customerRows.map((c) => ({
       id: c.id,
       name: c.name,
@@ -69,6 +77,7 @@ export async function readRelationalWorkspace(
       email: c.email,
       notes: c.notes,
       measurements: c.measurements,
+      ...(c.hasProfiles ? { profiles: [] } : {}),
       ...(c.hasMeasurementHistory
         ? {
             measurementHistory: (versionsByCustomer.get(c.id) ?? []).map(
@@ -93,6 +102,10 @@ export async function readRelationalWorkspace(
         material: i.material,
         station: i.station,
         price: i.price,
+        ...(i.measurement ? { measurement: i.measurement } : {}),
+        ...(i.measurementHistory
+          ? { measurementHistory: i.measurementHistory }
+          : {}),
       })),
       payments: (paymentsByOrder.get(o.id) ?? []).map((p) => ({
         id: p.id,
@@ -132,6 +145,8 @@ export async function readRelationalWorkspace(
         }
       : {}),
   };
+  await attachProfiles(tx, data.customers);
+  return data;
 }
 
 export function readStoredWorkspace(
@@ -155,6 +170,7 @@ function rowsFor(data: Workspace) {
       notes: c.notes,
       measurements: c.measurements,
       hasMeasurementHistory: c.measurementHistory !== undefined,
+      hasProfiles: c.profiles !== undefined,
     })),
     versions: data.customers.flatMap((c) =>
       (c.measurementHistory ?? []).map((v, version) => ({
@@ -230,6 +246,7 @@ export async function writeRelationalWorkspace(
   before: Workspace,
   after: Workspace,
 ) {
+  await writeCatalogue(tx, before, after);
   const a = rowsFor(before),
     b = rowsFor(after);
   const byId = <T extends { id: string }>(row: T) => row.id;
@@ -252,6 +269,7 @@ export async function writeRelationalWorkspace(
         target: [measurementVersions.customerId, measurementVersions.version],
         set: row,
       });
+  await writeProfiles(tx, before, after);
   for (const row of changed(a.orders, b.orders, byId, "orders"))
     await tx
       .insert(orders)
@@ -320,7 +338,7 @@ export async function recordWorkflowHistory(
   actor: string,
   occurredAt: string,
 ) {
-  if (action.type === "order.create") {
+  if (action.type === "order.create" || action.type === "order.intake") {
     const oldIds = new Set(before.orders.map((o) => o.id));
     const order = after.orders.find((o) => !oldIds.has(o.id));
     if (!order) throw new Error("Created order missing from transaction.");

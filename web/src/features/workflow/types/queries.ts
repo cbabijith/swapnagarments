@@ -1,6 +1,7 @@
 import type { PageInfo } from "@/shared/contracts/query";
 import type { Customer, Order, OrderItem } from "@/shared/workspace";
 export type WorkflowPiece = {
+  measurementsPending?: boolean;
   item: OrderItem;
   order: Pick<
     Order,

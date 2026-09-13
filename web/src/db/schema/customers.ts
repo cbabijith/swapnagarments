@@ -27,6 +27,7 @@ export const customers = pgTable(
     email: text().notNull(),
     notes: text().notNull(),
     measurements: jsonb().$type<Record<string, string>>().notNull(),
+    hasProfiles: boolean("has_profiles").notNull().default(false),
     hasMeasurementHistory: boolean("has_measurement_history")
       .notNull()
       .default(false),

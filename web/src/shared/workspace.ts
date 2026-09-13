@@ -31,6 +31,7 @@ export const GARMENTS = [
   "Other",
 ] as const;
 export type Workspace = {
+  catalogue?: import("@/features/settings/contracts/catalogue").Catalogue;
   customers: Customer[];
   orders: Order[];
   activity: Activity[];

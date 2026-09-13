@@ -10,7 +10,7 @@ import styles from "./customer-picker.module.css";
 type CustomerPickerProps = {
   value: Customer | null;
   onSelect: (customer: Customer) => void;
-  onAddNew: () => void;
+  onAddNew: (query: string) => void;
   disabled?: boolean;
 };
 
@@ -138,7 +138,7 @@ function CustomerSearch({
         type="button"
         className={styles.addButton}
         disabled={disabled}
-        onClick={onAddNew}
+        onClick={() => onAddNew(query.trim())}
       >
         <Plus size={17} aria-hidden="true" />
         Add new customer
@@ -193,9 +193,9 @@ export function CustomerPicker({
               changeButtonRef.current?.focus(),
             );
           }}
-          onAddNew={() => {
+          onAddNew={(query) => {
             setChanging(false);
-            onAddNew();
+            onAddNew(query);
           }}
         />
       )}

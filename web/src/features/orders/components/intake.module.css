@@ -1,0 +1,54 @@
+.customer {
+  margin-bottom: 24px;
+  max-width: 900px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 12px 0;
+}
+.row h3 {
+  margin-right: auto;
+}
+.piece {
+  border-top: 1px solid var(--line);
+  padding: 12px 0 25px;
+  margin-bottom: 12px;
+}
+.measureHead {
+  margin: 22px 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.check {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 12px;
+}
+.check input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--green);
+}
+.pending {
+  margin: 10px 0;
+  color: #865724;
+  background: #faf4e7;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 12px;
+}
+@media (max-width: 760px) {
+  .customer {
+    max-width: none;
+  }
+  .row {
+    gap: 12px;
+  }
+}

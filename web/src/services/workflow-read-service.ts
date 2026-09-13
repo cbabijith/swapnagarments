@@ -72,6 +72,7 @@ export const readWorkflow = (
         input.station === "all" || Number(input.station) === station
           ? await tx
               .select({
+                measurementsPending: sql<boolean>`coalesce((${orderItems.measurement}->>'confirmed')::boolean = false, false)`,
                 item: {
                   id: orderItems.id,
                   garment: orderItems.garment,

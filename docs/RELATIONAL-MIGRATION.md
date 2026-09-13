@@ -192,3 +192,22 @@ and mutation rows were unchanged. The immutable migration snapshot was verified.
 Database/bucket health returned connected; six website pages returned HTTP 200;
 all five feature command APIs required authentication; owner setup stayed closed.
 Authenticated HTTP workspace reads passed on the isolated restored database.
+
+## Catalogue and measurement extension (migration 4, local implementation)
+
+The configurable intake release adds `sg_shop_settings`, `sg_garments`,
+`sg_measurement_profiles`, piece measurement/history JSONB columns,
+`sg_customers.has_profiles`, and `sg_domain_events`. Startup adds these structures;
+it does not change the storage model. Existing records receive no invented size
+values or historical measurement snapshots.
+
+The release's reconciliation includes catalogue/profile rows and reconstructs all
+piece and profile history. Its tests cover original schema upgrades, absent/empty
+profile arrays, JSON intake followed by cutover, relational writes, rollback and
+recutover. The new event ledger stays alongside retry records during transitions.
+
+Use this release's operator tools for storage transitions after adopting the new
+fields. Continue writes with a compatible application; older JSON writers may not
+preserve fields they do not understand. The prior live cutover record above describes
+migration 3. Migration 4 has been tested in isolation and has not been applied to
+the live database by this implementation task.

@@ -1,4 +1,5 @@
 "use client";
+import { CatalogueSettings } from "./catalogue-editor";
 
 import { useState } from "react";
 import {
@@ -45,9 +46,10 @@ export function SettingsPage() {
       <PageHeading
         eyebrow="SHOP SETTINGS"
         title="Settings"
-        description="Check the database connection, view your account, and review saved daily reports."
+        description="Manage garments, measurement templates and shop defaults, then review your account and daily reports."
       />
-      <div className="settings-grid">
+      <CatalogueSettings />
+      <div className="settings-grid" style={{ marginTop: 24 }}>
         <section className="panel settings-card">
           <Database size={26} strokeWidth={1.5} />
           <h2>Database connection</h2>

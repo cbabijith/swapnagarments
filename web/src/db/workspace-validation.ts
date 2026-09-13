@@ -4,6 +4,11 @@ import { createHash } from "node:crypto";
 import { z } from "zod";
 import { date, id } from "@/shared/contracts/fields";
 import { total, paid, type Workspace } from "@/shared/workspace";
+import { catalogueSchema } from "@/features/settings/contracts/catalogue";
+import {
+  profileSchema,
+  snapshotSchema,
+} from "@/features/measurements/contracts/profiles";
 
 const timestamp = z.iso.datetime({ offset: true }).refine((value) => {
   const fraction = value.match(/\.(\d+)(?:Z|[+-]\d{2}:\d{2})$/)?.[1];
@@ -14,6 +19,7 @@ const money = z.number().int().min(1).max(100_000_000);
 const count = z.number().int().min(0).max(2_147_483_647);
 const reportMoney = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const workspaceSchema = z.strictObject({
+  catalogue: catalogueSchema.optional(),
   customers: z.array(
     z.strictObject({
       id,
@@ -22,6 +28,7 @@ const workspaceSchema = z.strictObject({
       email: z.string(),
       notes: z.string(),
       measurements: values,
+      profiles: z.array(profileSchema).optional(),
       measurementHistory: z
         .array(z.strictObject({ date: timestamp, values }))
         .optional(),
@@ -52,6 +59,8 @@ const workspaceSchema = z.strictObject({
             material: z.string(),
             station: z.number().int().min(0).max(5),
             price: money,
+            measurement: snapshotSchema.optional(),
+            measurementHistory: z.array(snapshotSchema).optional(),
           }),
         )
         .min(1),
@@ -168,7 +177,67 @@ export function validateWorkspace(source: unknown): Workspace {
   );
   const customerIds = new Set(data.customers.map((c) => c.id)),
     orderIds = new Set(data.orders.map((o) => o.id));
+  const garmentIds = new Set(data.catalogue?.garments.map((g) => g.id) ?? []);
+  if (data.catalogue) {
+    unique(
+      data.catalogue.garments.map((g) => g.id),
+      "garment IDs",
+    );
+    if (
+      !data.catalogue.garments.some(
+        (g) => g.id === data.catalogue!.defaultGarmentId && g.active,
+      )
+    )
+      throw new StorageMigrationError(
+        "Workspace has an unavailable default garment.",
+      );
+    for (const garment of data.catalogue.garments) {
+      unique(
+        garment.fields.map((f) => f.id),
+        "template field IDs",
+      );
+      unique(
+        garment.presets.map((p) => p.id),
+        "size preset IDs",
+      );
+    }
+  }
+  for (const customer of data.customers) {
+    unique(
+      (customer.profiles ?? []).map((p) => p.garmentId),
+      "customer profiles",
+    );
+    for (const profile of customer.profiles ?? []) {
+      if (
+        !garmentIds.has(profile.garmentId) ||
+        [profile.snapshot, ...profile.history].some(
+          (s) => s.garmentId !== profile.garmentId,
+        )
+      )
+        throw new StorageMigrationError(
+          "Workspace has a measurement profile without its garment.",
+        );
+    }
+  }
   for (const order of data.orders) {
+    for (const piece of order.items) {
+      if (
+        piece.measurement &&
+        (!garmentIds.has(piece.measurement.garmentId) ||
+          piece.measurement.garmentName !== piece.garment)
+      )
+        throw new StorageMigrationError(
+          "Workspace has a piece measurement without its garment.",
+        );
+      if (
+        piece.measurement &&
+        !piece.measurement.confirmed &&
+        piece.station > 0
+      )
+        throw new StorageMigrationError(
+          "Workspace has a piece in production without confirmed measurements.",
+        );
+    }
     if (!customerIds.has(order.customerId))
       throw new StorageMigrationError(
         "Workspace has an order without its customer.",
@@ -238,6 +307,12 @@ export function workspaceManifest(source: unknown) {
   return {
     checksum: createHash("sha256").update(stableJson(data)).digest("hex"),
     counts: {
+      shopSettings: data.catalogue ? 1 : 0,
+      garments: data.catalogue?.garments.length ?? 0,
+      customerProfiles: data.customers.reduce(
+        (sum, c) => sum + (c.profiles?.length ?? 0),
+        0,
+      ),
       customers: data.customers.length,
       measurementVersions: data.customers.reduce(
         (n, c) => n + (c.measurementHistory?.length ?? 0),

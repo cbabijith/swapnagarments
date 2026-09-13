@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { intakeSchema } from "@/features/orders/contracts/intake";
 import {
   createOrderSchema,
   deliverOrderSchema,
@@ -9,6 +10,7 @@ export const POST = commandHandler(
   z.object({
     mutationId: z.uuid(),
     action: z.discriminatedUnion("type", [
+      intakeSchema,
       createOrderSchema,
       deliverOrderSchema,
     ]),

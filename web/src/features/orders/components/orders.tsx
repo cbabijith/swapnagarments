@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -10,7 +10,6 @@ import {
   Search,
   Download,
   Shirt,
-  Trash2,
   Printer,
   Check,
   RotateCcw,
@@ -24,12 +23,12 @@ import {
   orderSearchParams,
   selectPreviewOrders,
 } from "@/features/orders/hooks/use-order-reads";
-import { useCustomers } from "@/features/customers/hooks/use-customers";
-import { CustomerPicker } from "@/features/customers/components/customer-picker";
 import { useDebouncedValue } from "@/shared/hooks/use-feature-query";
 import { QueryState, Pagination } from "@/shared/components/query-state";
 import { useWorkflow } from "@/features/workflow/hooks/use-workflow";
 import { useBilling } from "@/features/billing/hooks/use-billing";
+import { MeasurementSummary } from "@/features/measurements/components/measurement-fields";
+import { PieceMeasurementEditor } from "@/features/measurements/components/piece-measurements";
 import {
   Avatar,
   Dialog,
@@ -40,12 +39,9 @@ import {
   PriorityBadge,
 } from "@/shared/components/ui";
 import {
-  GARMENTS,
   STATIONS,
   STATUS_LABEL,
-  type Priority,
   type OrderItem,
-  type Customer,
   isOpen,
   isOverdue,
   formatDate,
@@ -286,362 +282,6 @@ export function OrdersList() {
   );
 }
 
-export function NewOrderForm() {
-  const { today, mode, createOrder } = useOrders();
-  const { saveCustomer } = useCustomers();
-  const router = useRouter();
-  const [customerId, setCustomerId] = useState("");
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
-    null,
-  );
-  const customerSection = useRef<HTMLElement>(null);
-  const [items, setItems] = useState<
-    { garment: string; material: string; price: string }[]
-  >([{ garment: "Blouse", material: "", price: "" }]);
-  const [advance, setAdvance] = useState("");
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
-  const quoted = items.reduce(
-    (sum, item) => sum + Math.round(Number(item.price || 0) * 100),
-    0,
-  );
-  const updateItem = (index: number, field: string, value: string) =>
-    setItems(
-      items.map((item, at) =>
-        index === at ? { ...item, [field]: value } : item,
-      ),
-    );
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (busy) return;
-    const form = new FormData(event.currentTarget);
-    setError("");
-    if (!customerId) {
-      setError("Choose a customer or add a new customer first.");
-      customerSection.current
-        ?.querySelector<HTMLInputElement>("input")
-        ?.focus();
-      return;
-    }
-    const advanceAmount = Math.round(Number(advance || 0) * 100);
-    if (advanceAmount > quoted) {
-      setError("The advance cannot be more than the order total.");
-      return;
-    }
-    setBusy(true);
-    try {
-      let selected = customerId;
-      if (customerId === "new") {
-        const customer: Customer = {
-          id: crypto.randomUUID(),
-          name: String(form.get("name")).trim(),
-          phone: String(form.get("phone")).trim(),
-          email: String(form.get("email") || "").trim(),
-          notes: "",
-          measurements: {},
-        };
-        if (!customer.name || !/^\+?[\d\s-]{10,16}$/.test(customer.phone))
-          throw new Error("Enter a customer name and a valid phone number.");
-        await saveCustomer(customer);
-        selected = customer.id;
-        setSelectedCustomer(customer);
-        setCustomerId(selected);
-      }
-      const order = await createOrder({
-        customerId: selected,
-        items: items.map((item) => ({
-          ...item,
-          price: Math.round(Number(item.price) * 100),
-        })),
-        priority: String(form.get("priority")) as Priority,
-        dueDate: String(form.get("dueDate")),
-        notes: String(form.get("notes") || ""),
-        advance: advanceAmount,
-        method: String(form.get("method") || "Cash"),
-      });
-      router.push(`/orders/${order.id}`);
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Could not create the order.",
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <>
-      <Link className="back-link" href="/orders">
-        <ArrowLeft size={14} />
-        Back to orders
-      </Link>
-      <PageHeading
-        eyebrow="ORDER INTAKE"
-        title="New order"
-        description="Choose a customer, add garments, and set the delivery date."
-      />
-      <form onSubmit={submit} className="order-form-layout">
-        <fieldset className="order-fields" disabled={busy}>
-          <section className="panel form-panel" ref={customerSection}>
-            <div className="form-section-title">
-              <span>01</span>
-              <h2>Customer</h2>
-            </div>
-            <div className="form-grid">
-              {customerId !== "new" && (
-                <div className="full-width">
-                  <CustomerPicker
-                    value={selectedCustomer}
-                    disabled={busy}
-                    onSelect={(customer) => {
-                      setSelectedCustomer(customer);
-                      setCustomerId(customer.id);
-                      setError("");
-                    }}
-                    onAddNew={() => {
-                      setCustomerId("new");
-                      setError("");
-                    }}
-                  />
-                  {error && !customerId && (
-                    <p className="form-error" role="alert">
-                      {error}
-                    </p>
-                  )}
-                </div>
-              )}
-              {customerId === "new" && (
-                <>
-                  <div className="new-customer-heading full-width">
-                    <strong>New customer</strong>
-                    <button
-                      type="button"
-                      className="text-link"
-                      onClick={() => setCustomerId(selectedCustomer?.id ?? "")}
-                    >
-                      Choose an existing customer
-                    </button>
-                  </div>
-                  <label className="field">
-                    Customer name
-                    <input
-                      autoFocus
-                      name="name"
-                      autoComplete="name"
-                      required
-                      maxLength={100}
-                    />
-                  </label>
-                  <label className="field">
-                    Phone number
-                    <input
-                      name="phone"
-                      autoComplete="tel"
-                      type="tel"
-                      required
-                      maxLength={16}
-                      placeholder="10-digit mobile number"
-                    />
-                  </label>
-                  <label className="field full-width">
-                    Email (optional)
-                    <input
-                      name="email"
-                      autoComplete="email"
-                      type="email"
-                      maxLength={150}
-                    />
-                  </label>
-                </>
-              )}
-            </div>
-          </section>
-          <section className="panel form-panel">
-            <div className="form-section-title">
-              <span>02</span>
-              <h2>Garments</h2>
-            </div>
-            {items.map((item, index) => (
-              <div key={index} className="garment-form">
-                <div className="garment-form-header">
-                  <strong>PIECE {String(index + 1).padStart(2, "0")}</strong>
-                  {items.length > 1 && (
-                    <button
-                      type="button"
-                      className="icon-button"
-                      aria-label={`Remove piece ${index + 1}`}
-                      onClick={() =>
-                        setItems(items.filter((_, at) => at !== index))
-                      }
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  )}
-                </div>
-                <div className="form-grid">
-                  <label className="field">
-                    Garment
-                    <select
-                      value={item.garment}
-                      onChange={(event) =>
-                        updateItem(index, "garment", event.target.value)
-                      }
-                    >
-                      {GARMENTS.map((garment) => (
-                        <option key={garment}>{garment}</option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="field">
-                    Stitching price (₹)
-                    <input
-                      aria-label={`Price for piece ${index + 1}`}
-                      required
-                      type="number"
-                      min="1"
-                      max="1000000"
-                      step="0.01"
-                      inputMode="decimal"
-                      placeholder="0.00"
-                      value={item.price}
-                      onChange={(event) =>
-                        updateItem(index, "price", event.target.value)
-                      }
-                    />
-                  </label>
-                  <label className="field full-width">
-                    Fabric & design notes (optional)
-                    <input
-                      placeholder="e.g. Rose silk, elbow sleeve, with lining"
-                      maxLength={500}
-                      value={item.material}
-                      onChange={(event) =>
-                        updateItem(index, "material", event.target.value)
-                      }
-                    />
-                    <small>
-                      Note the customer’s fabric, colour, and any special
-                      requests.
-                    </small>
-                  </label>
-                </div>
-              </div>
-            ))}
-            <button
-              type="button"
-              className="button subtle"
-              disabled={items.length >= 50}
-              onClick={() =>
-                setItems([
-                  ...items,
-                  { garment: "Blouse", material: "", price: "" },
-                ])
-              }
-            >
-              <Plus size={16} />
-              Add another piece
-            </button>
-          </section>
-          <section className="panel form-panel">
-            <div className="form-section-title">
-              <span>03</span>
-              <h2>Delivery & payment</h2>
-            </div>
-            <div className="form-grid">
-              <label className="field">
-                Delivery date
-                <input name="dueDate" type="date" required min={today} />
-              </label>
-              <label className="field">
-                Priority
-                <select name="priority">
-                  <option value="normal">Normal</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
-                </select>
-              </label>
-              <label className="field">
-                Advance payment (₹, optional)
-                <input
-                  type="number"
-                  inputMode="decimal"
-                  min="0"
-                  max={quoted / 100}
-                  step="0.01"
-                  value={advance}
-                  placeholder="0.00"
-                  onChange={(event) => setAdvance(event.target.value)}
-                />
-              </label>
-              <label className="field">
-                Payment method
-                <select name="method" disabled={!Number(advance)}>
-                  <option>Cash</option>
-                  <option>UPI</option>
-                  <option>Card</option>
-                  <option>Bank transfer</option>
-                </select>
-              </label>
-              <label className="field full-width">
-                Order notes (optional)
-                <textarea
-                  name="notes"
-                  maxLength={2000}
-                  placeholder="Anything else the team should know?"
-                />
-              </label>
-            </div>
-          </section>
-        </fieldset>
-        <aside className="panel order-summary">
-          <p className="eyebrow">REVIEW & SAVE</p>
-          <h2>Order summary</h2>
-          {selectedCustomer && customerId !== "new" && (
-            <p className="summary-customer">{selectedCustomer.name}</p>
-          )}
-          {items.map((item, index) => (
-            <div className="summary-line" key={index}>
-              <span>
-                {index + 1}. {item.garment}
-              </span>
-              <strong>
-                {money(Math.round(Number(item.price || 0) * 100))}
-              </strong>
-            </div>
-          ))}
-          <div className="summary-line">
-            <span>Order total</span>
-            <strong>{money(quoted)}</strong>
-          </div>
-          <div className="summary-line">
-            <span>Advance</span>
-            <strong>{money(Math.round(Number(advance || 0) * 100))}</strong>
-          </div>
-          <div className="summary-line total">
-            <span>Balance due</span>
-            <strong>
-              {money(quoted - Math.round(Number(advance || 0) * 100))}
-            </strong>
-          </div>
-          {error && customerId && (
-            <p className="form-error" role="alert">
-              {error}
-            </p>
-          )}
-          <button type="submit" className="button primary" disabled={busy}>
-            <Check size={17} />
-            {busy ? "Creating order…" : "Create order"}
-          </button>
-          <p className="small muted">
-            {mode === "preview"
-              ? "Sample order — changes stay in this preview."
-              : "You can record more payments after saving the order."}
-          </p>
-        </aside>
-      </form>
-    </>
-  );
-}
-
 export function OrderDetail({ id }: { id: string }) {
   const { deliver } = useOrders();
   const [activityPage, setActivityPage] = useState(1);
@@ -650,7 +290,7 @@ export function OrderDetail({ id }: { id: string }) {
   const { advancePiece, rework } = useWorkflow();
   const { recordPayment } = useBilling();
   const [dialog, setDialog] = useState<
-    "payment" | "qr" | "deliver" | "rework" | null
+    "payment" | "qr" | "deliver" | "rework" | "measurements" | null
   >(null);
   const [piece, setPiece] = useState<OrderItem | null>(null);
   const [error, setError] = useState("");
@@ -767,6 +407,18 @@ export function OrderDetail({ id }: { id: string }) {
                   </div>
                   <strong>{money(item.price)}</strong>
                 </div>
+                <MeasurementSummary snapshot={item.measurement} />
+                {item.measurementHistory?.length ? (
+                  <details className="no-print">
+                    <summary>Earlier measurements for this piece</summary>
+                    {item.measurementHistory.map((snapshot) => (
+                      <MeasurementSummary
+                        key={snapshot.revision}
+                        snapshot={snapshot}
+                      />
+                    ))}
+                  </details>
+                ) : null}
                 <div className="progress-steps">
                   {STATIONS.map((station, index) => (
                     <div
@@ -780,9 +432,27 @@ export function OrderDetail({ id }: { id: string }) {
                 </div>
                 {isOpen(order) && (
                   <div className="detail-item-actions">
+                    {item.measurement && item.station === 0 && (
+                      <button
+                        type="button"
+                        className="button"
+                        disabled={mutationBlocked}
+                        onClick={() => {
+                          setPiece(item);
+                          setDialog("measurements");
+                        }}
+                      >
+                        {item.measurement.confirmed
+                          ? "Edit piece measurements"
+                          : "Add / confirm measurements"}
+                      </button>
+                    )}
                     {item.station < 5 && (
                       <button
-                        disabled={mutationBlocked}
+                        disabled={
+                          mutationBlocked ||
+                          item.measurement?.confirmed === false
+                        }
                         className="button primary small-button"
                         onClick={() =>
                           void mutate(() =>
@@ -1074,6 +744,13 @@ export function OrderDetail({ id }: { id: string }) {
             </div>
           </form>
         </Dialog>
+      )}
+      {dialog === "measurements" && piece && (
+        <PieceMeasurementEditor
+          orderId={id}
+          piece={piece}
+          onClose={() => setDialog(null)}
+        />
       )}
       {dialog === "qr" && (
         <Dialog

@@ -8,3 +8,5 @@ export * from "./reports";
 export * from "./team";
 export * from "./activity";
 export * from "./backups";
+export * from "./catalogue";
+export * from "./events";

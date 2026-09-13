@@ -256,3 +256,25 @@ PostgreSQL and bucket connected. All 13 feature list/detail/export read checks
 reject unsigned requests with 401 and `Cache-Control: no-store`; owner setup
 remains closed. The isolated browser and PostgreSQL test services were stopped
 after validation. Both `main` and `shahil` contain the release.
+
+## Implemented locally: configurable order intake
+
+The September 13 implementation adds feature contracts and pure rules for shop
+catalogues, customer garment profiles and atomic `order.intake`. Thin authenticated
+`/api/settings` and `/api/measurements` routes use server services and the existing
+locked transaction coordinator. The browser uses feature reads for catalogue and
+selected-customer data; old client command routes remain compatible.
+
+Migration 4 adds Drizzle schemas for settings, garments, customer measurement
+profiles and durable command event identities, plus piece snapshots/history and a
+profile-presence flag. Reconciliation and JSON rollback include these fields.
+Order intake commits new customer, profile, expanded pieces, advance, retry receipt
+and event identity together. No external event dispatcher or notification consumer
+is introduced. Workflow reads include a bounded pending-measurement indicator.
+
+New Order, customer profiles and Settings share the same dynamic measurement form.
+Old orders keep their names, prices, units and measurement definitions. Settings can
+archive garments, configure fields/presets/prices and set intake defaults. Pending
+pieces cannot advance until measurements are confirmed. See
+[implementation details and verification](ORDER-WORKFLOW-IMPLEMENTATION.md).
+This stage is local work, not a new Railway release.

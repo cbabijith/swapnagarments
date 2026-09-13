@@ -28,6 +28,7 @@ type WorkspaceContext = {
   send: (
     action: unknown,
     message: string,
+    retryId?: string,
   ) => Promise<{ data?: Workspace; resultId?: string; revision?: number }>;
   signOut: () => Promise<void>;
 };
@@ -135,7 +136,7 @@ export function WorkspaceProvider({
     };
   }, [mode, refresh]);
 
-  async function send(action: unknown, message: string) {
+  async function send(action: unknown, message: string, retryId?: string) {
     if (mode === "preview") {
       const result = applyMutation(snapshot.current, action, owner.name);
       acceptSnapshot(result.data, revision.current + 1);
@@ -143,7 +144,7 @@ export function WorkspaceProvider({
       return result;
     }
     const command = mutationSchema.parse(action);
-    const mutationId = crypto.randomUUID();
+    const mutationId = retryId ?? crypto.randomUUID();
     // Reuse the command id if a transient network failure makes one retry necessary.
     let response: Response;
     const request = () =>

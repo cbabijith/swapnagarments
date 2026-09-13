@@ -15,6 +15,9 @@ import {
   dayReports,
   workflowHistory,
   owners,
+  shopSettings,
+  garments,
+  customerProfiles,
 } from "@/db/schema";
 import {
   validateWorkspace,
@@ -40,6 +43,9 @@ export async function verifyRelationalWorkspace(
   );
   const actual = workspaceManifest(rebuilt);
   const tables = {
+    shopSettings,
+    garments,
+    customerProfiles,
     customers,
     measurementVersions,
     orders,
