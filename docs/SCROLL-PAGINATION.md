@@ -1,6 +1,6 @@
 # Scroll pagination
 
-Implemented locally on 2026-09-14; deployment is not part of this change.
+Deployed and verified on 2026-09-14.
 
 ## Behavior
 
@@ -46,3 +46,17 @@ longer scrolls to the top when loading more entries.
   cancellation, retries, refreshes and termination. These checks do not change
   shop records or access the production database.
 - Results and a mobile screenshot are saved under `output/qa/scroll-pagination-*`.
+
+## Production release
+
+Code commit `116c0cd71441026ef2131b468574e6829c31bbc2` deployed successfully to
+Railway as `2ecb7eb1-e944-4249-a543-ec9da6e65bed`. The release was validated in a
+clean checkout with the existing npm lockfile and production build command;
+the separate, pending Bun migration was not included.
+
+Production HTTP checks confirmed healthy PostgreSQL and bucket connections,
+working pages and assets, protected APIs, and closed owner registration.
+The deployed JavaScript contains the scroll loader. Browser checks of the
+deployed assets use intercepted synthetic API responses to verify scrolling
+without creating or changing real shop records. See
+`output/qa/scroll-pagination-production-release.json` for the release record.

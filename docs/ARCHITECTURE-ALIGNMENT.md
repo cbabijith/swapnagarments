@@ -1,6 +1,6 @@
 # Feature-driven architecture: alignment with Dolce CRM
 
-Scroll pagination is implemented in the local web application. Lists append
+Scroll pagination is deployed and verified on September 14. Lists append
 bounded API pages as their footer approaches the viewport, with a manual Load
 more fallback and retry controls. See [scope and verification](SCROLL-PAGINATION.md).
 This change does not require a database migration or change the page-based API.

@@ -1,0 +1,144 @@
+{
+  "checkedAt": "2026-09-14T06:56:42.534Z",
+  "origin": "https://swapna-garmentsweb-production.up.railway.app",
+  "health": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "routes": [
+    {
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "path": "/api/session",
+      "status": 401
+    },
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/orders",
+      "status": 200
+    },
+    {
+      "path": "/customers",
+      "status": 200
+    },
+    {
+      "path": "/billing",
+      "status": 200
+    },
+    {
+      "path": "/workflow",
+      "status": 200
+    },
+    {
+      "path": "/team",
+      "status": 200
+    },
+    {
+      "path": "/calendar",
+      "status": 200
+    },
+    {
+      "path": "/settings",
+      "status": 200
+    },
+    {
+      "path": "/my-work",
+      "status": 200
+    },
+    {
+      "path": "/my-work/history",
+      "status": 200
+    },
+    {
+      "path": "/my-work/calendar",
+      "status": 200
+    },
+    {
+      "path": "/api/orders",
+      "status": 401
+    },
+    {
+      "path": "/api/customers",
+      "status": 401
+    },
+    {
+      "path": "/api/billing",
+      "status": 401
+    },
+    {
+      "path": "/api/team",
+      "status": 401
+    },
+    {
+      "path": "/api/work",
+      "status": 401
+    },
+    {
+      "path": "/api/work/history",
+      "status": 401
+    },
+    {
+      "path": "/api/calendar/day?date=2026-09-14",
+      "status": 401
+    },
+    {
+      "path": "/api/work/calendar/day?date=2026-09-14",
+      "status": 401
+    }
+  ],
+  "assetsChecked": 21,
+  "scrollAssets": [
+    "/_next/static/chunks/3zhkul-fta_s6.js"
+  ],
+  "ownerSetupClosed": true,
+  "liveBusinessWrites": 0,
+  "commit": "116c0cd71441026ef2131b468574e6829c31bbc2",
+  "deploymentId": "2ecb7eb1-e944-4249-a543-ec9da6e65bed",
+  "deploymentStatus": "success",
+  "releaseValidation": {
+    "checkout": "clean isolated checkout",
+    "dependencies": "npm ci using committed production lockfile",
+    "productionBuild": "passed",
+    "typescript": "passed",
+    "eslint": "passed",
+    "tests": {
+      "passed": 49,
+      "failed": 0
+    }
+  },
+  "browser": {
+    "origin": "https://swapna-garmentsweb-production.up.railway.app",
+    "scope": "Deployed HTML and JavaScript with intercepted synthetic API responses; no production business data changes.",
+    "checks": [
+      "Append keeps rows and metadata; repeated scrolling sends one request",
+      "Search resets to page one; empty results stop loading",
+      "Delayed old searches cannot overwrite the current filter",
+      "Failed append retains rows, stops automatic retries and recovers",
+      "Refresh rebuilds loaded pages after records are removed",
+      "/orders appends all 45 records",
+      "/customers/c0 appends all 45 records",
+      "/orders/o0 appends all 45 records",
+      "/billing appends all 45 records",
+      "/team appends all 45 records",
+      "/workflow?station=0 appends all 45 records",
+      "/team?view=work appends all 45 records",
+      "Worker assignment scrolls inside its dialog and retains workloads",
+      "/calendar appends all 45 records",
+      "/settings appends all 25 records",
+      "Daily reports append all 25 records",
+      "/customers appends all 45 records",
+      "/my-work/history appends all 45 records",
+      "/my-work appends all 45 records",
+      "/my-work/calendar appends all 45 records",
+      "Load more works without IntersectionObserver"
+    ],
+    "errors": [],
+    "requestCount": 92
+  }
+}

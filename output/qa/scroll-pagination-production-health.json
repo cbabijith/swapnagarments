@@ -1,0 +1,101 @@
+{
+  "checkedAt": "2026-09-14T06:56:42.534Z",
+  "origin": "https://swapna-garmentsweb-production.up.railway.app",
+  "health": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "routes": [
+    {
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "path": "/api/session",
+      "status": 401
+    },
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/orders",
+      "status": 200
+    },
+    {
+      "path": "/customers",
+      "status": 200
+    },
+    {
+      "path": "/billing",
+      "status": 200
+    },
+    {
+      "path": "/workflow",
+      "status": 200
+    },
+    {
+      "path": "/team",
+      "status": 200
+    },
+    {
+      "path": "/calendar",
+      "status": 200
+    },
+    {
+      "path": "/settings",
+      "status": 200
+    },
+    {
+      "path": "/my-work",
+      "status": 200
+    },
+    {
+      "path": "/my-work/history",
+      "status": 200
+    },
+    {
+      "path": "/my-work/calendar",
+      "status": 200
+    },
+    {
+      "path": "/api/orders",
+      "status": 401
+    },
+    {
+      "path": "/api/customers",
+      "status": 401
+    },
+    {
+      "path": "/api/billing",
+      "status": 401
+    },
+    {
+      "path": "/api/team",
+      "status": 401
+    },
+    {
+      "path": "/api/work",
+      "status": 401
+    },
+    {
+      "path": "/api/work/history",
+      "status": 401
+    },
+    {
+      "path": "/api/calendar/day?date=2026-09-14",
+      "status": 401
+    },
+    {
+      "path": "/api/work/calendar/day?date=2026-09-14",
+      "status": 401
+    }
+  ],
+  "assetsChecked": 21,
+  "scrollAssets": [
+    "/_next/static/chunks/3zhkul-fta_s6.js"
+  ],
+  "ownerSetupClosed": true,
+  "liveBusinessWrites": 0
+}
