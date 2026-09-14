@@ -1,6 +1,9 @@
 # Worker mobile interface
 
-Implemented locally on 2026-09-14. This change has not been deployed.
+Deployed and verified on Railway on 2026-09-14. Code commit
+`08929ffdfb3bf48008f67eec9ea07a9a8f3ed357` is active through deployment
+`6f1ef726-6cc0-4fb7-adf8-2f6045c172ab` on the
+[worker website](https://swapna-garmentsweb-production.up.railway.app/my-work).
 
 - The work queue opens with a compact greeting and scan shortcut. Personal
   details live on the Profile tab instead of repeating above the assignments.
@@ -20,8 +23,8 @@ the existing service and confirmation flows.
 
 ## Verification
 
-The production build, TypeScript checks, targeted ESLint checks, and the team,
-profile, and history tests passed. Browser verification used synthetic API
+The production build, TypeScript checks, full ESLint checks, and all 36 web
+tests passed. Browser verification used synthetic API
 responses against a local production server; no live shop records were changed.
 
 `output/qa/worker-mobile-browser.cjs` covers 320, 360, 390, 430, 768, and 1440px
@@ -30,6 +33,13 @@ targets, filters, measurement expansion, cancelling completion, starting work,
 history detail navigation, error recovery, printed-code lookup, and sign out.
 Results are recorded in `output/qa/worker-mobile-results.json` with screenshots
 alongside it. Camera hardware and the on-screen keyboard were not exercised.
+
+Live verification is recorded in `output/qa/worker-mobile-production-release.json`.
+Railway reports the release active and successful. All 14 referenced application
+assets loaded, including the new mobile styles and queue controls. The worker
+pages returned HTTP 200; protected APIs returned HTTP 401 with no-store caching.
+Database and image storage health were connected, and owner setup stayed closed.
+No production business commands were submitted during verification.
 
 The browser script defaults to `http://localhost:3118`; set `WORKER_TEST_URL` to
 test another local production server. Its Playwright import uses the same bundled

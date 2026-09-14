@@ -1,0 +1,19 @@
+{
+  "mode": "Local production build; synthetic API fixtures, no live data",
+  "checks": [
+    "Queue fits 320px, first task above 410px, touch targets at least 44px",
+    "Queue fits 360px, first task above 410px, touch targets at least 44px",
+    "Queue fits 390px, first task above 410px, touch targets at least 44px",
+    "Queue fits 430px, first task above 410px, touch targets at least 44px",
+    "Queue fits 768px",
+    "Queue fits 1440px",
+    "Status and station filters update results; empty filters can be cleared",
+    "Measurements expand; cancelling completion leaves work untouched; Start work refreshes the card",
+    "History layouts fit phones; history search returns the matching garments",
+    "Completed work details fit phones and preserve history search on return",
+    "Profile fits long names and email addresses; retry and sign out remain available on failure",
+    "Scan supports printed order lookup; queue errors recover with retry",
+    "Profile sign out returns to the sign-in screen"
+  ],
+  "errors": []
+}
