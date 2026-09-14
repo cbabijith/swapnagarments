@@ -1,0 +1,86 @@
+{
+  "verifiedAt": "2026-09-14T05:41:36.286Z",
+  "commit": "ffc860ed6afcbfb68a51eb725633b4e4eedf4d16",
+  "deployment": "1f6237b9-e0c0-4e96-a448-f4acb54c944a",
+  "url": "https://swapna-garmentsweb-production.up.railway.app",
+  "railwayStatus": "active-successful",
+  "health": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "endpoints": {
+    "/api/health": {
+      "status": 200,
+      "cacheControl": "no-store"
+    },
+    "/my-work": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/my-work/profile": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/my-work/history": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/scan": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/team": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/api/session": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work/profile": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work/history": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/team": {
+      "status": 401,
+      "cacheControl": "no-store"
+    }
+  },
+  "ownerSetup": {
+    "required": false,
+    "available": false
+  },
+  "assets": {
+    "count": 14,
+    "allLoaded": true,
+    "features": {
+      "statusButtons": true,
+      "mobileStyles": true,
+      "queueCopy": true,
+      "clearFilters": true,
+      "printedOrderEntry": true,
+      "profile": true,
+      "history": true,
+      "historyGroups": true,
+      "historyRefresh": true,
+      "historyReset": true
+    }
+  },
+  "validation": {
+    "productionBuild": "passed",
+    "lint": "passed",
+    "tests": 38,
+    "mobileBrowser": "passed at 320, 360, 390, 430, 768 and 1440px with synthetic API fixtures"
+  },
+  "productionBusinessCommandsSubmitted": false,
+  "passed": true
+}

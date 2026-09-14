@@ -28,5 +28,15 @@ Pagination moves keyboard focus to the results and remains above the bottom nav.
   port 3118 and accepts `WORKER_TEST_URL` for another local production server.
 
 The list has its own CSS module. Services, permissions, data contracts and saved
-completion details are unchanged. Live deployment verification will be recorded
-in `output/qa/history-ui-production-release.json`.
+completion details are unchanged.
+
+## Deployment
+
+Deployed and verified on 2026-09-14 at
+https://swapna-garmentsweb-production.up.railway.app/my-work/history.
+Release commit `ffc860ed6afcbfb68a51eb725633b4e4eedf4d16` runs as Railway deployment
+`1f6237b9-e0c0-4e96-a448-f4acb54c944a`. The build and deployment succeeded. Live
+health reports the database and image bucket connected; worker pages return 200,
+protected APIs return 401, and all 14 referenced assets load with the new history
+grouping, refresh and filter-reset controls. Owner setup remains closed.
+The read-only verification is in `output/qa/history-ui-production-release.json`.
