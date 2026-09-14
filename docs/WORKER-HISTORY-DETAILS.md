@@ -74,3 +74,32 @@ Current garment data is not backfilled into older history.
   Evidence is in the ignored local report
   `output/qa/worker-profile-history-details-release.json`. Verification performed
   no production business-data writes or worker sign-in.
+
+## Compact work details — September 14
+
+The work-details layout now uses a single compact summary for the garment,
+completed stage/time, and customer name/call link. **Overview**, **Measurements**,
+and **Designs** tabs replace the tall stack of cards. Measurements use a compact
+value grid; tab counts show saved values and deduplicated reference images.
+The full piece code and assignment/start timestamps remain in the expandable
+**Full work record** section. Snapshot and authorization behavior are unchanged.
+
+The tabs support arrow keys, Home/End and normal Tab navigation. Closing a
+reference-image dialog restores focus to the image that opened it. Older records,
+missing contacts, and empty/unconfirmed measurements have explicit fallback text.
+
+Local verification on September 14:
+
+- The populated overview fits without vertical scrolling at 320×844 and 390×844
+  with representative material/design notes; longer content can still scroll.
+- No horizontal overflow at 320px, 390px or 1440px. Long customer names wrap.
+- Verified one-tap tabs, measurement units and text fields, hidden empty fields,
+  deduplicated images, enlarged previews and Escape/focus return.
+- Verified expanded timestamps, current customer call link, older entries and
+  return navigation retaining the search and station filter.
+- All 49 web tests, production build, TypeScript and full ESLint passed. Browser console had
+  no errors or warnings. Browser checks used synthetic data through the local
+  `output/qa/work-details-preview.cjs` proxy and made no production writes.
+
+Release status: local verification complete; publication pending.
+
