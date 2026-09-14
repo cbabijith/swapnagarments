@@ -9,7 +9,7 @@ import {
 } from "@/features/calendar/components/calendar-month-panel";
 import styles from "@/features/calendar/components/calendar.module.css";
 import { PageHeading, EmptyState } from "@/shared/components/ui";
-import { ScrollPagination, QueryState } from "@/shared/components/query-state";
+import { Pagination, QueryState } from "@/shared/components/query-state";
 import { shopDate } from "@/shared/workspace";
 import {
   workCalendarKinds,
@@ -205,8 +205,8 @@ export function WorkCalendar() {
             </ul>
           )}
           {dayQuery.data && (
-            <ScrollPagination
-              page={dayQuery.data.page} loading={dayQuery.isRefreshing} error={dayQuery.error} retry={dayQuery.reload}
+            <Pagination
+              page={dayQuery.data.page}
               disabled={dayQuery.isLoading}
               onPageChange={(page) =>
                 setSelection((current) => ({ ...current, page }))
