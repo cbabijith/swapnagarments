@@ -1,0 +1,18 @@
+{
+  "mode": "Local production build; synthetic API fixtures; no live shop data",
+  "checks": [
+    "Profile fits 320px with readable details and reachable work shortcuts",
+    "Profile fits 360px with readable details and reachable work shortcuts",
+    "Profile fits 390px with readable details and reachable work shortcuts",
+    "Profile fits 430px with readable details and reachable work shortcuts",
+    "Profile fits 768px with readable details and reachable work shortcuts",
+    "Profile fits 1440px with readable details and reachable work shortcuts",
+    "Work totals use full server counts; keyboard expands previews; links open the selected assignment or history record",
+    "Both work overview shortcuts navigate correctly",
+    "Availability guidance, hour/minute capacity, empty skills and long account details render correctly",
+    "Each query can fail and recover independently; unavailable totals are not shown as zero and sign out remains accessible",
+    "Missing profile, loading and empty work states offer clear feedback",
+    "Sign out recovers from network and server failures, prevents repeat taps while pending, and returns to sign in"
+  ],
+  "errors": []
+}
