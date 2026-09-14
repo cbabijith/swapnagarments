@@ -1,6 +1,6 @@
 # Worker completed-work history
 
-Implemented locally on `shahil`, September 14, 2026. Awaiting deployment.
+Deployed and verified on Railway, September 14, 2026.
 
 ## Behavior
 
@@ -64,3 +64,23 @@ assigned work have explicit completion receipts.
   search, station filtering, empty results and pagination across 24 completions.
 - The worker history layout and navigation were inspected at 390px and 1440px.
   No browser console errors appeared. Production data was not modified.
+
+## Production release
+
+Commit `f68d8c7f32a9ef50c831943252f86ca727391eb9` is active through Railway
+deployment `ffaa22c6-48c3-43a2-b7f5-030b217288af`, together with the worker
+profile and personal work overview. Verification completed at
+`2026-09-14T04:41:11.289Z` (10:11 IST).
+
+All 36 tests, TypeScript, ESLint and the production build passed for the combined
+release. The live My work, History and Profile pages return 200; all 10 worker
+page script assets load and contain both features. Live APIs require sign-in,
+authenticate before validating history filters, and return no-store headers.
+The schema-initializing session/authentication checks passed, and database and
+bucket health are connected. Existing owner setup remains closed.
+
+No production business commands or worker sign-ins were submitted during release
+verification. Authenticated completion/history flows were verified against the
+isolated local database; no claim is made about the number of historical rows
+recovered in production. The release report is
+`output/qa/worker-portal-release.json`.

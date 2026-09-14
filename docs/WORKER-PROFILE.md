@@ -1,7 +1,9 @@
 # Worker profile and personal work overview
 
-Implemented locally on `shahil`, September 14, 2026. This addition has not been
-deployed as part of the profile task.
+Deployed and verified on Railway, September 14, 2026, together with worker
+completion history. Commit `f68d8c7f32a9ef50c831943252f86ca727391eb9` is active
+through deployment `ffaa22c6-48c3-43a2-b7f5-030b217288af`. See
+[the shared production verification](WORKER-HISTORY.md#production-release).
 
 Workers can open **Profile** from the bottom navigation, their name in the
 header, or **View profile** above the My work queue. The profile shows their

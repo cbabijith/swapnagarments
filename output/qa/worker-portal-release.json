@@ -1,0 +1,81 @@
+{
+  "verifiedAt": "2026-09-14T04:41:11.289Z",
+  "commit": "f68d8c7f32a9ef50c831943252f86ca727391eb9",
+  "deployment": "ffaa22c6-48c3-43a2-b7f5-030b217288af",
+  "url": "https://swapna-garmentsweb-production.up.railway.app",
+  "railwayStatus": "active-successful",
+  "health": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "endpoints": {
+    "/api/work": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/team": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work/profile": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work/history?staffId=release-verification&page=0": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work/history": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/my-work/history": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/my-work/profile": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/api/session": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/my-work": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/api/health": {
+      "status": 200,
+      "cacheControl": "no-store"
+    }
+  },
+  "ownerSetup": {
+    "required": false,
+    "available": false
+  },
+  "migration10": "Schema initialization passed through the authenticated API guards.",
+  "assets": {
+    "count": 10,
+    "allLoaded": true,
+    "features": {
+      "/api/work/history": true,
+      "/my-work/history": true,
+      "/api/work/profile": true,
+      "/my-work/profile": true,
+      "Work history": true,
+      "My completed work": true,
+      "Filter completed station": true
+    }
+  },
+  "validation": {
+    "tests": 36,
+    "lint": "passed",
+    "typecheck": "passed",
+    "productionBuild": "passed"
+  },
+  "productionBusinessCommandsSubmitted": false,
+  "authenticatedWorkerHistory": "Validated with an isolated local database; no production worker credentials used.",
+  "passed": true
+}

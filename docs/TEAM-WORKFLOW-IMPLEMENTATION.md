@@ -54,7 +54,8 @@ giving work to someone who cannot perform it.
    measurement snapshots, design references, priority, and due date. They can
    start, block with a reason, resume, and explicitly confirm stage completion.
    The local September 14 [worker history update](WORKER-HISTORY.md) adds a
-   **History** tab for completed stages; it is awaiting deployment.
+   **History** tab for completed stages; it is deployed and verified alongside
+   the personal **Profile** page.
 6. **Scan a piece** accepts existing `swapna:<order-id>:<piece-id>` QR labels or
    a printed order number. Exact QR lookup verifies both the order and piece.
    Scanning only opens work; it never starts or completes a stage. A worker
