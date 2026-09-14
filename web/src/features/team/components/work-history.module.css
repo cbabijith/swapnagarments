@@ -201,6 +201,29 @@
   gap: 8px 12px;
   font-size: 12px;
 }
+.customer {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.customer > svg {
+  flex: none;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+.customer > p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 12px;
+  min-width: 0;
+}
+.customerName {
+  font-weight: 500;
+  color: var(--foreground);
+}
 .stage {
   display: inline-flex;
   align-items: center;

@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "widths": [
+    320,
+    390,
+    1440
+  ],
+  "checks": [
+    "List and detail customer name/phone",
+    "Tap-to-call link",
+    "Name and phone search",
+    "Station filter",
+    "Return navigation retains search",
+    "Missing customer",
+    "Missing phone and long name"
+  ],
+  "errors": []
+}

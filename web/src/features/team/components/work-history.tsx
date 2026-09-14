@@ -5,7 +5,14 @@ import "./team.css";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Check, ChevronRight, RefreshCw, Search, X } from "lucide-react";
+import {
+  Check,
+  ChevronRight,
+  RefreshCw,
+  Search,
+  UserRound,
+  X,
+} from "lucide-react";
 import { STATIONS } from "@/shared/workspace";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { useDebouncedValue } from "@/shared/hooks/use-feature-query";
@@ -76,7 +83,7 @@ export function WorkHistory() {
           <input
             ref={searchInput}
             aria-label="Search work history"
-            placeholder="Order, garment or stage"
+            placeholder="Customer, phone, order…"
             autoComplete="off"
             spellCheck={false}
             value={search}
@@ -196,6 +203,21 @@ export function WorkHistory() {
                           <span>Piece {entry.pieceId.slice(-6)}</span>
                         </p>
                         <h3>{entry.garment}</h3>
+                        <div className={styles.customer}>
+                          <UserRound size={14} aria-hidden="true" />
+                          {entry.customer ? (
+                            <p>
+                              <span className={styles.customerName}>
+                                {entry.customer.name}
+                              </span>
+                              {entry.customer.phone && (
+                                <span>{entry.customer.phone}</span>
+                              )}
+                            </p>
+                          ) : (
+                            <p>Customer details unavailable</p>
+                          )}
+                        </div>
                         <div className={styles.entryMeta}>
                           <span className={styles.stage}>
                             <Check size={14} aria-hidden="true" />
@@ -232,7 +254,7 @@ export function WorkHistory() {
             }
             text={
               filtered
-                ? "Try another order or garment, or clear your filters."
+                ? "Try a customer, phone number, order, garment or stage, or clear your filters."
                 : "Your finished stages will appear here, ready to look back on."
             }
           >

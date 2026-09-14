@@ -1,6 +1,8 @@
 import type { Customer } from "@/features/customers/types";
 import type { Order } from "@/features/orders/types";
+import { Check, Scissors } from "lucide-react";
 import { STATUS_LABEL, balance, money, paid, total } from "@/shared/workspace";
+import styles from "./order-bill.module.css";
 
 const billDate = new Intl.DateTimeFormat("en-IN", {
   day: "numeric",
@@ -24,50 +26,92 @@ export function OrderBill({
   order: Order;
   customer?: Customer;
 }) {
+  const amountPaid = paid(order);
+  const amountDue = balance(order);
+  const cancelled = order.status === "cancelled";
+  const settled = amountDue <= 0;
+  const paymentStatus = cancelled
+    ? "Cancelled"
+    : settled
+      ? "Fully paid"
+      : amountPaid > 0
+        ? "Partially paid"
+        : "Unpaid";
   return (
-    <article className="order-bill" aria-label={`Bill ${order.number}`}>
-      <header className="bill-header">
-        <div>
-          <h1>Swapna Garments</h1>
-          <p>Customer bill</p>
-          {order.gst?.gstin && (
-            <p className="bill-gstin">GSTIN: {order.gst.gstin}</p>
-          )}
+    <article
+      className={`order-bill ${styles.bill}`}
+      aria-label={`Bill ${order.number}`}
+    >
+      <header className={styles.header}>
+        <div className={styles.brand}>
+          <span className={styles.brandMark} aria-hidden="true">
+            <Scissors size={27} strokeWidth={1.4} />
+          </span>
+          <div>
+            <h2>
+              Swapna <span>Garments</span>
+            </h2>
+            <p>Made with care. Tailored for you.</p>
+          </div>
         </div>
-        <div className="bill-reference">
+        <div className={styles.reference}>
+          <p className={styles.label}>Customer bill</p>
           <strong>{order.number}</strong>
-          <p>{STATUS_LABEL[order.status]}</p>
+          <span
+            className={`${styles.status} ${cancelled ? styles.cancelled : settled ? styles.settled : styles.pending}`}
+          >
+            {settled && !cancelled && <Check size={12} aria-hidden="true" />}
+            {paymentStatus}
+          </span>
         </div>
       </header>
-      <div className="bill-details">
-        <div>
-          <span>Customer</span>
+      {order.gst?.gstin && (
+        <p className={styles.gstin}>
+          GSTIN <strong>{order.gst.gstin}</strong>
+        </p>
+      )}
+      <div className={styles.details}>
+        <div className={styles.customer}>
+          <p className={styles.label}>Billed to</p>
           <strong>{customer?.name ?? "Customer"}</strong>
           {customer?.phone && <p>{customer.phone}</p>}
         </div>
-        <dl className="bill-dates">
+        <dl className={styles.dates}>
           <div>
             <dt>Order date</dt>
             <dd>{formatBillDate(order.createdAt)}</dd>
           </div>
           <div>
-            <dt>Due date</dt>
+            <dt>Delivery due</dt>
             <dd>{formatBillDate(order.dueDate)}</dd>
+          </div>
+          <div>
+            <dt>Order status</dt>
+            <dd>{STATUS_LABEL[order.status]}</dd>
           </div>
         </dl>
       </div>
-      <table className="bill-items">
+      <div className={styles.sectionHeading}>
+        <h3>Order details</h3>
+        <span>
+          {order.items.length} {order.items.length === 1 ? "piece" : "pieces"}
+        </span>
+      </div>
+      <table className={styles.items}>
+        <caption className={styles.srOnly}>
+          Garments and charges for {order.number}
+        </caption>
         <thead>
           <tr>
             <th scope="col">#</th>
-            <th scope="col">Garment / details</th>
+            <th scope="col">Description</th>
             <th scope="col">Amount</th>
           </tr>
         </thead>
         <tbody>
           {order.items.map((item, index) => (
             <tr key={item.id}>
-              <td>{index + 1}</td>
+              <td>{String(index + 1).padStart(2, "0")}</td>
               <td>
                 <strong>{item.garment}</strong>
                 {item.material && <p>{item.material}</p>}
@@ -77,12 +121,29 @@ export function OrderBill({
           ))}
         </tbody>
       </table>
-      <footer className="bill-footer">
-        <div className="bill-summary">
-          <p>
-            {order.items.length} {order.items.length === 1 ? "piece" : "pieces"}
-          </p>
-          <dl className="bill-totals">
+      <div
+        className={`${styles.summary} ${order.payments.length > 4 ? styles.expandedSummary : ""}`}
+      >
+        <section className={styles.payments} aria-label="Payment record">
+          <h3>Payment record</h3>
+          {order.payments.length ? (
+            <ul>
+              {order.payments.map((payment) => (
+                <li key={payment.id}>
+                  <div>
+                    <strong>{payment.method}</strong>
+                    <span>{formatBillDate(payment.date)}</span>
+                  </div>
+                  <b>{money(payment.amount)}</b>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={styles.emptyPayments}>No payments recorded.</p>
+          )}
+        </section>
+        <div className={styles.totalsBlock}>
+          <dl className={styles.totals}>
             {order.gst && (
               <>
                 <div>
@@ -98,21 +159,37 @@ export function OrderBill({
                 </div>
               </>
             )}
-            <div>
-              <dt>Total</dt>
+            <div className={styles.grandTotal}>
+              <dt>Bill total</dt>
               <dd>{money(total(order))}</dd>
             </div>
             <div>
               <dt>Amount paid</dt>
-              <dd>{money(paid(order))}</dd>
-            </div>
-            <div className="bill-balance">
-              <dt>Balance due</dt>
-              <dd>{money(balance(order))}</dd>
+              <dd>{money(amountPaid)}</dd>
             </div>
           </dl>
+          <div className={styles.balance}>
+            <span>{cancelled ? "Recorded balance" : "Balance due"}</span>
+            <strong>{money(amountDue)}</strong>
+            <small>
+              {cancelled
+                ? "This order has been cancelled."
+                : settled
+                  ? "Thank you. Your bill is fully settled."
+                  : "Payable at collection"}
+            </small>
+          </div>
         </div>
-        <p className="bill-thanks">Thank you for choosing Swapna Garments.</p>
+      </div>
+      <footer className={styles.footer}>
+        <p>
+          Thank you for choosing <strong>Swapna Garments.</strong>
+        </p>
+        <span>
+          {cancelled || order.status === "delivered"
+            ? "Please retain this bill for your records."
+            : "Please keep this bill for collection."}
+        </span>
       </footer>
     </article>
   );

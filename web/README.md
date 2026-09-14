@@ -31,11 +31,17 @@ worker accounts with station skills, manual/automatic assignment, and private
 worker task queues. Live writes are validated and persisted in PostgreSQL;
 preview data is never inserted into the live database.
 
-On an order, **Print bill** produces a compact A5 customer bill with item prices,
-customer and delivery details, the total, amount paid, and balance. Normal bills
-fit on one small page; larger orders continue onto extra pages without dropping
-items. **Print order** keeps the full workshop details on A4, and **QR labels**
-prints garment labels separately.
+On an order, **View bill** opens a responsive customer bill preview with shop
+branding, item prices, customer and delivery details, payment status and records,
+saved GST, and the outstanding balance. **Print / Save PDF** produces a compact
+A5 copy. A standard six-piece bill with GST fits on one page; longer orders
+continue without dropping items or payments. **Print order** keeps the full
+workshop details on A4, and **QR labels** prints garment labels separately.
+
+Workers' history entries and details show the customer's current name and phone,
+with customer search and a tap-to-call link on the detail screen. Contacts are
+resolved only for the signed-in worker's completed work, including older entries.
+Historical garment snapshots remain unchanged when customer contact data changes.
 
 **Settings → GST & billing** configures GST enablement, a percentage, prices
 including or excluding GST, and an optional shop GSTIN. GST is disabled until

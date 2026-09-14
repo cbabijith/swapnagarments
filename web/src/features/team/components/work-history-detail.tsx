@@ -3,7 +3,15 @@ import "./team.css";
 import Link from "next/link";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, Check, Clock3, ImageIcon, Ruler } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  Clock3,
+  ImageIcon,
+  Phone,
+  Ruler,
+  UserRound,
+} from "lucide-react";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import {
   PageHeading,
@@ -98,78 +106,122 @@ function CompletedWorkDetail({ id }: { id: string }) {
             </span>
           </section>
           <div className={styles.layout}>
-            <section
-              className={`panel ${styles.section}`}
-              aria-labelledby="completion-heading"
-            >
-              <h2 id="completion-heading">
-                <Clock3 size={18} />
-                Completion details
-              </h2>
-              <dl className={styles.details}>
-                <div>
-                  <dt>Order number</dt>
-                  <dd>{entry.orderNumber}</dd>
-                </div>
-                <div>
-                  <dt>Piece code</dt>
-                  <dd>{entry.pieceId}</dd>
-                </div>
-                <div>
-                  <dt>Completed stage</dt>
-                  <dd>{entry.stepName}</dd>
-                </div>
-                <div>
-                  <dt>Workstation</dt>
-                  <dd>{STATIONS[entry.station]}</dd>
-                </div>
-                <div>
-                  <dt>Completed on</dt>
-                  <dd>
-                    <time dateTime={entry.completedAt}>
-                      {completedWorkDate(entry.completedAt)}
-                    </time>
-                  </dd>
-                </div>
-                {snapshot?.assignedAt && (
-                  <div>
-                    <dt>Assigned on</dt>
-                    <dd>
-                      <time dateTime={snapshot.assignedAt}>
-                        {completedWorkDate(snapshot.assignedAt)}
-                      </time>
-                    </dd>
-                  </div>
-                )}
-                {snapshot?.startedAt && (
-                  <div>
-                    <dt>Started on</dt>
-                    <dd>
-                      <time dateTime={snapshot.startedAt}>
-                        {completedWorkDate(snapshot.startedAt)}
-                      </time>
-                    </dd>
-                  </div>
-                )}
-                {snapshot && (
+            <div className={styles.stack}>
+              <section
+                className={`panel ${styles.section}`}
+                aria-labelledby="history-customer-heading"
+              >
+                <h2 id="history-customer-heading">
+                  <UserRound size={18} />
+                  Customer details
+                </h2>
+                {entry.customer ? (
                   <>
+                    <dl className={styles.details}>
+                      <div>
+                        <dt>Name</dt>
+                        <dd>{entry.customer.name}</dd>
+                      </div>
+                      <div>
+                        <dt>Phone number</dt>
+                        <dd>
+                          {entry.customer.phone ? (
+                            <a
+                              className={styles.customerPhone}
+                              href={`tel:${entry.customer.phone.replace(/[^\d+]/g, "")}`}
+                            >
+                              <Phone size={15} aria-hidden="true" />
+                              {entry.customer.phone}
+                            </a>
+                          ) : (
+                            "Not provided"
+                          )}
+                        </dd>
+                      </div>
+                    </dl>
+                    <p className={styles.hint}>
+                      Current customer contact details.
+                    </p>
+                  </>
+                ) : (
+                  <p className={styles.note}>
+                    Customer details are no longer available for this order.
+                  </p>
+                )}
+              </section>
+              <section
+                className={`panel ${styles.section}`}
+                aria-labelledby="completion-heading"
+              >
+                <h2 id="completion-heading">
+                  <Clock3 size={18} />
+                  Completion details
+                </h2>
+                <dl className={styles.details}>
+                  <div>
+                    <dt>Order number</dt>
+                    <dd>{entry.orderNumber}</dd>
+                  </div>
+                  <div>
+                    <dt>Piece code</dt>
+                    <dd>{entry.pieceId}</dd>
+                  </div>
+                  <div>
+                    <dt>Completed stage</dt>
+                    <dd>{entry.stepName}</dd>
+                  </div>
+                  <div>
+                    <dt>Workstation</dt>
+                    <dd>{STATIONS[entry.station]}</dd>
+                  </div>
+                  <div>
+                    <dt>Completed on</dt>
+                    <dd>
+                      <time dateTime={entry.completedAt}>
+                        {completedWorkDate(entry.completedAt)}
+                      </time>
+                    </dd>
+                  </div>
+                  {snapshot?.assignedAt && (
                     <div>
-                      <dt>Due date at completion</dt>
-                      <dd>{formatDate(snapshot.dueDate)}</dd>
-                    </div>
-                    <div>
-                      <dt>Priority at completion</dt>
+                      <dt>Assigned on</dt>
                       <dd>
-                        <PriorityBadge priority={snapshot.priority} />
+                        <time dateTime={snapshot.assignedAt}>
+                          {completedWorkDate(snapshot.assignedAt)}
+                        </time>
                       </dd>
                     </div>
-                  </>
-                )}
-              </dl>
-              <p className={styles.hint}>
-                Times are shown in India Standard Time.
-              </p>
-            </section>
+                  )}
+                  {snapshot?.startedAt && (
+                    <div>
+                      <dt>Started on</dt>
+                      <dd>
+                        <time dateTime={snapshot.startedAt}>
+                          {completedWorkDate(snapshot.startedAt)}
+                        </time>
+                      </dd>
+                    </div>
+                  )}
+                  {snapshot && (
+                    <>
+                      <div>
+                        <dt>Due date at completion</dt>
+                        <dd>{formatDate(snapshot.dueDate)}</dd>
+                      </div>
+                      <div>
+                        <dt>Priority at completion</dt>
+                        <dd>
+                          <PriorityBadge priority={snapshot.priority} />
+                        </dd>
+                      </div>
+                    </>
+                  )}
+                </dl>
+                <p className={styles.hint}>
+                  Times are shown in India Standard Time.
+                </p>
+              </section>
+            </div>
             <div className={styles.stack}>
               {!snapshot ? (
                 <section className={`panel ${styles.section}`}>

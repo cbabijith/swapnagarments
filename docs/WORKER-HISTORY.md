@@ -6,6 +6,28 @@ A [details screen extension](WORKER-HISTORY-DETAILS.md) is deployed and verified
 with immutable task snapshots and worker-scoped reference image access. Its
 deployment status is tracked separately from the release below.
 
+## Customer details — September 14 (local update)
+
+History entries and their detail screens now show the customer's current name
+and phone number. Phone numbers on the detail screen can be tapped to call.
+Search also matches customer names and phone numbers, alongside order, garment
+and stage. This update is implemented locally and has not been deployed.
+
+Contacts are resolved from the order's current customer record for only the
+authorized receipt or bounded history page. This also supports earlier receipts;
+missing orders/customers show an unavailable message while retaining the work
+record. Contact changes are reflected on subsequent reads; completed-stage
+snapshots remain immutable. No migration is required, and both JSON and relational
+storage modes use their active records.
+
+The five targeted history/grouping/profile/calendar tests, ESLint, TypeScript,
+and production build passed. Added assertions cover contact fields, worker
+isolation, customer search and pagination, old receipts, contact edits across
+rollback/recutover, and missing orders. Browser checks passed at 320px, 390px and
+1440px for list/details layout, name/phone search, station filters, return
+navigation, long names, missing contacts, and call links. See
+`output/qa/history-customers-results.json`.
+
 ## Behavior
 
 Workers can open **History** in the bottom navigation or **Work history** from
@@ -38,8 +60,9 @@ is replaced by this migration.
 The worker-only `/api/work/history` route authenticates before query validation.
 Its service obtains the staff ID from the session and filters, counts, sorts and
 pages records in PostgreSQL. Clients cannot request another worker's ID. The
-response excludes customer identity/contact details, measurements, notes,
-prices, payments, other assignees and mutation IDs. A name change or another
+local customer extension adds only customer name and phone; the list response
+excludes customer email, measurements, notes, prices, payments, other assignees
+and mutation IDs. A name change or another
 worker sharing the same name does not change history ownership.
 
 ## Earlier completions

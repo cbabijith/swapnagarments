@@ -1,0 +1,54 @@
+{
+  "desktop": true,
+  "mobileWidths": [
+    390,
+    320
+  ],
+  "focusRestored": true,
+  "printAction": true,
+  "fullyPaid": true,
+  "browserErrors": [],
+  "printScenarios": [
+    "open-preview",
+    "print-action",
+    "workshop",
+    "qr",
+    "six-gst",
+    "inclusive",
+    "unpaid",
+    "cancelled",
+    "long"
+  ],
+  "pdfChecks": {
+    "six-gst": {
+      "pages": 1,
+      "amountsVerified": true
+    },
+    "inclusive": {
+      "pages": 1,
+      "amountsVerified": true
+    },
+    "unpaid": {
+      "pages": 1,
+      "amountsVerified": true
+    },
+    "cancelled": {
+      "pages": 1,
+      "amountsVerified": true
+    },
+    "open-preview": {
+      "pages": 1,
+      "amountsVerified": true
+    },
+    "print-action": {
+      "pages": 1,
+      "amountsVerified": true
+    },
+    "long": {
+      "pages": 5,
+      "items": 45,
+      "payments": 24,
+      "datesVerified": true
+    }
+  }
+}

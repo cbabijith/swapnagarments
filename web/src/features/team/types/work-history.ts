@@ -24,6 +24,7 @@ export type CompletedWork = {
   station: number;
   stepName: string;
   completedAt: string;
+  customer?: { name: string; phone: string } | null;
 };
 export type WorkHistoryRead = {
   revision: number;

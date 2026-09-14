@@ -254,6 +254,21 @@ test("worker history preserves completed stages, scopes accounts, filters and pa
     assert.equal((await item(orderId, first.id)).work?.assigneeId, undefined);
     const completionId = (await history(a.user)).entries[0].id;
     const saved = await readWorkHistoryDetail(completionId, a.user);
+    const customerContact = { name: "Private customer", phone: "9000000001" };
+    assert.deepEqual(saved.entry.customer, customerContact);
+    assert.deepEqual(
+      (await history(a.user)).entries[0].customer,
+      customerContact,
+    );
+    assert.equal(
+      (await history(a.user, { q: "private CUSTOMER" })).page.total,
+      1,
+    );
+    assert.equal((await history(a.user, { q: "000000001" })).page.total, 1);
+    assert.equal(
+      (await history(b.user, { q: "Private customer" })).page.total,
+      0,
+    );
     assert.equal(saved.entry.snapshot?.material, "Private fabric notes");
     assert.equal(saved.entry.snapshot?.design?.notes, "Original design note");
     assert.equal(saved.entry.snapshot?.measurement?.values.bust, "92");
@@ -275,9 +290,8 @@ test("worker history preserves completed stages, scopes accounts, filters and pa
     const detailBody = JSON.stringify(await detailResponse.json());
     for (const secret of [
       "Private measurer",
-      "Private customer",
+      "Private customer note",
       "private@example.test",
-      "9000000001",
       "Private order",
       "payments",
       "price",
@@ -416,6 +430,14 @@ test("worker history preserves completed stages, scopes accounts, filters and pa
     assert.equal((await history(a.user, { station: "1" })).page.total, 0);
     assert.equal((await history(b.user, { station: "1" })).page.total, 1);
     assert.equal((await history(a.user, { q: order.number })).page.total, 3);
+    const customerPage = await history(a.user, {
+      q: "Private customer",
+      pageSize: 1,
+      page: 2,
+    });
+    assert.equal(customerPage.page.total, 3);
+    assert.equal(customerPage.entries.length, 1);
+    assert.deepEqual(customerPage.entries[0].customer, customerContact);
     assert.equal((await history(a.user, { q: "%" })).page.total, 0);
 
     // Owner-confirmed completion credits the assigned worker; a correction is not completion.
@@ -474,6 +496,16 @@ test("worker history preserves completed stages, scopes accounts, filters and pa
     const prior = (await history(a.user)).entries;
     await transition("rollback");
     assert.deepEqual((await history(a.user)).entries, prior);
+    assert.equal(
+      (await history(a.user, { q: "Private customer" })).page.total,
+      3,
+    );
+    assert.equal((await history(a.user, { q: "9000000001" })).page.total, 3);
+    assert.equal((await history(a.user, { q: "%" })).page.total, 0);
+    assert.deepEqual(
+      (await readWorkHistoryDetail(recoveredId, a.user)).entry.customer,
+      customerContact,
+    );
     await assign(orderId, first.id, a.id);
     await complete(orderId, first.id, a, true);
     assert.equal((await history(a.user)).page.total, 4);
@@ -506,8 +538,7 @@ test("worker history preserves completed stages, scopes accounts, filters and pa
     const body = JSON.stringify(await response.json());
     for (const secret of [
       "private@example.test",
-      "9000000001",
-      "Private customer",
+      "Private customer note",
       "Private order",
       "Private fabric",
       "price",
@@ -517,6 +548,67 @@ test("worker history preserves completed stages, scopes accounts, filters and pa
       "mutationId",
     ])
       assert.ok(!body.includes(secret), secret);
+
+    // Contacts are current data, independently of the immutable work snapshot.
+    // In JSON mode the dormant relational tables must not supply stale contacts.
+    const snapshotBeforeContactEdit = (
+      await readWorkHistoryDetail(jsonCompletion, a.user)
+    ).entry.snapshot;
+    await transition("rollback");
+    const currentCustomer = (await readWorkspace()).data.customers.find(
+      (entry) => entry.id === customer.resultId,
+    )!;
+    await send({
+      type: "customer.save",
+      customer: {
+        ...currentCustomer,
+        name: "Updated history customer",
+        phone: "9000000002",
+      },
+    });
+    const updatedContact = {
+      name: "Updated history customer",
+      phone: "9000000002",
+    };
+    assert.deepEqual(
+      (await readWorkHistoryDetail(jsonCompletion, a.user)).entry.customer,
+      updatedContact,
+    );
+    assert.equal(
+      (await history(a.user, { q: "Private customer" })).page.total,
+      0,
+    );
+    assert.equal((await history(a.user, { q: "000000002" })).page.total, 4);
+    await transition("cutover");
+    assert.deepEqual(
+      (await history(a.user)).entries[0].customer,
+      updatedContact,
+    );
+    assert.equal(
+      (await history(a.user, { q: "Updated history customer" })).page.total,
+      4,
+    );
+    assert.deepEqual(
+      (await readWorkHistoryDetail(jsonCompletion, a.user)).entry.snapshot,
+      snapshotBeforeContactEdit,
+    );
+
+    // A missing order must not hide its completion or fabricate customer details.
+    await context.engine.query(
+      "UPDATE sg_work_completions SET order_id='missing-order' WHERE id=$1",
+      [jsonCompletion],
+    );
+    assert.equal(
+      (await readWorkHistoryDetail(jsonCompletion, a.user)).entry.customer,
+      null,
+    );
+    assert.equal(
+      (await history(a.user)).entries.find(
+        (entry) => entry.id === jsonCompletion,
+      )?.customer,
+      null,
+    );
+    assert.equal((await history(a.user)).page.total, 4);
   } finally {
     await context.engine.close();
   }

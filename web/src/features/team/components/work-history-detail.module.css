@@ -83,6 +83,15 @@
 .notes {
   white-space: pre-wrap;
 }
+.customerPhone {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .hint,
 .note {
   font-size: 12px;

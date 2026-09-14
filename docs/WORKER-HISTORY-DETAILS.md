@@ -12,6 +12,12 @@ piece code, order number, completed stage, workstation and completion time.
 History remains selected in the worker navigation. **Back to history** restores
 the previous search, station filter and page.
 
+The [local customer-details extension](WORKER-HISTORY.md#customer-details--september-14-local-update)
+adds a customer card with the current name and phone number, including a call
+link. Contacts are resolved separately from the immutable stage snapshot, so
+earlier completions can show them too. Unavailable contacts are explicitly
+labelled. This extension has not been deployed.
+
 New completions also show saved material/design notes, measurements with their
 units, reference images, original due date and priority, and assignment/start
 timestamps when available. Images open in a larger read-only dialog. These are
@@ -40,6 +46,9 @@ Current garment data is not backfilled into older history.
   under the existing immutable image storage policy.
 - History list queries stay paginated and omit snapshots. Detail queries fetch
   one receipt. JSON rollback and relational recutover retain receipt snapshots.
+- The local customer extension resolves only name and phone for orders on the
+  authorized page or receipt, using the active storage model. It grants no access
+  to other workers' receipts or to customer profiles, email, notes or billing.
 
 ## Verification
 

@@ -8,7 +8,7 @@ import {
   nextStepName,
 } from "@/features/workflow/domain/templates";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { flushSync } from "react-dom";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -19,6 +19,7 @@ import {
   Search,
   Download,
   Printer,
+  FileText,
   Check,
   RotateCcw,
   QrCode,
@@ -37,6 +38,7 @@ import { QueryState, ScrollPagination } from "@/shared/components/query-state";
 import { useWorkflow } from "@/features/workflow/hooks/use-workflow";
 import { useBilling } from "@/features/billing/hooks/use-billing";
 import { OrderBill } from "@/features/billing/components/order-bill";
+import { BillPreview } from "@/features/billing/components/bill-preview";
 import { GstSummary } from "@/features/billing/components/gst-summary";
 import { ApplyOrderGst } from "@/features/billing/components/apply-order-gst";
 import { MeasurementSummary } from "@/features/measurements/components/measurement-fields";
@@ -297,6 +299,7 @@ export function OrdersList() {
 
 export function OrderDetail({ id }: { id: string }) {
   const { deliver } = useOrders();
+  const billButtonRef = useRef<HTMLButtonElement>(null);
   const [printLayout, setPrintLayout] = useState<"bill" | "order">("bill");
   useEffect(() => {
     const resetPrintLayout = () => setPrintLayout("bill");
@@ -313,7 +316,14 @@ export function OrderDetail({ id }: { id: string }) {
   const { advancePiece, rework } = useWorkflow();
   const { recordPayment } = useBilling();
   const [dialog, setDialog] = useState<
-    "payment" | "qr" | "deliver" | "rework" | "measurements" | "assign" | null
+    | "payment"
+    | "qr"
+    | "deliver"
+    | "rework"
+    | "measurements"
+    | "assign"
+    | "bill"
+    | null
   >(null);
   const [piece, setPiece] = useState<OrderItem | null>(null);
   const [error, setError] = useState("");
@@ -342,6 +352,10 @@ export function OrderDetail({ id }: { id: string }) {
   const customer = data?.customers.find(
     (entry) => entry.id === order.customerId,
   );
+  function closeBill() {
+    flushSync(() => setDialog(null));
+    billButtonRef.current?.focus();
+  }
   async function mutate(work: () => void | Promise<unknown>) {
     if (mutationBlocked) return;
     setBusy(true);
@@ -373,6 +387,17 @@ export function OrderDetail({ id }: { id: string }) {
   return (
     <div className="order-detail" data-print-layout={printLayout}>
       <OrderBill order={order} customer={customer} />
+      {dialog === "bill" && (
+        <BillPreview
+          order={order}
+          customer={customer}
+          onClose={closeBill}
+          onPrint={() => {
+            closeBill();
+            printOrder("bill");
+          }}
+        />
+      )}
       <Link className="back-link" href="/orders">
         <ArrowLeft size={14} />
         Back to orders
@@ -390,9 +415,13 @@ export function OrderDetail({ id }: { id: string }) {
           <Printer size={16} />
           Print order
         </button>
-        <button className="button primary" onClick={() => printOrder("bill")}>
-          <Printer size={16} />
-          Print bill
+        <button
+          ref={billButtonRef}
+          className="button primary"
+          onClick={() => setDialog("bill")}
+        >
+          <FileText size={16} />
+          View bill
         </button>
       </PageHeading>
       <QueryState

@@ -1,9 +1,29 @@
 # GST settings and compact customer bills
 
-The order page offers **Print bill** for a compact A5 customer bill and **Print
-order** for the complete A4 workshop details. QR labels remain a separate print
-action. A six-piece bill with GST fits on one A5 page; longer orders continue
-without dropping items.
+The order page offers **View bill** to review the customer copy before using
+**Print / Save PDF** for a compact A5 bill. The preview includes the shop branding,
+customer and delivery details, payment status, garment charges, saved GST,
+payment records, and balance. **Print order** retains the complete A4 workshop
+details; QR labels remain a separate print action. A standard six-piece bill
+with GST fits on one A5 page; longer orders continue without dropping items.
+
+## Bill UI update — September 14 (local)
+
+The responsive preview and print styles live in the billing feature. Preview
+controls stay visible while the bill scrolls; closing the dialog restores focus
+to **View bill**. Printing from the preview button or the browser uses the same
+A5 customer copy. Bills distinguish unpaid, partially paid, fully paid, and
+cancelled orders, without changing stored amounts or tax calculations.
+
+Validated at 1440px, 390px, and 320px, including dialog focus and print actions.
+PDF checks verified inclusive/exclusive GST amounts, a one-page six-piece A5
+bill, and all 45 garments and 24 payments in a long-order fixture. Existing A4
+order and QR printing were also checked. The GST and date-format tests,
+TypeScript, ESLint, and production build passed. See
+`output/qa/bill-ui-results.json` for browser and PDF results. This UI update has
+not been deployed; the production release below describes the earlier version.
+
+## GST behavior
 
 **Settings → GST & billing** has an enable switch, GST percentage, prices that
 include or exclude GST, and an optional shop GSTIN. GST starts disabled. New
