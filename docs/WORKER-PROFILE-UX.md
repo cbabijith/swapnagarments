@@ -15,6 +15,13 @@ dismissible notification.
 Availability and account details remain managed by the shop owner. No worker
 editing controls, service changes, schema changes or permission changes were added.
 
+On the profile screen, the top profile icon opens the existing account menu with
+Sign out. From other worker screens it remains a link to Profile. Escape closes
+the menu and returns focus to the icon; leaving Profile resets the menu.
+`output/qa/profile-account-menu-browser.cjs` verifies this behavior at 320, 390 and
+1440px, including sign-out failure/retry and prevention of repeated taps. The
+production build and focused worker-shell ESLint check passed.
+
 ## Verification
 
 - Production build and full ESLint passed in an isolated checkout using the

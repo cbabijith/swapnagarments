@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
+import { AccountMenu } from "@/features/auth/components/account-menu";
 import { WorkQueue } from "./work-queue";
 import { WorkHistory } from "./work-history";
 import { WorkHistoryDetail } from "./work-history-detail";
@@ -47,14 +48,18 @@ export function WorkerShell() {
           </strong>
         </Link>
         <div>
-          <Link
-            className="worker-account-link"
-            href="/my-work/profile"
-            aria-label={`View ${owner.name}'s profile`}
-          >
-            <UserRound size={17} />
-            <span>{owner.name}</span>
-          </Link>
+          {pathname === "/my-work/profile" ? (
+            <AccountMenu />
+          ) : (
+            <Link
+              className="worker-account-link"
+              href="/my-work/profile"
+              aria-label={`View ${owner.name}'s profile`}
+            >
+              <UserRound size={17} />
+              <span>{owner.name}</span>
+            </Link>
+          )}
         </div>
       </header>
       <main className="page-content" id="main-content" tabIndex={-1}>

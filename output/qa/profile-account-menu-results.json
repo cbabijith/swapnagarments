@@ -1,0 +1,9 @@
+{
+  "mode": "Local production build with synthetic API fixtures",
+  "checks": [
+    "Top profile link navigates to profile; its menu opens without signing out and fits 320, 390 and 1440px",
+    "Escape closes and restores focus; Enter opens and a second tap closes the menu",
+    "Navigating away resets the menu; sign out can retry a failure, prevents duplicate taps and returns to sign in"
+  ],
+  "errors": []
+}
