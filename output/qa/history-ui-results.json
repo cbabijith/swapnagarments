@@ -1,0 +1,18 @@
+{
+  "mode": "Local production build; synthetic read-only fixtures; device timezone America/Los_Angeles",
+  "checks": [
+    "History fits 320px; compact cards and readable controls",
+    "History fits 360px; compact cards and readable controls",
+    "History fits 390px; compact cards and readable controls",
+    "History fits 430px; compact cards and readable controls",
+    "History fits 768px; compact cards and readable controls",
+    "History fits 1440px; compact cards and readable controls",
+    "Search and station filter combine; opening details and returning preserves both filters",
+    "Clear search keeps keyboard focus; empty results offer a working reset",
+    "Pagination moves focus to results and preserves page when returning from details",
+    "Refresh failures preserve entries; initial and refresh errors both recover with retry",
+    "First-use empty state and loading placeholders render correctly",
+    "Long garment, order and stage names wrap at 320px; bottom navigation leaves pagination reachable"
+  ],
+  "errors": []
+}
