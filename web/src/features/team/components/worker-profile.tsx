@@ -6,7 +6,7 @@ import {
   CheckCheck,
   History,
   ListTodo,
-  ScanLine,
+  LogOut,
 } from "lucide-react";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
@@ -38,7 +38,7 @@ export function WorkerProfilePage() {
 }
 
 function WorkerProfile() {
-  const { owner } = useWorkspace();
+  const { owner, signOut } = useWorkspace();
   const query = useWorkerProfile();
   const work = useFeatureQuery<WorkRead>(
     "/api/work?page=1&pageSize=3",
@@ -63,10 +63,9 @@ function WorkerProfile() {
         title="My profile"
         description="Your team details and the work you are part of."
       >
-        <Link className="button primary" href="/scan">
-          <ScanLine size={17} />
-          Scan a piece
-        </Link>
+        <button className="button" onClick={() => void signOut()}>
+          <LogOut size={17} /> Sign out
+        </button>
       </PageHeading>
       <QueryState
         loading={query.isLoading}

@@ -8,7 +8,6 @@ import {
   ListTodo,
   History,
   UserRound,
-  LogOut,
   X,
 } from "lucide-react";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
@@ -17,8 +16,9 @@ import { WorkHistory } from "./work-history";
 import { WorkHistoryDetail } from "./work-history-detail";
 import { WorkerProfilePage } from "./worker-profile";
 import { Scan } from "@/features/qr-tags/components/qr-tags";
+import styles from "./worker-shell.module.css";
 export function WorkerShell() {
-  const { owner, signOut, notice, notify } = useWorkspace();
+  const { owner, notice, notify } = useWorkspace();
   const pathname = usePathname();
   const router = useRouter();
   const params = useParams<{ id?: string }>();
@@ -35,7 +35,7 @@ export function WorkerShell() {
       router.replace("/my-work");
   }, [pathname, router, historyDetail]);
   return (
-    <div className="worker-shell">
+    <div className={`worker-shell ${styles.shell}`}>
       <a className="skip-link" href="#main-content">
         Skip to work
       </a>
@@ -55,13 +55,9 @@ export function WorkerShell() {
             <UserRound size={17} />
             <span>{owner.name}</span>
           </Link>
-          <button className="button" onClick={() => void signOut()}>
-            <LogOut size={16} />
-            Sign out
-          </button>
         </div>
       </header>
-      <main className="page-content" id="main-content">
+      <main className="page-content" id="main-content" tabIndex={-1}>
         <Suspense fallback={<p>Loading your work…</p>}>
           {pathname === "/scan" ? (
             <Scan />

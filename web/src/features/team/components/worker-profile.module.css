@@ -244,4 +244,38 @@ a.workRow:hover h3 {
   .stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .identity {
+    border-radius: 16px;
+    margin-bottom: 18px;
+  }
+  .identityCopy h2 {
+    font-size: 26px;
+  }
+  .role,
+  .availability,
+  .help,
+  .workRow p:not(:global(.work-order)),
+  .workRow time {
+    font-size: 13px;
+  }
+  .details,
+  .workSection {
+    padding: 18px;
+    border-radius: 14px;
+  }
+  .sectionHeading {
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .sectionHeading a {
+    min-height: 44px;
+    font-size: 13px;
+  }
+  .stats dt,
+  .details dt {
+    font-size: 12px;
+  }
+  .details dd {
+    font-size: 14px;
+  }
 }

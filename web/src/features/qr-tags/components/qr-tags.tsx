@@ -232,13 +232,16 @@ export function Scan() {
           }}
         >
           <label className="field">
-            Or enter an order number / scan with a handheld reader
+            Or enter the printed order number
             <input
               value={code}
               required
               onChange={(event) => setCode(event.target.value)}
               placeholder="e.g. SG-1041"
               autoCapitalize="characters"
+              autoComplete="off"
+              spellCheck={false}
+              enterKeyHint="search"
             />
           </label>
           <button className="button" type="submit" disabled={busy}>

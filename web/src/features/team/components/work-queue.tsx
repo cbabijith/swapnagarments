@@ -12,7 +12,8 @@ import {
   Shuffle,
   X,
   RefreshCw,
-  History,
+  CalendarDays,
+  ChevronDown,
 } from "lucide-react";
 import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
@@ -31,7 +32,6 @@ import {
 import { previewWork } from "../domain/queries";
 import type { WorkRead, WorkPiece, WorkQuery } from "../types/queries";
 import { AssignWorkDialog } from "./assign-work-dialog";
-import { WorkerProfileCard } from "./worker-profile-card";
 import { AssetImage } from "@/features/design-library/components/asset-image";
 
 export function WorkQueue({
@@ -132,31 +132,29 @@ export function WorkQueue({
     }
   }
   const summary = query.data?.summary;
+  const filtered = status !== "all" || station !== "all";
   return (
     <div className="work-queue">
       {!embedded && (
         <PageHeading
-          eyebrow="YOUR PRODUCTION QUEUE"
+          eyebrow={
+            worker
+              ? `HELLO, ${owner.name.split(" ")[0]}`
+              : "YOUR PRODUCTION QUEUE"
+          }
           title={worker ? `My work` : "Work assignments"}
           description={
             worker
-              ? `Hello ${owner.name.split(" ")[0]}. Start with urgent work, then the earliest due date.`
+              ? "Urgent pieces first, then earliest due."
               : "Assign, start, and track every piece at its current station."
           }
         >
-          {worker && (
-            <Link className="button" href="/my-work/history">
-              <History size={17} />
-              Work history
-            </Link>
-          )}
           <Link className="button primary" href="/scan">
             <ScanLine size={17} />
             Scan a piece
           </Link>
         </PageHeading>
       )}
-      {worker && !embedded && <WorkerProfileCard />}
       {summary && (
         <div className="work-summary">
           {(
@@ -177,22 +175,52 @@ export function WorkQueue({
           ))}
         </div>
       )}
+      {worker && (
+        <div
+          className="work-status-filters"
+          role="group"
+          aria-label="Work status"
+        >
+          {(
+            [
+              ["all", "All work"],
+              ["pending", "To do"],
+              ["in_progress", "Active"],
+              ["blocked", "Blocked"],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              type="button"
+              key={value}
+              aria-pressed={status === value}
+              onClick={() => {
+                setStatus(value);
+                setPage(1);
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="toolbar team-toolbar">
         <div className="toolbar-filters">
-          <select
-            aria-label="Work status"
-            value={status}
-            onChange={(e) => {
-              setStatus(e.target.value as WorkQuery["status"]);
-              setPage(1);
-            }}
-          >
-            <option value="all">All unfinished work</option>
-            <option value="pending">Pending</option>
-            <option value="in_progress">In progress</option>
-            <option value="blocked">Blocked</option>
-            {!worker && <option value="unassigned">Unassigned</option>}
-          </select>
+          {!worker && (
+            <select
+              aria-label="Work status"
+              value={status}
+              onChange={(e) => {
+                setStatus(e.target.value as WorkQuery["status"]);
+                setPage(1);
+              }}
+            >
+              <option value="all">All unfinished work</option>
+              <option value="pending">Pending</option>
+              <option value="in_progress">In progress</option>
+              <option value="blocked">Blocked</option>
+              {!worker && <option value="unassigned">Unassigned</option>}
+            </select>
+          )}
           <select
             aria-label="Work station"
             value={station}
@@ -214,9 +242,12 @@ export function WorkQueue({
             className="button"
             aria-label="Refresh work queue"
             onClick={query.reload}
-            disabled={Boolean(busy)}
+            disabled={Boolean(busy) || query.isRefreshing || query.isLoading}
           >
             <RefreshCw size={16} />
+            {worker && (
+              <span>{query.isRefreshing ? "Refreshing…" : "Refresh"}</span>
+            )}
           </button>
           {!worker && (
             <button
@@ -230,6 +261,21 @@ export function WorkQueue({
           )}
         </div>
       </div>
+      {worker && filtered && (
+        <p className="work-filter-note">
+          Filtered work
+          <button
+            className="text-link"
+            onClick={() => {
+              setStatus("all");
+              setStation("all");
+              setPage(1);
+            }}
+          >
+            Clear filters <X size={14} />
+          </button>
+        </p>
+      )}
       {member && (
         <p className="work-filter-note">
           Work assigned to <strong>{member.name}</strong>
@@ -309,12 +355,15 @@ export function WorkQueue({
               </p>
               <div className="work-card-meta">
                 <span className={overdue ? "overdue-text" : ""}>
+                  {worker && <CalendarDays size={14} aria-hidden="true" />}
                   {overdue ? "Overdue · " : "Due "}
                   {order.dueDate === query.data!.today
                     ? "today"
                     : formatDate(order.dueDate)}
                 </span>
-                <span>{piece.assigneeName ?? "No worker assigned"}</span>
+                {!worker && (
+                  <span>{piece.assigneeName ?? "No worker assigned"}</span>
+                )}
               </div>
               {piece.unassignedReason && (
                 <p className="note-box">{piece.unassignedReason}</p>
@@ -324,8 +373,16 @@ export function WorkQueue({
                   <strong>Blocked:</strong> {work.blockedReason}
                 </p>
               )}
+              {worker && item.measurement?.confirmed === false && (
+                <p className="note-box">
+                  Measurements need confirmation. Ask the owner before starting.
+                </p>
+              )}
               <details className="work-details">
-                <summary>Piece details & measurements</summary>
+                <summary>
+                  Piece details & measurements{" "}
+                  {worker && <ChevronDown size={16} aria-hidden="true" />}
+                </summary>
                 <p className="small muted">Piece code: {item.id}</p>
                 {item.design && (
                   <>
@@ -452,16 +509,35 @@ export function WorkQueue({
       {query.data && !query.data.pieces.length && !query.error && (
         <EmptyState
           title={
-            code ? "No matching work in this queue" : "Your queue is clear"
+            code
+              ? "No matching work in this queue"
+              : filtered
+                ? "No work matches these filters"
+                : "Your queue is clear"
           }
           text={
             code
               ? "This piece may be completed, reassigned, or outside the selected filters. Clear the filters or ask the owner."
-              : worker
-                ? "Assigned work will appear here. Your queue refreshes automatically."
-                : "Change the filters or add an order to create work."
+              : filtered
+                ? "Choose another status or station to see your assigned work."
+                : worker
+                  ? "Assigned work will appear here. Your queue refreshes automatically."
+                  : "Change the filters or add an order to create work."
           }
-        />
+        >
+          {filtered && (
+            <button
+              className="button"
+              onClick={() => {
+                setStatus("all");
+                setStation("all");
+                setPage(1);
+              }}
+            >
+              Show all work
+            </button>
+          )}
+        </EmptyState>
       )}
       {query.data && (
         <Pagination page={query.data.page} onPageChange={setPage} />
