@@ -7,6 +7,7 @@ import {
   ScanLine,
   ListTodo,
   History,
+  CalendarDays,
   UserRound,
   X,
 } from "lucide-react";
@@ -14,6 +15,7 @@ import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { AccountMenu } from "@/features/auth/components/account-menu";
 import { WorkQueue } from "./work-queue";
 import { WorkHistory } from "./work-history";
+import { WorkCalendar } from "./work-calendar";
 import { WorkHistoryDetail } from "./work-history-detail";
 import { WorkerProfilePage } from "./worker-profile";
 import { Scan } from "@/features/qr-tags/components/qr-tags";
@@ -26,8 +28,13 @@ export function WorkerShell() {
   const historyDetail =
     /^\/my-work\/history\/[^/]+$/.test(pathname) && Boolean(params.id);
   useEffect(() => {
+    if (pathname === "/calendar") {
+      router.replace("/my-work/calendar");
+      return;
+    }
     if (
       pathname !== "/my-work" &&
+      pathname !== "/my-work/calendar" &&
       pathname !== "/my-work/history" &&
       !historyDetail &&
       pathname !== "/my-work/profile" &&
@@ -66,6 +73,8 @@ export function WorkerShell() {
         <Suspense fallback={<p>Loading your work…</p>}>
           {pathname === "/scan" ? (
             <Scan />
+          ) : pathname === "/my-work/calendar" || pathname === "/calendar" ? (
+            <WorkCalendar />
           ) : pathname === "/my-work/history" ? (
             <WorkHistory />
           ) : historyDetail ? (
@@ -84,6 +93,17 @@ export function WorkerShell() {
         >
           <ListTodo size={20} />
           My work
+        </Link>
+        <Link
+          href="/my-work/calendar"
+          aria-current={
+            pathname === "/my-work/calendar" || pathname === "/calendar"
+              ? "page"
+              : undefined
+          }
+        >
+          <CalendarDays size={20} />
+          Calendar
         </Link>
         <Link
           href="/my-work/history"

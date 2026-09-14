@@ -47,7 +47,44 @@ only events already retained by the existing application.
 - Existing JSON storage and the sample preview share pure selectors. The live
   relational path does not read the frozen workspace JSON.
 - No schema migration, new package, write endpoint, or production-data change is
-  required. Worker access remains restricted by the existing owner-only guard.
+  required. Shop-wide calendar access remains restricted by the owner-only guard.
+
+## Worker calendar
+
+The worker website adds **Calendar** to its bottom navigation at
+`/my-work/calendar`. Worker visits to `/calendar` also open this personal view.
+The month grid, date picker, Today control and selected-day layout are shared
+with the owner calendar. Worker records have two categories:
+
+- **Work due:** each currently assigned, unfinished piece on its order's delivery
+  date, with its current custom workflow step and pending/in-progress/blocked
+  status. Cancelled/delivered orders and ready pieces are excluded.
+- **Completed:** each saved stage completed by the signed-in worker, grouped by
+  completion time in Asia/Kolkata. These records remain after reassignment or
+  delivery and open the existing immutable completion detail.
+
+Daily totals include work due, completed stages, in-progress work and overdue
+work. Selecting active work opens the exact piece in My work. Category/date
+changes reset pagination; pages contain up to 20 records, due work first and
+then newest completions. Counts describe records, so a piece may appear in both
+categories when the same worker has completed one stage and owns the next.
+
+The team feature owns worker UI/contracts/hooks and pure assignment selectors;
+`services/work-calendar-service.ts` owns the authenticated read logic.
+`GET /api/work/calendar?month=YYYY-MM` returns only aggregates, and
+`GET /api/work/calendar/day?date=YYYY-MM-DD&kind=all&page=1&pageSize=20`
+returns the selected day's bounded list (`all`, `due`, `completed`). Both use
+the session's worker ID, reject scope overrides, exclude customer/financial
+data and return no-store responses. SQL filters and paginates before returning
+records. JSON rollback retains the immutable completion ledger. Sample preview
+uses current assignments and has no persisted completion history.
+
+`web/tests/work-calendar.test.ts` covers worker isolation (including same-name
+workers), custom step labels, filtering, pagination across both sources, IST
+midnight/month boundaries, reassignment, JSON/relational parity, rollback,
+authentication, deactivated accounts and private-field exclusion. All 41 tests,
+lint and TypeScript checks pass. Production build, browser checks and deployment
+verification are pending for this worker extension.
 
 ## Validation
 

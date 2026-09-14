@@ -1,58 +1,63 @@
 "use client";
-
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowUpRight, RefreshCw } from "lucide-react";
+import { calendarDate } from "@/features/calendar/contracts/query";
 import {
-  calendarDate,
-  calendarKinds,
-} from "@/features/calendar/contracts/query";
-import type { CalendarDayQuery } from "@/features/calendar/contracts/query";
-import { calendarLabels } from "@/features/calendar/domain/calendar";
-import {
-  useCalendarDay,
-  useCalendarMonth,
-} from "@/features/calendar/hooks/use-calendar";
-import { PageHeading, EmptyState, StatusBadge } from "@/shared/components/ui";
+  CalendarMonthPanel,
+  dateLabel,
+} from "@/features/calendar/components/calendar-month-panel";
+import styles from "@/features/calendar/components/calendar.module.css";
+import { PageHeading, EmptyState } from "@/shared/components/ui";
 import { ScrollPagination, QueryState } from "@/shared/components/query-state";
-import { money, shopDate } from "@/shared/workspace";
-import styles from "./calendar.module.css";
-import { CalendarMonthPanel, dateLabel } from "./calendar-month-panel";
+import { shopDate } from "@/shared/workspace";
+import {
+  workCalendarKinds,
+  type WorkCalendarDayQuery,
+} from "../contracts/work-calendar";
+import { workCalendarLabels } from "../domain/work-calendar";
+import {
+  useWorkCalendarDay,
+  useWorkCalendarMonth,
+} from "../hooks/use-work-calendar";
 
-export function Calendar() {
+const statusLabels = {
+  pending: "Pending",
+  in_progress: "In progress",
+  blocked: "Blocked",
+  completed: "Completed",
+};
+export function WorkCalendar() {
   const [selection, setSelection] = useState(() => ({
     date: shopDate(),
     page: 1,
-    kind: "all" as CalendarDayQuery["kind"],
+    kind: "all" as WorkCalendarDayQuery["kind"],
   }));
   const month = selection.date.slice(0, 7);
-  const monthQuery = useCalendarMonth(month);
-  const dayQuery = useCalendarDay({ ...selection, pageSize: 20 });
-  const today = monthQuery.data?.today ?? shopDate();
+  const monthQuery = useWorkCalendarMonth(month);
+  const dayQuery = useWorkCalendarDay({ ...selection, pageSize: 20 });
   const summary = dayQuery.data?.summary;
+  const refreshing = monthQuery.isRefreshing || dayQuery.isRefreshing;
   const selectDate = (date: string) => {
     if (calendarDate.safeParse(date).success)
       setSelection((current) => ({ ...current, date, page: 1 }));
   };
-  const refreshing = monthQuery.isRefreshing || dayQuery.isRefreshing;
-  const reload = () => {
-    monthQuery.reload();
-    dayQuery.reload();
-  };
-
   return (
     <>
       <PageHeading
-        eyebrow="YOUR SHOP, DAY BY DAY"
-        title="Calendar"
-        description="Choose a date to see orders, deliveries, payments, and shop activity."
+        eyebrow="YOUR WORK, DAY BY DAY"
+        title="My calendar"
+        description="Choose a date to see your work due and completed stages."
       >
         <button
           type="button"
           className="button"
-          onClick={reload}
-          disabled={refreshing}
           aria-label="Refresh calendar"
+          disabled={refreshing}
+          onClick={() => {
+            monthQuery.reload();
+            dayQuery.reload();
+          }}
         >
           <RefreshCw size={16} />
           {refreshing ? "Refreshing…" : "Refresh"}
@@ -62,11 +67,11 @@ export function Calendar() {
         <CalendarMonthPanel
           month={month}
           selectedDate={selection.date}
-          today={today}
+          today={monthQuery.data?.today ?? shopDate()}
           selectDate={selectDate}
-          label="Shop calendar"
-          kinds={calendarKinds}
-          labels={calendarLabels}
+          label="My work calendar"
+          kinds={workCalendarKinds}
+          labels={workCalendarLabels}
           monthQuery={monthQuery}
         />
         <section
@@ -80,26 +85,26 @@ export function Calendar() {
               {dateLabel(selection.date)}
             </h2>
             <p>
-              All times are in India Standard Time. Order statuses show their
-              current state.
+              Due work uses the order’s delivery date. Completed stages use
+              India Standard Time.
             </p>
           </div>
           <div className={styles.stats}>
             <div>
-              <span>Orders due</span>
+              <span>Work due</span>
               <strong>{summary?.counts.due ?? "—"}</strong>
             </div>
             <div>
-              <span>New orders</span>
-              <strong>{summary?.counts.created ?? "—"}</strong>
+              <span>Completed</span>
+              <strong>{summary?.counts.completed ?? "—"}</strong>
             </div>
             <div>
-              <span>Delivered</span>
-              <strong>{summary?.counts.delivered ?? "—"}</strong>
+              <span>In progress</span>
+              <strong>{summary?.inProgress ?? "—"}</strong>
             </div>
             <div>
-              <span>Collected</span>
-              <strong>{summary ? money(summary.collected) : "—"}</strong>
+              <span>Overdue</span>
+              <strong>{summary?.overdue ?? "—"}</strong>
             </div>
           </div>
           <div
@@ -107,7 +112,7 @@ export function Calendar() {
             role="group"
             aria-label="Filter day records"
           >
-            {(["all", ...calendarKinds] as const).map((kind) => (
+            {(["all", ...workCalendarKinds] as const).map((kind) => (
               <button
                 type="button"
                 key={kind}
@@ -117,7 +122,7 @@ export function Calendar() {
                   setSelection((current) => ({ ...current, kind, page: 1 }))
                 }
               >
-                {kind === "all" ? "All records" : calendarLabels[kind]}
+                {kind === "all" ? "All work" : workCalendarLabels[kind]}
                 {summary && (
                   <span>
                     {kind === "all" ? summary.total : summary.counts[kind]}
@@ -136,9 +141,11 @@ export function Calendar() {
             dayQuery.data?.entries.length === 0 && (
               <EmptyState
                 title={
-                  selection.kind === "all"
-                    ? "No records on this date"
-                    : `No ${calendarLabels[selection.kind].toLowerCase()} on this date`
+                  selection.kind === "completed"
+                    ? "No completed stages on this date"
+                    : selection.kind === "due"
+                      ? "No work due on this date"
+                      : "No work on this date"
                 }
                 text="Choose another date or view a different category."
               />
@@ -148,8 +155,12 @@ export function Calendar() {
               {dayQuery.data?.entries.map((entry) => (
                 <li key={entry.id}>
                   <Link
-                    href={`/orders/${encodeURIComponent(entry.orderId)}`}
                     className={styles.entry}
+                    href={
+                      entry.kind === "completed"
+                        ? `/my-work/history/${encodeURIComponent(entry.id)}`
+                        : `/my-work?code=${encodeURIComponent(`swapna:${entry.orderId}:${entry.pieceId}`)}`
+                    }
                   >
                     <span
                       className={`${styles.eventMarker} ${styles[entry.kind]}`}
@@ -158,7 +169,7 @@ export function Calendar() {
                     <span className={styles.entryBody}>
                       <span className={styles.entryTop}>
                         <span className={styles.category}>
-                          {calendarLabels[entry.kind]}
+                          {workCalendarLabels[entry.kind]}
                         </span>
                         <time dateTime={entry.time ?? entry.date}>
                           {entry.time
@@ -174,18 +185,17 @@ export function Calendar() {
                         )}
                       </span>
                       <strong className={styles.customer}>
-                        {entry.customerName}
+                        {entry.garment}
                         <span>{entry.orderNumber}</span>
                       </strong>
                       <span className={styles.description}>
-                        {entry.title}
-                        {entry.detail ? ` · ${entry.detail}` : ""}
+                        {entry.stepName} · {statusLabels[entry.status]}
                       </span>
-                      <span className={styles.entryBottom}>
-                        <StatusBadge status={entry.status} />
-                        {entry.amount !== null && (
-                          <strong>{money(entry.amount)}</strong>
-                        )}
+                      <span className={styles.description}>
+                        Piece {entry.pieceId.slice(-6).toUpperCase()} ·{" "}
+                        {entry.kind === "completed"
+                          ? "View completed stage"
+                          : "Open task"}
                       </span>
                     </span>
                     <ArrowUpRight size={17} className={styles.openIcon} />
@@ -204,8 +214,8 @@ export function Calendar() {
             />
           )}
           <p className={styles.note}>
-            An order can appear in multiple categories. Activity includes the
-            updates recorded against orders.
+            Work due shows your current assignments. Completed stages stay in
+            your calendar after a piece moves to its next worker.
           </p>
         </section>
       </div>

@@ -125,7 +125,8 @@
 .created {
   background: #5692c3;
 }
-.delivered {
+.delivered,
+.completed {
   background: #65a27c;
 }
 .payment {
