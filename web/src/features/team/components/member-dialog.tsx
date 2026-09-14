@@ -1,8 +1,10 @@
 "use client";
-import { useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { Dialog } from "@/shared/components/ui";
 import { STATIONS, type Employee } from "@/shared/workspace";
+import styles from "./member-dialog.module.css";
 export function MemberDialog({
   person,
   onClose,
@@ -23,6 +25,8 @@ export function MemberDialog({
   const [multiple, setMultiple] = useState((worker?.skills.length ?? 1) > 1);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const passwordId = useId();
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
@@ -88,23 +92,42 @@ export function MemberDialog({
               autoComplete="off"
             />
           </label>
-          <label className="field full-width">
-            {worker
-              ? "New password (leave empty to keep current)"
-              : "Account password"}
-            <input
-              name="password"
-              type="password"
-              required={!worker}
-              minLength={12}
-              maxLength={128}
-              autoComplete="new-password"
-            />
+          <div className="field full-width">
+            <label htmlFor={passwordId}>
+              {worker
+                ? "New password (leave empty to keep current)"
+                : "Account password"}
+            </label>
+            <div className={styles.passwordControl}>
+              <input
+                id={passwordId}
+                className={styles.passwordInput}
+                name="password"
+                type={showPassword ? "text" : "password"}
+                required={!worker}
+                minLength={12}
+                maxLength={128}
+                autoComplete="new-password"
+              />
+              <button
+                className={styles.passwordToggle}
+                type="button"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-controls={passwordId}
+                onClick={() => setShowPassword((visible) => !visible)}
+              >
+                {showPassword ? (
+                  <EyeOff size={19} aria-hidden="true" />
+                ) : (
+                  <Eye size={19} aria-hidden="true" />
+                )}
+              </button>
+            </div>
             <small>
               At least 12 characters. Share the login details with the worker
               privately.
             </small>
-          </label>
+          </div>
           <fieldset className="team-fieldset full-width">
             <legend>Work skills</legend>
             <div className="team-choice-row">
