@@ -2,6 +2,10 @@
 
 Deployed and verified on Railway, September 14, 2026.
 
+A [details screen extension](WORKER-HISTORY-DETAILS.md) is implemented locally
+with immutable task snapshots and worker-scoped reference image access. Its
+deployment status is tracked separately from the release below.
+
 ## Behavior
 
 Workers can open **History** in the bottom navigation or **Work history** from

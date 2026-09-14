@@ -3,6 +3,7 @@ import { teamWork } from "./migrations/0007-team-work";
 import { customWorkflows } from "./migrations/0008-custom-workflows";
 import { gstBilling } from "./migrations/0009-gst-billing";
 import { workHistory } from "./migrations/0010-work-history";
+import { workHistoryDetails } from "./migrations/0011-work-history-details";
 import "server-only";
 import { createHash } from "node:crypto";
 import type { Pool } from "pg";
@@ -31,6 +32,7 @@ const migrations = [
   { version: 8, name: "custom_garment_workflows", sql: customWorkflows },
   { version: 9, name: "gst_settings_and_bill_snapshots", sql: gstBilling },
   { version: 10, name: "worker_completion_history", sql: workHistory },
+  { version: 11, name: "worker_completion_details", sql: workHistoryDetails },
 ];
 
 /** Every migration and its ledger entry commit together under the original schema lock. */

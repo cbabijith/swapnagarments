@@ -1,4 +1,4 @@
-import { test } from "node:test";
+import { test, mock } from "node:test";
 import assert from "node:assert/strict";
 import { NextRequest } from "next/server";
 import { isolatedDatabase } from "./helpers/isolated-database";
@@ -11,7 +11,16 @@ import {
   storageStatus,
   transitionWorkspaceStorage,
 } from "../src/services/storage-migration-service";
-import { readWorkHistory } from "../src/services/work-history-service";
+import {
+  readWorkHistory,
+  readWorkHistoryDetail,
+} from "../src/services/work-history-service";
+import { readAccessibleWorkImage } from "../src/services/work-image-service";
+import { storage } from "../src/integrations/storage";
+import { GET as detailGet } from "../src/app/api/work/history/[id]/route";
+import { GET as imageGet } from "../src/app/api/design-library/[id]/image/route";
+import type { MeasurementSnapshot } from "../src/features/measurements/contracts/profiles";
+import { defaultCatalogue } from "../src/features/settings/domain/catalogue";
 import { workHistoryQuery } from "../src/features/team/contracts/work-history";
 import { workHistory } from "../src/db/migrations/0010-work-history";
 import { GET as historyGet } from "../src/app/api/work/history/route";
@@ -35,6 +44,13 @@ test("worker history preserves completed stages, scopes accounts, filters and pa
     new NextRequest(`http://localhost:3000/api/work/history${query}`, {
       headers: token ? { Cookie: `swapna_session=${token}` } : {},
     });
+  const detail = (id: string, token?: string) =>
+    detailGet(
+      new NextRequest(`http://localhost:3000/api/work/history/${id}`, {
+        headers: token ? { Cookie: `swapna_session=${token}` } : {},
+      }),
+      { params: Promise.resolve({ id }) },
+    );
   async function transition(direction: "cutover" | "rollback") {
     const current = await storageStatus();
     return transitionWorkspaceStorage({
@@ -133,6 +149,7 @@ test("worker history preserves completed stages, scopes accounts, filters and pa
       setupToken: process.env.SETUP_TOKEN,
     });
     await transition("cutover");
+    await send({ type: "settings.save", catalogue: defaultCatalogue() });
     const a = await createWorker("history-a@example.test");
     const b = await createWorker("history-b@example.test");
     const customer = await send({
@@ -162,6 +179,52 @@ test("worker history preserves completed stages, scopes accounts, filters and pa
     const orderId = created.resultId!;
     const order = created.data.orders.find((o) => o.id === orderId)!;
     const [first, second] = order.items;
+    const reference = {
+      id: `upload-${crypto.randomUUID()}`,
+      label: "Saved sleeve reference",
+      kind: "reference" as const,
+      view: "reference" as const,
+    };
+    const measurement: MeasurementSnapshot = {
+      garmentId: "garment-blouse",
+      garmentName: "Blouse",
+      garmentRevision: 1,
+      revision: 1,
+      unit: "cm",
+      confirmed: true,
+      source: "new",
+      recordedAt: new Date().toISOString(),
+      recordedBy: "Private measurer",
+      fields: [
+        {
+          id: "bust",
+          label: "Bust",
+          type: "number",
+          required: true,
+          help: "",
+          options: [],
+        },
+      ],
+      values: { bust: "92" },
+      image: reference,
+    };
+    await context.engine.query(
+      "UPDATE sg_order_items SET measurement=$1::jsonb, design=$2::jsonb WHERE id=$3",
+      [
+        JSON.stringify(measurement),
+        JSON.stringify({
+          garmentReferences: [],
+          choices: [],
+          references: [reference],
+          notes: "Original design note",
+        }),
+        first.id,
+      ],
+    );
+    await context.engine.query(
+      "INSERT INTO sg_design_assets (id,workspace_id,source,label,kind,view,storage_key,thumbnail_key,checksum) VALUES ($1,1,'upload',$2,'reference','reference','saved-image','saved-thumb','fixture-checksum')",
+      [reference.id, reference.label],
+    );
     const history = (user: SessionUser, input = {}) =>
       readWorkHistory(workHistoryQuery.parse(input), user);
     assert.equal((await history(a.user)).page.total, 0);
@@ -189,8 +252,125 @@ test("worker history preserves completed stages, scopes accounts, filters and pa
     assert.equal((await history(b.user)).page.total, 0); // Duplicate names do not merge histories.
     assert.equal((await history(a.user)).entries[0].stepName, "Cutting");
     assert.equal((await item(orderId, first.id)).work?.assigneeId, undefined);
+    const completionId = (await history(a.user)).entries[0].id;
+    const saved = await readWorkHistoryDetail(completionId, a.user);
+    assert.equal(saved.entry.snapshot?.material, "Private fabric notes");
+    assert.equal(saved.entry.snapshot?.design?.notes, "Original design note");
+    assert.equal(saved.entry.snapshot?.measurement?.values.bust, "92");
+    assert.ok(saved.entry.snapshot?.assignedAt);
+    assert.ok(saved.entry.snapshot?.startedAt);
+    assert.equal((await detail(completionId)).status, 401);
+    assert.equal((await detail(completionId, ownerToken)).status, 403);
+    assert.equal((await detail(completionId, b.token)).status, 404);
+    assert.equal((await detail(crypto.randomUUID(), a.token)).status, 404);
+    assert.equal((await detail("not-a-uuid", a.token)).status, 404);
+    assert.throws(
+      () =>
+        readWorkHistoryDetail(completionId, { ...a.user, staffId: undefined }),
+      /worker account/,
+    );
+    const detailResponse = await detail(completionId, a.token);
+    assert.equal(detailResponse.status, 200);
+    assert.equal(detailResponse.headers.get("cache-control"), "no-store");
+    const detailBody = JSON.stringify(await detailResponse.json());
+    for (const secret of [
+      "Private measurer",
+      "Private customer",
+      "private@example.test",
+      "9000000001",
+      "Private order",
+      "payments",
+      "price",
+      "workerId",
+      "mutationId",
+    ])
+      assert.ok(
+        !detailBody.includes(secret),
+        `History detail leaked ${secret}`,
+      );
+    // Emulate details changing during a later correction of the same piece.
+    await context.engine.query(
+      "UPDATE sg_order_items SET material='Changed fabric', measurement=jsonb_set(measurement,'{values,bust}','\"96\"'::jsonb), design=$1::jsonb WHERE id=$2",
+      [
+        JSON.stringify({
+          garmentReferences: [],
+          choices: [],
+          references: [],
+          notes: "Changed design",
+        }),
+        first.id,
+      ],
+    );
+    assert.deepEqual(
+      (await readWorkHistoryDetail(completionId, a.user)).entry,
+      saved.entry,
+    );
+    process.env.AWS_ENDPOINT_URL = "http://127.0.0.1:1";
+    process.env.AWS_S3_BUCKET_NAME = "isolated-history-images";
+    process.env.AWS_ACCESS_KEY_ID = "isolated";
+    process.env.AWS_SECRET_ACCESS_KEY = "isolated";
+    const imageMock = mock.method(storage(), "send", async () => ({
+      Body: { transformToByteArray: async () => new Uint8Array([1, 2, 3]) },
+    }));
+    try {
+      const historicalImage = await imageGet(
+        new NextRequest(
+          `http://localhost:3000/api/design-library/${reference.id}/image?work=history:${completionId}`,
+          { headers: { Cookie: `swapna_session=${a.token}` } },
+        ),
+        { params: Promise.resolve({ id: reference.id }) },
+      );
+      assert.equal(historicalImage.status, 200);
+      assert.equal(
+        historicalImage.headers.get("cache-control"),
+        "private, no-store",
+      );
+      assert.deepEqual(
+        new Uint8Array(await historicalImage.arrayBuffer()),
+        new Uint8Array([1, 2, 3]),
+      );
+      const reads = imageMock.mock.callCount();
+      await assert.rejects(
+        readAccessibleWorkImage(
+          reference.id,
+          true,
+          `history:${completionId}`,
+          b.user,
+        ),
+        /not found/,
+      );
+      await assert.rejects(
+        readAccessibleWorkImage(
+          "upload-unrelated",
+          true,
+          `history:${completionId}`,
+          a.user,
+        ),
+        /not found/,
+      );
+      await assert.rejects(
+        readAccessibleWorkImage(reference.id, true, "history:invalid", a.user),
+        /not found/,
+      );
+      await assert.rejects(
+        readAccessibleWorkImage(
+          reference.id,
+          true,
+          `swapna:${orderId}:${first.id}`,
+          a.user,
+        ),
+        /not found/,
+      );
+      assert.equal(imageMock.mock.callCount(), reads);
+    } finally {
+      imageMock.mock.restore();
+    }
     await assign(orderId, first.id, b.id);
     await complete(orderId, first.id, b);
+    assert.deepEqual(
+      (await readWorkHistoryDetail(completionId, a.user)).entry,
+      saved.entry,
+    );
     assert.equal((await history(a.user)).page.total, 1); // Handoff preserves the previous worker's work.
     assert.equal((await history(b.user)).entries[0].stepName, "Sizing");
 
@@ -274,6 +454,11 @@ test("worker history preserves completed stages, scopes accounts, filters and pa
     await context.engine.exec(workHistory); // Recovery is idempotent.
     assert.equal((await history(a.user)).page.total, 3);
     assert.equal((await history(b.user)).page.total, 1);
+    const recoveredId = (await history(a.user)).entries[0].id;
+    assert.equal(
+      (await readWorkHistoryDetail(recoveredId, a.user)).entry.snapshot,
+      null,
+    );
     assert.deepEqual(
       new Set((await history(a.user)).entries.map((row) => row.stepName)),
       new Set(["Cutting", "Sew the seam", "Trim the seam"]),
@@ -292,7 +477,15 @@ test("worker history preserves completed stages, scopes accounts, filters and pa
     await assign(orderId, first.id, a.id);
     await complete(orderId, first.id, a, true);
     assert.equal((await history(a.user)).page.total, 4);
+    const jsonCompletion = (await history(a.user)).entries[0].id;
+    const jsonDetail = (await readWorkHistoryDetail(jsonCompletion, a.user))
+      .entry;
+    assert.equal(jsonDetail.snapshot?.material, "Changed fabric");
     await transition("cutover");
+    assert.deepEqual(
+      (await readWorkHistoryDetail(jsonCompletion, a.user)).entry,
+      jsonDetail,
+    );
     assert.equal((await history(a.user)).page.total, 4);
     for (const station of [3, 4])
       await send({
@@ -302,6 +495,10 @@ test("worker history preserves completed stages, scopes accounts, filters and pa
         expectedStation: station,
       });
     await send({ type: "order.deliver", orderId });
+    assert.deepEqual(
+      (await readWorkHistoryDetail(jsonCompletion, a.user)).entry,
+      jsonDetail,
+    );
     assert.equal((await history(a.user)).page.total, 4);
     const response = await historyGet(req("", a.token));
     assert.equal(response.status, 200);

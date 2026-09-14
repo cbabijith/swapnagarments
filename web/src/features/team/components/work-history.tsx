@@ -2,28 +2,27 @@
 import "./team.css";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowLeft, Check, Clock3, Search } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { ArrowLeft, ArrowUpRight, Check, Clock3, Search } from "lucide-react";
 import { STATIONS } from "@/shared/workspace";
 import { useDebouncedValue } from "@/shared/hooks/use-feature-query";
 import { EmptyState, PageHeading } from "@/shared/components/ui";
 import { Pagination, QueryState } from "@/shared/components/query-state";
 import { useWorkHistory } from "../hooks/use-work-history";
 import type { WorkHistoryQuery } from "../contracts/work-history";
-
-const completedDate = (value: string) =>
-  new Intl.DateTimeFormat("en-IN", {
-    timeZone: "Asia/Kolkata",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(value));
+import {
+  historyFilters,
+  historyFilterQuery,
+  completedWorkDate,
+} from "../domain/history-navigation";
 
 export function WorkHistory() {
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [station, setStation] = useState<WorkHistoryQuery["station"]>("all");
+  const filters = historyFilters(useSearchParams());
+  const [page, setPage] = useState(filters.page);
+  const [search, setSearch] = useState(filters.q);
+  const [station, setStation] = useState<WorkHistoryQuery["station"]>(
+    filters.station,
+  );
   const query = useWorkHistory({
     page,
     pageSize: 20,
@@ -88,7 +87,11 @@ export function WorkHistory() {
       )}
       <div className="work-history-list">
         {query.data?.entries.map((entry) => (
-          <article className="panel work-history-card" key={entry.id}>
+          <Link
+            className="panel work-history-card work-history-link"
+            key={entry.id}
+            href={`/my-work/history/${entry.id}?${historyFilterQuery({ page, pageSize: 20, q: search, station })}`}
+          >
             <div className="work-history-icon" aria-hidden="true">
               <Check size={20} />
             </div>
@@ -104,10 +107,13 @@ export function WorkHistory() {
             <div className="work-history-date">
               <Clock3 size={15} aria-hidden="true" />
               <time dateTime={entry.completedAt}>
-                {completedDate(entry.completedAt)}
+                {completedWorkDate(entry.completedAt)}
               </time>
             </div>
-          </article>
+            <span className="work-history-open">
+              View details <ArrowUpRight size={15} />
+            </span>
+          </Link>
         ))}
       </div>
       {query.data && !query.data.entries.length && !query.error && (

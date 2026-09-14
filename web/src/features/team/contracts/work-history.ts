@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { pageQuery } from "@/shared/contracts/query-input";
 
+export const workHistoryId = z.uuid();
+
 export const workHistoryQuery = pageQuery
   .extend({
     q: z.string().trim().max(200).default(""),

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Suspense, useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import {
   Scissors,
   ScanLine,
@@ -14,21 +14,26 @@ import {
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { WorkQueue } from "./work-queue";
 import { WorkHistory } from "./work-history";
+import { WorkHistoryDetail } from "./work-history-detail";
 import { WorkerProfilePage } from "./worker-profile";
 import { Scan } from "@/features/qr-tags/components/qr-tags";
 export function WorkerShell() {
   const { owner, signOut, notice, notify } = useWorkspace();
   const pathname = usePathname();
   const router = useRouter();
+  const params = useParams<{ id?: string }>();
+  const historyDetail =
+    /^\/my-work\/history\/[^/]+$/.test(pathname) && Boolean(params.id);
   useEffect(() => {
     if (
       pathname !== "/my-work" &&
       pathname !== "/my-work/history" &&
+      !historyDetail &&
       pathname !== "/my-work/profile" &&
       pathname !== "/scan"
     )
       router.replace("/my-work");
-  }, [pathname, router]);
+  }, [pathname, router, historyDetail]);
   return (
     <div className="worker-shell">
       <a className="skip-link" href="#main-content">
@@ -62,6 +67,8 @@ export function WorkerShell() {
             <Scan />
           ) : pathname === "/my-work/history" ? (
             <WorkHistory />
+          ) : historyDetail ? (
+            <WorkHistoryDetail key={params.id} id={params.id!} />
           ) : pathname === "/my-work/profile" ? (
             <WorkerProfilePage />
           ) : (
@@ -79,7 +86,11 @@ export function WorkerShell() {
         </Link>
         <Link
           href="/my-work/history"
-          aria-current={pathname === "/my-work/history" ? "page" : undefined}
+          aria-current={
+            pathname === "/my-work/history" || historyDetail
+              ? "page"
+              : undefined
+          }
         >
           <History size={20} />
           History

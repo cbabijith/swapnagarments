@@ -1,6 +1,7 @@
 import {
   index,
   integer,
+  jsonb,
   pgTable,
   text,
   timestamp,
@@ -10,6 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { mutations } from "./workspace";
+import type { WorkCompletionSnapshot } from "@/features/team/types/work-history";
 
 /** Immutable work receipts survive stage changes and either workspace storage mode. */
 export const workCompletions = pgTable(
@@ -26,6 +28,7 @@ export const workCompletions = pgTable(
     garment: text().notNull(),
     station: integer().notNull(),
     stepName: text("step_name").notNull(),
+    snapshot: jsonb().$type<WorkCompletionSnapshot>(),
     completedAt: timestamp("completed_at", {
       withTimezone: true,
       mode: "string",

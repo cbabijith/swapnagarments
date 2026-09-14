@@ -231,7 +231,11 @@ function WorkerProfile() {
                       {history.data.page.total === 1 ? "stage" : "stages"}
                     </p>
                     {history.data.entries.map((entry) => (
-                      <div className={styles.workRow} key={entry.id}>
+                      <Link
+                        className={styles.workRow}
+                        key={entry.id}
+                        href={`/my-work/history/${entry.id}`}
+                      >
                         <div>
                           <p className="work-order">
                             {entry.orderNumber} · Piece{" "}
@@ -248,7 +252,7 @@ function WorkerProfile() {
                             year: "numeric",
                           }).format(new Date(entry.completedAt))}
                         </time>
-                      </div>
+                      </Link>
                     ))}
                     {!history.data.entries.length && !history.error && (
                       <p className={styles.empty}>

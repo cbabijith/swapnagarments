@@ -6,7 +6,12 @@ import type { WorkspaceMutation } from "@/shared/contracts/command";
 import type { Workspace } from "@/shared/workspace";
 import type { SessionUser } from "@/features/team/contracts/team";
 import type { WorkHistoryQuery } from "@/features/team/contracts/work-history";
-import type { WorkHistoryRead } from "@/features/team/types/work-history";
+import type {
+  WorkHistoryRead,
+  WorkHistoryDetailRead,
+} from "@/features/team/types/work-history";
+import { completionSnapshot } from "@/features/team/domain/work-completion";
+import { workHistoryId } from "@/features/team/contracts/work-history";
 import { currentStepName } from "@/features/workflow/domain/templates";
 import { WorkspaceError } from "@/shared/errors";
 import { withRead, literalPattern, offset, pageInfo } from "./read-context";
@@ -37,7 +42,39 @@ export async function recordWorkCompletion(
     garment: piece.garment,
     station: piece.station,
     stepName: currentStepName(piece),
+    snapshot: completionSnapshot(order, piece),
     completedAt,
+  });
+}
+
+export function readWorkHistoryDetail(id: string, user: SessionUser) {
+  if (user.role !== "worker" || !user.staffId)
+    throw new WorkspaceError(
+      "Sign in with a worker account to view your work history.",
+      403,
+    );
+  if (!workHistoryId.safeParse(id).success)
+    throw new WorkspaceError("Completed work not found.", 404);
+  const workerId = user.staffId;
+  return withRead(async ({ tx, revision }): Promise<WorkHistoryDetailRead> => {
+    const [entry] = await tx
+      .select({
+        id: workCompletions.id,
+        orderNumber: workCompletions.orderNumber,
+        pieceId: workCompletions.pieceId,
+        garment: workCompletions.garment,
+        station: workCompletions.station,
+        stepName: workCompletions.stepName,
+        completedAt: workCompletions.completedAt,
+        snapshot: workCompletions.snapshot,
+      })
+      .from(workCompletions)
+      .where(
+        and(eq(workCompletions.id, id), eq(workCompletions.workerId, workerId)),
+      )
+      .limit(1);
+    if (!entry) throw new WorkspaceError("Completed work not found.", 404);
+    return { revision, entry };
   });
 }
 
