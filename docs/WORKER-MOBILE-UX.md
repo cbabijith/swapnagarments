@@ -58,4 +58,8 @@ no horizontal overflow, correct scan route/selected state, and no browser consol
 errors. Production build, TypeScript and targeted ESLint passed. The scanner's
 camera and work-resolution behavior are unchanged.
 
-Release status: verified locally; publication pending.
+Deployed and verified at 14:04 IST on September 14, 2026. Code `5d19dbe` is
+active through Railway deployment `439ab00f-7612-4a49-86a7-8168ddb526dd`.
+The scan page and all 13 referenced assets load, including the new scan styles.
+Database and image storage health are connected; owner setup remains closed.
+Evidence: `output/qa/worker-scan-navigation-release.json`.

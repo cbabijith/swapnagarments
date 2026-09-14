@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-09-14T08:34:38.638Z",
+  "codeCommit": "5d19dbe629cef2f4e21309f6e7d233fa103c47ce",
+  "deploymentId": "439ab00f-7612-4a49-86a7-8168ddb526dd",
+  "origin": "https://swapna-garmentsweb-production.up.railway.app",
+  "health": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "scanPage": 200,
+  "publishedAssets": 13,
+  "centeredScanAssets": true,
+  "ownerSetupClosed": true,
+  "localChecks": {
+    "widths": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "scanCentered": true,
+    "noHorizontalOverflow": true,
+    "scanNavigation": true,
+    "minimumLinkHeight": 48,
+    "consoleErrors": []
+  }
+}
