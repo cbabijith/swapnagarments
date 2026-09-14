@@ -34,6 +34,12 @@ giving work to someone who cannot perform it.
 2. In **Work assignments**, use **Assign / Reassign** to select a qualified worker.
    The picker shows current estimated load and marks full queues. Use **Hold
    unassigned** for a piece that should stay under manual control.
+   The September 14 update also adds **Assign work /
+   Reassign work** to order details beside each pending garment at a production
+   station, using the same picker. Confirm measurements first when they are
+   pending. **View work** opens the assigned piece's task. Production build,
+   TypeScript, lint, and five team/workflow tests pass; browser checks cover the
+   picker, manual hold and activity refresh, and 390px/1440px action layouts.
 3. Use **Distribute waiting work** for a one-time assignment pass. Switch on
    **Auto-assign** to distribute unassigned eligible work whenever shop commands
    create or release work. Existing assignments, started work, blocked work,

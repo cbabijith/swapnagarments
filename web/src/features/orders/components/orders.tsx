@@ -20,6 +20,7 @@ import {
   Check,
   RotateCcw,
   QrCode,
+  UserRoundPlus,
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useOrders } from "@/features/orders/hooks/use-orders";
@@ -39,6 +40,8 @@ import { ApplyOrderGst } from "@/features/billing/components/apply-order-gst";
 import { MeasurementSummary } from "@/features/measurements/components/measurement-fields";
 import { PieceMeasurementEditor } from "@/features/measurements/components/piece-measurements";
 import { PieceIllustration } from "./piece-illustration";
+import { AssignWorkDialog } from "@/features/team/components/assign-work-dialog";
+import { safeWorkPiece } from "@/features/team/domain/assignment";
 import {
   Avatar,
   Dialog,
@@ -305,7 +308,7 @@ export function OrderDetail({ id }: { id: string }) {
   const { advancePiece, rework } = useWorkflow();
   const { recordPayment } = useBilling();
   const [dialog, setDialog] = useState<
-    "payment" | "qr" | "deliver" | "rework" | "measurements" | null
+    "payment" | "qr" | "deliver" | "rework" | "measurements" | "assign" | null
   >(null);
   const [piece, setPiece] = useState<OrderItem | null>(null);
   const [error, setError] = useState("");
@@ -459,6 +462,40 @@ export function OrderDetail({ id }: { id: string }) {
                 </div>
                 {isOpen(order) && (
                   <div className="detail-item-actions">
+                    {item.station < 5 &&
+                      (item.work?.status ?? "pending") === "pending" && (
+                        <button
+                          type="button"
+                          className="button small-button"
+                          disabled={
+                            mutationBlocked ||
+                            item.measurement?.confirmed === false
+                          }
+                          title={
+                            item.measurement?.confirmed === false
+                              ? "Confirm measurements before assigning work"
+                              : undefined
+                          }
+                          onClick={() => {
+                            setPiece(item);
+                            setDialog("assign");
+                          }}
+                        >
+                          <UserRoundPlus size={14} />
+                          {item.work?.assigneeId
+                            ? "Reassign work"
+                            : "Assign work"}
+                        </button>
+                      )}
+                    {item.station < 5 && item.work?.assigneeId && (
+                      <Link
+                        className="button small-button"
+                        href={`/team?view=work&code=${encodeURIComponent(`swapna:${order.id}:${item.id}`)}`}
+                      >
+                        View work
+                        <ArrowUpRight size={14} />
+                      </Link>
+                    )}
                     {item.measurement && piecePosition(item) === 0 && (
                       <button
                         type="button"
@@ -793,6 +830,12 @@ export function OrderDetail({ id }: { id: string }) {
         <PieceMeasurementEditor
           orderId={id}
           piece={piece}
+          onClose={() => setDialog(null)}
+        />
+      )}
+      {dialog === "assign" && piece && (
+        <AssignWorkDialog
+          piece={safeWorkPiece(order, piece)}
           onClose={() => setDialog(null)}
         />
       )}
