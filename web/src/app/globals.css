@@ -2617,6 +2617,15 @@ svg {
     gap: 8px;
   }
 }
+@media (max-width: 360px) {
+  .topbar {
+    gap: 6px;
+  }
+  .mobile-brand {
+    gap: 6px;
+    font-size: 23px;
+  }
+}
 .page-description,
 .section-heading p,
 .metric-detail,

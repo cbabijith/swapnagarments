@@ -24,7 +24,10 @@ import {
   RotateCcw,
   QrCode,
   UserRoundPlus,
+  X,
+  CalendarDays,
 } from "lucide-react";
+import styles from "./orders-list.module.css";
 import { QRCodeSVG } from "qrcode.react";
 import { useOrders } from "@/features/orders/hooks/use-orders";
 import {
@@ -83,16 +86,27 @@ export function OrdersList() {
   const read = useOrderDirectory({ ...filters, page });
   const data = read.data?.data;
   const orders = data?.orders ?? [];
+  const hasFilters =
+    Boolean(query.trim()) || filter !== "all" || priority !== "all";
+  function resetFilters() {
+    setQuery("");
+    setPriority("all");
+    router.replace("/orders", { scroll: false });
+  }
   return (
-    <>
-      <PageHeading
-        eyebrow="ORDER MANAGEMENT"
-        title="Orders"
-        description="Find orders, check progress, and manage delivery."
-      >
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <div>
+          <p className={styles.eyebrow}>ORDER MANAGEMENT</p>
+          <h1>Orders</h1>
+          <p className={styles.description}>
+            Track progress. Keep deliveries on time.
+          </p>
+        </div>
         {mode === "preview" ? (
           <button
-            className="button"
+            type="button"
+            className={`button ${styles.exportButton}`}
             onClick={() =>
               exportOrders(
                 selectPreviewOrders(previewWorkspace, filters),
@@ -105,7 +119,7 @@ export function OrdersList() {
           </button>
         ) : (
           <a
-            className="button"
+            className={`button ${styles.exportButton}`}
             href={`/api/orders/export?${orderSearchParams(filters)}`}
             download
           >
@@ -113,29 +127,38 @@ export function OrdersList() {
             Export
           </a>
         )}
-        <Link className="button primary" href="/orders/new">
-          <Plus size={17} />
-          New order
-        </Link>
-      </PageHeading>
+      </header>
       <section className="panel">
-        <div className="toolbar">
-          <label className="search-input">
-            <Search size={17} />
-            <input
-              placeholder="Search orders or customers"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              maxLength={160}
-              aria-label="Search orders"
-            />
-          </label>
-          <div className="toolbar-filters">
+        <div className={styles.toolbar}>
+          <div className={styles.searchRow}>
+            <div className={`search-input ${styles.search}`}>
+              <Search size={17} aria-hidden="true" />
+              <input
+                placeholder="Search orders or customers"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                maxLength={160}
+                aria-label="Search orders"
+              />
+              {query && (
+                <button
+                  type="button"
+                  className={styles.clearSearch}
+                  aria-label="Clear search"
+                  onClick={() => setQuery("")}
+                >
+                  <X size={15} aria-hidden="true" />
+                </button>
+              )}
+            </div>
             <select
+              className={styles.statusFilter}
               aria-label="Filter orders"
               value={filter}
               onChange={(event) =>
-                router.replace(`/orders?filter=${event.target.value}`)
+                router.replace(`/orders?filter=${event.target.value}`, {
+                  scroll: false,
+                })
               }
             >
               <option value="all">All orders</option>
@@ -148,17 +171,61 @@ export function OrdersList() {
                 </option>
               ))}
             </select>
-            <select
-              aria-label="Filter priority"
-              value={priority}
-              onChange={(event) => setPriority(event.target.value)}
-            >
-              <option value="all">All priorities</option>
-              <option value="urgent">Urgent</option>
-              <option value="high">High</option>
-              <option value="normal">Normal</option>
-            </select>
           </div>
+          <div className={styles.filterRow}>
+            <div
+              className={styles.priorityChips}
+              role="group"
+              aria-label="Filter priority"
+            >
+              {[
+                { value: "all", label: "All" },
+                { value: "urgent", label: "Urgent" },
+                { value: "high", label: "High" },
+                { value: "normal", label: "Normal" },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={styles.priorityChip}
+                  data-priority={option.value}
+                  aria-label={
+                    option.value === "all"
+                      ? "All priorities"
+                      : `${option.label} priority`
+                  }
+                  aria-pressed={priority === option.value}
+                  onClick={() => setPriority(option.value)}
+                >
+                  {option.value !== "all" && (
+                    <span className={styles.priorityDot} aria-hidden="true" />
+                  )}
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className={styles.resultsBar}>
+          <span role="status" aria-live="polite">
+            {read.isLoading || query !== search
+              ? "Finding orders…"
+              : read.data
+                ? `${read.data.page.total} ${read.data.page.total === 1 ? "order" : "orders"}${hasFilters ? " found" : ""}`
+                : "Orders"}
+          </span>
+          {hasFilters ? (
+            <button
+              type="button"
+              className={styles.resetFilters}
+              onClick={resetFilters}
+            >
+              <RotateCcw size={13} aria-hidden="true" />
+              Reset filters
+            </button>
+          ) : (
+            <span>Priority first</span>
+          )}
         </div>
         <QueryState
           loading={read.isLoading}
@@ -166,7 +233,7 @@ export function OrdersList() {
           retry={read.reload}
         />
         <div className="table-scroll orders-table">
-          <table className="data-table">
+          <table className="data-table" aria-label="Orders">
             <thead>
               <tr>
                 <th>ORDER</th>
@@ -240,12 +307,12 @@ export function OrdersList() {
         <div className="mobile-order-cards">
           {orders.map((order) => (
             <Link
-              className="mobile-order-card"
+              className={`mobile-order-card ${styles.orderCard}`}
               key={order.id}
               href={`/orders/${order.id}`}
             >
               <div className="mobile-order-card-top">
-                <div className="order-identity">
+                <div className={`order-identity ${styles.identity}`}>
                   <PieceIllustration item={order.items[0]} />
                   <div>
                     <strong>
@@ -257,29 +324,57 @@ export function OrdersList() {
                     </strong>
                     <span>
                       {order.number} · {order.items[0].garment}
+                      {order.items.length > 1 &&
+                        ` · ${order.items.length} pieces`}
                     </span>
                   </div>
                 </div>
-                <ArrowUpRight size={16} />
+                <ArrowUpRight size={16} aria-hidden="true" />
               </div>
-              <div className="mobile-order-card-bottom">
+              <div className={styles.cardStatus}>
                 <StatusBadge status={order.status} />
-                <span className={isOverdue(order, today) ? "overdue-text" : ""}>
+                <PriorityBadge priority={order.priority} />
+              </div>
+              <div className={styles.cardFooter}>
+                <span
+                  className={`${styles.dueDate} ${isOverdue(order, today) ? "overdue-text" : ""}`}
+                >
+                  <CalendarDays size={13} aria-hidden="true" />
                   {isOverdue(order, today) ? "Overdue · " : "Due "}
                   {order.dueDate === today
                     ? "today"
                     : formatDate(order.dueDate)}
                 </span>
-                <PriorityBadge priority={order.priority} />
+                <span className={styles.cardBalance}>
+                  {balance(order) > 0 ? (
+                    <>
+                      <strong>{money(balance(order))}</strong> due
+                    </>
+                  ) : (
+                    <>
+                      <Check size={13} aria-hidden="true" /> Paid
+                    </>
+                  )}
+                </span>
               </div>
             </Link>
           ))}
         </div>
         {!read.isLoading && !read.error && orders.length === 0 && (
           <EmptyState
-            title="No orders match"
-            text="Try a different search or filter."
-          />
+            title={hasFilters ? "No orders match" : "Your orders start here"}
+            text={
+              hasFilters
+                ? "Try another search or reset your filters."
+                : "Tap New order to create your first customer order."
+            }
+          >
+            {hasFilters && (
+              <button type="button" className="button" onClick={resetFilters}>
+                Reset filters
+              </button>
+            )}
+          </EmptyState>
         )}
         {read.data && (
           <ScrollPagination
@@ -293,7 +388,11 @@ export function OrdersList() {
           />
         )}
       </section>
-    </>
+      <Link className={styles.newOrderFab} href="/orders/new">
+        <Plus size={21} aria-hidden="true" />
+        New order
+      </Link>
+    </div>
   );
 }
 
