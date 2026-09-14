@@ -83,8 +83,22 @@ uses current assignments and has no persisted completion history.
 workers), custom step labels, filtering, pagination across both sources, IST
 midnight/month boundaries, reassignment, JSON/relational parity, rollback,
 authentication, deactivated accounts and private-field exclusion. All 41 tests,
-lint and TypeScript checks pass. Production build, browser checks and deployment
-verification are pending for this worker extension.
+lint, TypeScript and the production build pass. The clean release uses the
+committed npm lockfiles. Browser checks used an authenticated worker and isolated
+PostgreSQL sample data: all 25 daily records were reachable through two pages,
+category/date changes reset the page, and task/completion links opened the correct
+records. Layout checks passed at 320, 390 and 1440 pixels without horizontal
+overflow or console warnings/errors.
+
+Worker calendar release `7bd57eb675954a017c1f0ef09f703a529d5279e1` deployed
+successfully on September 14, 2026, as Railway deployment
+`c8c8296d-8a36-4284-8bab-577171963c18`. Verified at
+`2026-09-14T06:46:37.557Z`: worker pages and all ten script assets returned 200,
+the worker calendar code was present in the live bundle, unsigned worker
+month/day APIs returned 401/no-store, database and bucket were connected, and
+owner setup remained closed. The signed-in owner calendar continued loading.
+Production verification made no business writes. Machine-readable checks:
+`output/qa/worker-calendar-production-release.json`.
 
 ## Validation
 

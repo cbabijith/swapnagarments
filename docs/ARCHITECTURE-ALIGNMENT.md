@@ -5,6 +5,12 @@ authenticated month/day APIs, and server-filtered aggregate/paginated reads.
 See [calendar behavior and validation](CALENDAR.md). No database migration is
 required. Calendar code `af42cda` passed production verification on September 14.
 
+The worker calendar extension is also deployed (`7bd57eb`, September 14).
+It reuses the month grid while keeping worker UI/contracts in the team feature
+and session-scoped SQL reads in `services/work-calendar-service.ts`. Current
+assignments and immutable completion history appear by date with bounded
+pagination. See [worker calendar behavior and release checks](CALENDAR.md#worker-calendar).
+
 Worker completion history and personal profiles are deployed and verified. The
 history feature UI, authenticated read service and additive migration 10 retain completed
 stages by worker ID, independently of the active queue and storage selector.

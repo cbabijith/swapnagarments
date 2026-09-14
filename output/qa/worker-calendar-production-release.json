@@ -1,0 +1,86 @@
+{
+  "checkedAt": "2026-09-14T06:46:37.557Z",
+  "origin": "https://swapna-garmentsweb-production.up.railway.app",
+  "commit": "7bd57eb675954a017c1f0ef09f703a529d5279e1",
+  "deploymentId": "c8c8296d-8a36-4284-8bab-577171963c18",
+  "deploymentStatus": "successful",
+  "health": {
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "routes": [
+    {
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/calendar",
+      "status": 200
+    },
+    {
+      "path": "/my-work",
+      "status": 200
+    },
+    {
+      "path": "/my-work/calendar",
+      "status": 200
+    },
+    {
+      "path": "/my-work/history",
+      "status": 200
+    },
+    {
+      "path": "/api/work/calendar?month=2026-09",
+      "status": 401
+    },
+    {
+      "path": "/api/work/calendar/day?date=2026-09-14",
+      "status": 401
+    },
+    {
+      "path": "/api/calendar?month=2026-09",
+      "status": 401
+    },
+    {
+      "path": "/api/work/history",
+      "status": 401
+    },
+    {
+      "path": "/api/session",
+      "status": 401
+    }
+  ],
+  "assetsChecked": 10,
+  "workerCalendarAssets": [
+    "/_next/static/chunks/2c9mh4zlofg22.js"
+  ],
+  "ownerSetupClosed": true,
+  "liveBusinessWrites": 0,
+  "localBrowserChecks": {
+    "database": "isolated synthetic PostgreSQL",
+    "workerAuthenticated": true,
+    "viewports": [
+      320,
+      390,
+      1440
+    ],
+    "horizontalOverflow": false,
+    "consoleWarningsOrErrors": 0,
+    "checks": [
+      "date selection",
+      "month change",
+      "Today",
+      "category filters",
+      "25 records across two pages",
+      "exact assigned-piece navigation",
+      "immutable completion detail",
+      "empty date",
+      "worker /calendar redirect",
+      "five-link worker navigation"
+    ]
+  }
+}
