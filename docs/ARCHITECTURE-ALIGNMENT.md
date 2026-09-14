@@ -1,5 +1,10 @@
 # Feature-driven architecture: alignment with Dolce CRM
 
+The shop calendar is implemented locally with feature-owned UI/contracts, thin
+authenticated month/day APIs, and server-filtered aggregate/paginated reads.
+See [calendar behavior and validation](CALENDAR.md). No database migration is
+required; deployment is pending.
+
 Worker completion history and personal profiles are deployed and verified. The
 history feature UI, authenticated read service and additive migration 10 retain completed
 stages by worker ID, independently of the active queue and storage selector.

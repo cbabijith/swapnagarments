@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
+  CalendarDays,
   ShoppingBag,
   Users,
   GitBranch,
@@ -39,6 +40,7 @@ import { emptyWorkspace, isOpen } from "@/shared/workspace";
 
 const navigation = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
+  { href: "/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/orders", label: "Orders", icon: ShoppingBag },
   { href: "/customers", label: "Customers", icon: Users },
   { href: "/workflow", label: "Workflow", icon: GitBranch },

@@ -71,7 +71,7 @@ export function Overview() {
         title="Overview"
         description="Check due orders, track progress, and review today’s payments."
       >
-        <span className="date-chip">
+        <Link href="/calendar" className="date-chip" aria-label="Open calendar">
           <CalendarDays size={16} />
           {new Intl.DateTimeFormat("en-IN", {
             weekday: "short",
@@ -79,7 +79,7 @@ export function Overview() {
             month: "short",
             timeZone: "Asia/Kolkata",
           }).format(new Date(`${today}T12:00:00+05:30`))}
-        </span>
+        </Link>
         <Link className="button primary" href="/orders/new">
           <Plus size={18} />
           New order
