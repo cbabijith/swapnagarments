@@ -17,10 +17,12 @@ export function useDebouncedValue<T>(value: T, delay = 250): T {
 export function useFeatureQuery<T>(
   url: string | null,
   preview: (workspace: Workspace) => T,
+  { keepPreviousData = false }: { keepPreviousData?: boolean } = {},
 ): {
   data: T | null;
   isLoading: boolean;
   isRefreshing: boolean;
+  isPreviousData: boolean;
   error: string;
   reload: () => void;
 } {
@@ -101,6 +103,7 @@ export function useFeatureQuery<T>(
       data: null,
       isLoading: false,
       isRefreshing: false,
+      isPreviousData: false,
       error: "",
       reload,
     };
@@ -109,15 +112,22 @@ export function useFeatureQuery<T>(
       data: preview(workspace),
       isLoading: false,
       isRefreshing: false,
+      isPreviousData: false,
       error: "",
       reload,
     };
   const current = result?.key === key ? result : null;
-  const data = result?.url === url ? result.data : null;
+  // Keep the last result visible during an opted-in filter change. A failed
+  // request still exposes its error instead of presenting old results as current.
+  const data =
+    result?.url === url || (keepPreviousData && !current)
+      ? (result?.data ?? null)
+      : null;
   return {
     data,
     isLoading: !data && !current,
     isRefreshing: Boolean(data) && !current,
+    isPreviousData: Boolean(data) && result?.url !== url,
     error: current?.error ?? "",
     reload,
   };

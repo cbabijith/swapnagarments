@@ -34,9 +34,11 @@ export function QueryState({
 export function Pagination({
   page,
   onPageChange,
+  disabled = false,
 }: {
   page: PageInfo;
   onPageChange: (page: number) => void;
+  disabled?: boolean;
 }) {
   if (page.total === 0 && page.page <= 1) return null;
   const start = (page.page - 1) * page.pageSize + 1;
@@ -53,7 +55,7 @@ export function Pagination({
           <button
             type="button"
             className="button small-button"
-            disabled={page.page <= 1}
+            disabled={disabled || page.page <= 1}
             onClick={() => onPageChange(page.page - 1)}
             aria-label="Previous page"
           >
@@ -63,7 +65,7 @@ export function Pagination({
           <button
             type="button"
             className="button small-button"
-            disabled={page.page >= page.pageCount}
+            disabled={disabled || page.page >= page.pageCount}
             onClick={() => onPageChange(page.page + 1)}
             aria-label="Next page"
           >

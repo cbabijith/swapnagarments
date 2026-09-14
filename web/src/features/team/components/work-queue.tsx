@@ -74,8 +74,10 @@ export function WorkQueue({
   });
   if (member) search.set("member", member.id);
   if (code) search.set("code", code);
-  const query = useFeatureQuery<WorkRead>(`/api/work?${search}`, (data) =>
-    previewWork(data, input, worker ? owner.staffId : undefined),
+  const query = useFeatureQuery<WorkRead>(
+    `/api/work?${search}`,
+    (data) => previewWork(data, input, worker ? owner.staffId : undefined),
+    { keepPreviousData: worker },
   );
   async function update(
     piece: WorkPiece,
@@ -133,6 +135,8 @@ export function WorkQueue({
   }
   const summary = query.data?.summary;
   const filtered = status !== "all" || station !== "all";
+  const showEmptyState =
+    query.data?.pieces.length === 0 && !query.isPreviousData && !query.error;
   return (
     <div className="work-queue">
       {!embedded && (
@@ -246,7 +250,11 @@ export function WorkQueue({
           >
             <RefreshCw size={16} />
             {worker && (
-              <span>{query.isRefreshing ? "Refreshing…" : "Refresh"}</span>
+              <span>
+                {query.isRefreshing && !query.isPreviousData
+                  ? "Refreshing…"
+                  : "Refresh"}
+              </span>
             )}
           </button>
           {!worker && (
@@ -316,7 +324,7 @@ export function WorkQueue({
           {error}
         </p>
       )}
-      <div className="work-grid">
+      <div className="work-grid" aria-busy={query.isRefreshing}>
         {query.data?.pieces.map((piece) => {
           const { item, order } = piece;
           const work = item.work;
@@ -506,7 +514,7 @@ export function WorkQueue({
           );
         })}
       </div>
-      {query.data && !query.data.pieces.length && !query.error && (
+      {showEmptyState && (
         <EmptyState
           title={
             code
@@ -540,7 +548,11 @@ export function WorkQueue({
         </EmptyState>
       )}
       {query.data && (
-        <Pagination page={query.data.page} onPageChange={setPage} />
+        <Pagination
+          page={query.data.page}
+          onPageChange={setPage}
+          disabled={query.isPreviousData}
+        />
       )}
       {assign && (
         <AssignWorkDialog piece={assign} onClose={() => setAssign(null)} />
