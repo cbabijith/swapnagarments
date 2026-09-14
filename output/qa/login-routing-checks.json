@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-09-14T06:04:08.382Z",
+  "checks": [
+    "Worker login opens My Work",
+    "Worker profile logout followed by admin login opens Overview",
+    "No worker requests under new admin session",
+    "No admin requests under new worker session",
+    "Admin logout from filtered Orders followed by worker login opens My Work",
+    "Invalid credentials keep the sign-in page and show an error",
+    "Session retry after successful login preserves the home destination",
+    "Connection retry for an existing session preserves the Orders page and due filter"
+  ],
+  "productionBuild": "passed",
+  "lint": "passed",
+  "testsPassed": 38,
+  "testsFailed": 0,
+  "accountFixtures": "synthetic local accounts",
+  "liveBusinessWrites": 0
+}

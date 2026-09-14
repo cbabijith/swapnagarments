@@ -56,6 +56,7 @@ export function WorkspaceProvider({
   const snapshot = useRef(initialData);
   const revision = useRef(-1);
   const sessionRequest = useRef<AbortController | null>(null);
+  const openHomeAfterSignIn = useRef(false);
   const notify = useCallback((message: string) => setNotice(message), []);
   const onUnauthorized = useCallback(() => {
     sessionRequest.current?.abort();
@@ -103,6 +104,7 @@ export function WorkspaceProvider({
       if (controller.signal.aborted || sessionRequest.current !== controller)
         return;
       if (response.status === 401) {
+        openHomeAfterSignIn.current = false;
         setAccess(result.setupRequired ? "setup" : "signin");
         setSetupAvailable(Boolean(result.setupAvailable));
         return;
@@ -111,6 +113,13 @@ export function WorkspaceProvider({
         throw new Error(
           result.error || "The workspace connection is unavailable.",
         );
+      if (openHomeAfterSignIn.current) {
+        // Start the new account on its own home page with a fresh route cache.
+        window.location.replace(
+          result.owner.role === "worker" ? "/my-work" : "/",
+        );
+        return;
+      }
       setOwner(result.owner);
       setAccess("ready");
     } catch (error) {
@@ -186,6 +195,7 @@ export function WorkspaceProvider({
       notify("Could not sign out. Please try again.");
       return;
     }
+    setNotice("");
     setAccess("signin");
   };
 
@@ -195,7 +205,12 @@ export function WorkspaceProvider({
         state={access}
         setupAvailable={setupAvailable}
         error={connectionError}
-        onSuccess={refresh}
+        onSuccess={async () => {
+          openHomeAfterSignIn.current = true;
+          setAccess("loading");
+          await refresh();
+        }}
+        onRetry={refresh}
       />
     );
   return (

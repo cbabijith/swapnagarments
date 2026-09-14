@@ -16,11 +16,13 @@ export function AccessScreen({
   setupAvailable,
   error: connectionError,
   onSuccess,
+  onRetry,
 }: {
   state: string;
   setupAvailable: boolean;
   error: string;
   onSuccess: () => Promise<void>;
+  onRetry: () => Promise<void>;
 }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -111,7 +113,7 @@ export function AccessScreen({
               <p>{connectionError}</p>
               <button
                 className="button primary"
-                onClick={() => void onSuccess()}
+                onClick={() => void onRetry()}
               >
                 <RefreshCw size={16} />
                 Try connection again
