@@ -32,5 +32,14 @@ editing controls, service changes, schema changes or permission changes were add
   local production server. It uses the bundled Playwright runtime like the
   existing worker QA scripts.
 
-Live release verification will be recorded in
+## Deployment
+
+Deployed and verified on 2026-09-14 at
+https://swapna-garmentsweb-production.up.railway.app/my-work/profile.
+Commit `d5736e22c6ba37dc7e62a049b92d6b4029e33128` is active through Railway
+deployment `a54c18c8-fabd-48a5-bb27-6c2686bc9f80`. Railway reports successful
+deployment. Live health reports the database and image bucket connected; worker
+pages return 200 and protected APIs return 401. All 14 referenced assets load,
+including the new profile overview, previews, capacity copy and sign-out state.
+Owner setup remains closed. Read-only release evidence is recorded in
 `output/qa/profile-ui-production-release.json`.

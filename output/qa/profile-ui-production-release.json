@@ -1,0 +1,90 @@
+{
+  "verifiedAt": "2026-09-14T05:56:43.448Z",
+  "commit": "d5736e22c6ba37dc7e62a049b92d6b4029e33128",
+  "deployment": "a54c18c8-fabd-48a5-bb27-6c2686bc9f80",
+  "url": "https://swapna-garmentsweb-production.up.railway.app",
+  "railwayStatus": "active-successful",
+  "health": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "endpoints": {
+    "/api/health": {
+      "status": 200,
+      "cacheControl": "no-store"
+    },
+    "/my-work": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/my-work/profile": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/my-work/history": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/scan": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/team": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/api/session": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work/profile": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work/history": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/team": {
+      "status": 401,
+      "cacheControl": "no-store"
+    }
+  },
+  "ownerSetup": {
+    "required": false,
+    "available": false
+  },
+  "assets": {
+    "count": 14,
+    "allLoaded": true,
+    "features": {
+      "statusButtons": true,
+      "mobileStyles": true,
+      "queueCopy": true,
+      "clearFilters": true,
+      "printedOrderEntry": true,
+      "profile": true,
+      "profileOverview": true,
+      "profilePreviews": true,
+      "profileCapacity": true,
+      "profileSignOut": true,
+      "history": true,
+      "historyGroups": true,
+      "historyRefresh": true,
+      "historyReset": true
+    }
+  },
+  "validation": {
+    "productionBuild": "passed",
+    "lint": "passed",
+    "tests": 38,
+    "mobileBrowser": "passed at 320, 360, 390, 430, 768 and 1440px with synthetic API fixtures"
+  },
+  "productionBusinessCommandsSubmitted": false,
+  "passed": true
+}
