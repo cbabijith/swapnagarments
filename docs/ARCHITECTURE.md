@@ -6,7 +6,7 @@
 > current gaps, and migration sequence. The Hono five-layer description below
 > documents the original backend baseline and does not describe the live website.
 
-Feature-driven, five-layered, event-driven architecture in an npm-workspaces
+Feature-driven, five-layered, event-driven architecture in a Bun workspaces
 monorepo. The guiding rules:
 
 1. **The backend owns business logic.** `web` (Next.js) is the dashboard UI;
@@ -37,7 +37,7 @@ swapnagarments/
 │       └── features/      # vertical slices (layers 1–4 inside)
 ├── mobile/       # Flutter 3.44 — station scanning & staff app
 ├── docs/         # this documentation
-└── package.json  # npm workspaces root (web + backend)
+└── package.json  # Bun workspaces root (web + backend)
 ```
 
 ## The five layers (inside the backend)
@@ -94,7 +94,7 @@ handlers are registered there at startup.
   as `BETTER_AUTH_URL=http://localhost:3001/auth` — **Better Auth derives
   its base path from the URL pathname**, so the `/auth` suffix is required.
 - Persistence: Drizzle + SQLite file (`backend/data/swapna.db`), schema in
-  `features/auth/infrastructure/schema.ts`, applied with `npm run db:push`.
+  `features/auth/infrastructure/schema.ts`, applied with `bun run db:push`.
 - `requireSession` middleware protects everything under `/api/v1/*`.
 - Signup publishes `auth.user.created` via a Better Auth `databaseHooks`
   hook — auth joins the event-driven flow.

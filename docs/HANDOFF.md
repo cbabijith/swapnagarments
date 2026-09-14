@@ -30,7 +30,7 @@ garments). The real-world flow we are modelling:
 
 | Area | Status |
 | ---- | ------ |
-| Monorepo (`web` + `backend` npm workspaces, `mobile` Flutter) | ✅ Done |
+| Monorepo (`web` + `backend` Bun workspaces, `mobile` Flutter) | ✅ Done |
 | Backend: Hono 4.13, feature-driven 5-layer architecture, event bus | ✅ Done, smoke-tested |
 | Backend: Better Auth (email+password, sessions, SQLite/Drizzle) | ✅ Done — `/auth/**` |
 | Backend: Orders v1 (create / list / get / status change) | ✅ Done — `/api/v1/orders` |
@@ -45,20 +45,20 @@ change → events feed with actor attribution → email/WhatsApp dispatch logs.
 ## 3. Running everything
 
 ```bash
-npm install                 # repo root — installs web + backend
+bun install --frozen-lockfile # repo root — installs web + backend
 
 # backend (port 3001)
 cp backend/.env.example backend/.env    # then set BETTER_AUTH_SECRET:
 #   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-npm run db:push             # create SQLite tables (backend/data/swapna.db)
-npm run dev:backend
+bun run db:push             # create SQLite tables (backend/data/swapna.db)
+bun run dev:backend
 
 # web (port 3000)
-npm run dev:web
+bun run dev:web
 
 # checks before every PR
-npm run build               # all workspaces
-npm run lint
+bun run build               # all workspaces
+bun run lint
 ```
 
 Test credentials flow: sign up via `POST http://localhost:3001/auth/sign-up/email`
@@ -102,7 +102,7 @@ exists on the owner's machine — create your own.
 6. Money is **integer minor units (paise)** — never floats.
 7. Branches: `feature/<issue-number>-short-slug`. One issue = one branch =
    one PR referencing the issue ("Closes #12").
-8. Definition of done: `npm run build` + `npm run lint` clean, manually
+8. Definition of done: `bun run build` + `bun run lint` clean, manually
    tested against a running backend, PR description says what/how to test.
 
 ## 6. Known gotchas (read once, save an hour each)

@@ -1,0 +1,58 @@
+{
+  "checkedAt": "2026-09-14T05:52:14.349Z",
+  "origin": "https://swapna-garmentsweb-production.up.railway.app",
+  "commit": "2d749cdbea18fa5f2c27f9ed6b06866eb519295a",
+  "deploymentId": "d5df7f6d-9d19-4f39-baca-33f81ed49f63",
+  "checks": {
+    "build": "passed",
+    "lint": "passed",
+    "tests": {
+      "passed": 38,
+      "failed": 0
+    }
+  },
+  "health": {
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "routes": [
+    {
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "path": "/my-work",
+      "status": 200
+    },
+    {
+      "path": "/my-work/history",
+      "status": 200
+    },
+    {
+      "path": "/my-work/profile",
+      "status": 200
+    },
+    {
+      "path": "/api/session",
+      "status": 401
+    },
+    {
+      "path": "/api/work",
+      "status": 401
+    },
+    {
+      "path": "/api/work/history",
+      "status": 401
+    },
+    {
+      "path": "/api/work/profile",
+      "status": 401
+    }
+  ],
+  "assetsChecked": 13,
+  "silentLoadingAssets": [
+    "/_next/static/chunks/1e4pg3e1nx78m.js"
+  ],
+  "ownerSetupClosed": true,
+  "businessWrites": 0
+}

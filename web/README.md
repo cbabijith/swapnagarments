@@ -6,11 +6,12 @@ database. The Hono and Flutter workspaces are not required to run this website.
 
 ## Run locally
 
-From the repository root:
+Use Bun 1.3.14 (pinned in the root `package.json`) and Node.js ≥ 22.
+Both JavaScript workspaces share the root `bun.lock`. From the repository root:
 
 ```bash
-npm ci
-npm run dev:web
+bun install --frozen-lockfile
+bun run dev:web
 ```
 
 Open http://localhost:3000. Without a database URL, development shows a clearly
@@ -64,13 +65,15 @@ deployment settings, persistence model, security boundaries, and remaining scope
 ## Checks
 
 ```bash
-npm run build -w web
-npm run lint -w web
-npm run typecheck -w web
-npm run test -w web
+bun run --cwd web build
+bun run --cwd web lint
+bun run --cwd web typecheck
+bun run --cwd web test
 ```
 
 Tests run against an isolated PostgreSQL WASM engine and do not touch Railway.
+Use `bun run test` from the repository root as a shortcut. The `test` script
+uses Node.js's existing test runner and React server conditions.
 
 ## Structure
 
@@ -103,7 +106,7 @@ existing tables; version 2 adds a nullable retry fingerprint; version 3 adds
 relational shop tables and storage-selection metadata. The ledger stores checksums
 and rejects edits to applied migrations. Startup keeps JSON storage active.
 
-`npm run db:relational -w web -- help` describes the operator CLI. It supports
+`bun run --cwd web db:relational help` describes the operator CLI. It supports
 read-only status, dry-run rehearsal, reconciled cutover and rollback that preserves
 post-cutover work. Existing owner hashes, sessions, IDs, paise amounts and history
 are preserved. Follow [RELATIONAL-MIGRATION.md](../docs/RELATIONAL-MIGRATION.md)

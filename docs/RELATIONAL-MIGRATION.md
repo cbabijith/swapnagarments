@@ -108,9 +108,9 @@ inside its private network; this CLI does not expose a public database endpoint
 or retrieve credentials from another project.
 
 ```text
-npm run db:relational -w web -- help
-npm run db:relational -w web -- status
-npm run db:relational -w web -- check
+bun run --cwd web db:relational help
+bun run --cwd web db:relational status
+bun run --cwd web db:relational check
 ```
 
 `status` is read-only and also understands the original production schema.
@@ -136,7 +136,7 @@ Production procedure:
    Replace the uppercase placeholders in this example:
 
    ```text
-   npm run db:relational -w web -- cutover --expected-revision REVISION --expected-checksum CHECKSUM --backup-reference BACKUP_ID
+   bun run --cwd web db:relational cutover --expected-revision REVISION --expected-checksum CHECKSUM --backup-reference BACKUP_ID
    ```
 
 5. Verify `status` reports `relational`, reconcile the returned counts/totals,
@@ -159,8 +159,8 @@ including every order, payment, measurement change and report since cutover.
 Pause writes, obtain a new full backup, and rehearse on an isolated copy:
 
 ```text
-npm run db:relational -w web -- check-rollback
-npm run db:relational -w web -- rollback --expected-revision REVISION --expected-checksum CHECKSUM --backup-reference BACKUP_ID
+bun run --cwd web db:relational check-rollback
+bun run --cwd web db:relational rollback --expected-revision REVISION --expected-checksum CHECKSUM --backup-reference BACKUP_ID
 ```
 
 Rollback stores another immutable snapshot, reconciles the current relational

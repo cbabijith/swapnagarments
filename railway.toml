@@ -1,0 +1,7 @@
+[build]
+builder = "RAILPACK"
+buildCommand = "bun run --cwd web build"
+watchPatterns = ["/web/**", "/backend/package.json", "/package.json", "/bun.lock", "/bunfig.toml", "/railway.toml"]
+
+[deploy]
+startCommand = "bun run start:web"

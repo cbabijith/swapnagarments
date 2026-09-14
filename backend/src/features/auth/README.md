@@ -13,7 +13,7 @@ sessions) with a Drizzle/SQLite persistence layer.
   welcome notifications, audit).
 - `infrastructure/schema.ts` — Better Auth core tables (`user`, `session`,
   `account`, `verification`) as a Drizzle SQLite schema; applied with
-  `npm run db:push -w backend` (drizzle-kit).
+  `bun run --cwd backend db:push` (drizzle-kit).
 - `presentation/session-middleware.ts` — `requireSession` guards `/api/v1/*`:
   resolves the session and exposes it as `c.get("session")` (user id becomes
   `actorId` on events published by use cases).

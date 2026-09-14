@@ -1,0 +1,26 @@
+{
+  "verifiedAt": "2026-09-14T05:14:27.1851290Z",
+  "commit": "f10f324a578121a7319dabf680153c304e7e3ae1",
+  "deployment": "f72ba246-30bc-4431-bea3-cb7bdb64480c",
+  "railwayStatus": "active-successful",
+  "url": "https://swapna-garmentsweb-production.up.railway.app/orders/new",
+  "health": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "checks": {
+    "typescript": "passed",
+    "productionBuild": "passed",
+    "orderIntakeAndBillingTests": 7,
+    "eslint": "passed"
+  },
+  "browser": {
+    "zeroAdvance": "disabled with explanation",
+    "positiveAdvance": "enabled with explanation hidden",
+    "emptyAdvance": "disabled with explanation",
+    "clearedAdvance": "disabled with explanation"
+  },
+  "productionBusinessDataModified": false,
+  "passed": true
+}

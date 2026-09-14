@@ -5,7 +5,7 @@ import {
   transitionWorkspaceStorage,
 } from "../src/services/storage-migration-service";
 
-const help = `Usage: npm run db:relational -w web -- <command> [options]
+const help = `Usage: bun run --cwd web db:relational <command> [options]
 
 Commands:
   status          Show storage model, revision, counts, paise totals and checksum.

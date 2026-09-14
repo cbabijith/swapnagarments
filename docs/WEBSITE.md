@@ -71,8 +71,22 @@ Railway session can. Deployment must use that authorized project context.
 
 ## Deployment settings
 
-Keep the existing repository-root build/start commands. Set these variables on
-the **website service**, not on PostgreSQL:
+The Bun migration adds repository-root `railway.toml` for the next deployment:
+
+- Builder: Railpack, with Bun 1.3.14 selected by root `package.json`.
+- Install: Bun using the root `bun.lock`; use `bun install --frozen-lockfile`
+  for local/CI reproducibility.
+- Build: `bun run --cwd web build`.
+- Start: `bun run start:web`.
+- Watch paths include `web/`, both workspace manifests, the root manifest,
+  `bun.lock`, `bunfig.toml`, and `railway.toml` so dependency changes rebuild.
+
+These source settings replace the historical npm build/start commands above
+on the next deployment; adding the file does not change the running service.
+See [Railway config as code](https://docs.railway.com/config-as-code) and
+[Railpack package manager detection](https://railpack.com/languages/node/#package-managers).
+
+Set these variables on the **website service**, not on PostgreSQL:
 
 | Variable | Value |
 | --- | --- |
@@ -140,7 +154,7 @@ parameters; database errors and credentials are not returned to the browser.
 
 ## Validation and remaining scope
 
-`npm run test -w web` runs isolated tests against PostgreSQL's PGlite WASM engine
+`bun run --cwd web test` runs isolated tests against PostgreSQL's PGlite WASM engine
 and the real route handlers. Coverage includes setup-code checks, authentication,
 origin checks, data persistence, monetary guards, multi-step workflow, stale
 updates, idempotent retries, delivery, reports, and session revocation. Architecture

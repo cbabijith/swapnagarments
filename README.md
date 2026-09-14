@@ -167,7 +167,7 @@ is the mobile story for now (kept for future native needs).
 | Build (backend) | tsx (dev), tsup → `dist/` (production) |
 | Mobile | Flutter 3.44 stable (placeholder) |
 | Language | TypeScript ~5.9 (7.0 verified for builds; pinned because typescript-eslint blocks TS 7) |
-| Monorepo | npm workspaces (`web`, `backend`) |
+| Monorepo | Bun workspaces (`web`, `backend`) |
 
 ## Architecture
 
@@ -223,39 +223,47 @@ swapnagarments/
 │   └── .env.example
 ├── mobile/                   # Flutter app (placeholder)
 ├── docs/                     # all documentation (see index below)
-└── package.json              # npm workspaces root
+└── package.json              # Bun workspaces root
 ```
 
 ## Getting started
 
-**Prerequisites:** Node.js ≥ 22, npm ≥ 10. (Flutter 3.44 only for
+**Prerequisites:** Node.js ≥ 22, Bun 1.3.14. (Flutter 3.44 only for
 `mobile/`.)
+
+Bun manages the `web` and `backend` workspaces through the root `bun.lock`.
+Install from the repository root with `bun install --frozen-lockfile`; use
+`bun install` when intentionally updating dependencies, and commit `bun.lock`.
+The application and existing test scripts continue to run on Node.js. Flutter
+dependencies are managed separately with `flutter pub get` in `mobile/`.
 
 ```bash
 git clone git@github.com:cbabijith/swapnagarments.git
 cd swapnagarments
-npm install                          # installs web + backend workspaces
+bun install --frozen-lockfile        # installs web + backend workspaces
 
 # Backend configuration
 cp backend/.env.example backend/.env
 # generate a secret and put it in backend/.env as BETTER_AUTH_SECRET:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
-npm run db:push                      # create SQLite tables
-npm run dev:backend                  # → http://localhost:3001
-npm run dev:web                      # → http://localhost:3000 (separate terminal)
+bun run db:push                      # create SQLite tables
+bun run dev:backend                  # → http://localhost:3001
+bun run dev:web                      # → http://localhost:3000 (separate terminal)
 ```
 
 **Scripts (repo root):**
 
 | Script | What it does |
 | ------ | ------------ |
-| `npm run dev:web` | Next.js dev server (port 3000) |
-| `npm run dev:backend` | Hono dev server with watch (port 3001) |
-| `npm run build` | Production build of all workspaces (type-checked) |
-| `npm run lint` | ESLint across workspaces |
-| `npm run typecheck` | TypeScript check across workspaces |
-| `npm run db:push` | Apply the Drizzle schema to SQLite |
+| `bun run dev:web` | Next.js dev server (port 3000) |
+| `bun run dev:backend` | Hono dev server with watch (port 3001) |
+| `bun run start:web` | Start the production website after building |
+| `bun run build` | Production build of all workspaces (type-checked) |
+| `bun run lint` | ESLint across workspaces |
+| `bun run typecheck` | TypeScript check across workspaces |
+| `bun run test` | Website tests using the existing Node.js test runner |
+| `bun run db:push` | Apply the Drizzle schema to SQLite |
 
 **First user:** sign up via the API (no UI yet — see
 [API reference](#api-reference)) or the sign-in screen once backlog
@@ -358,7 +366,7 @@ Every event carries an id, timestamp, and metadata including `actorId`
 - **Branches:** use `shahil` for development and `main` for verified releases.
   The owner requested only these two branches; do not create feature or `codex/`
   branches. Reference related backlog issues in changes where appropriate.
-- **Definition of done:** `npm run build` and `npm run lint` clean at the
+- **Definition of done:** `bun run build` and `bun run lint` clean at the
   root; manually tested against a running backend; PR explains what/how
   to test.
 - **Conventions (enforced):** use-case methods are named `run(...)`, never

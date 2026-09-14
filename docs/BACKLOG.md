@@ -8,7 +8,7 @@ Backend issues say "feature pattern" — that means mirror
 infrastructure → presentation, events published, wired in the container).
 
 **Every PR:** branch `feature/<issue>-slug`, references the issue
-("Closes #N"), `npm run build` + `npm run lint` clean, tested against a
+("Closes #N"), `bun run build` + `bun run lint` clean, tested against a
 running backend.
 
 ---
@@ -36,7 +36,7 @@ dark mode via a class toggle; document tokens in `web/README.md`.
 **Do:** Init shadcn/ui in `web` (works with Tailwind v4), add `lucide-react`;
 add the base components you'll need (button, input, select, dialog, sheet,
 table, card, badge, tabs, dropdown-menu, sonner).
-**Done when:** `npm run build -w web` passes with components generated.
+**Done when:** `bun run --cwd web build` passes with components generated.
 
 ### #4 — Better Auth client + env config
 **What:** Web signs in/out against the backend properly.
