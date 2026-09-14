@@ -43,3 +43,21 @@ verified at **15:56 IST**:
   401 with `no-store`, and owner setup remains closed.
 - Verification submitted no production business commands.
 - Release evidence: `output/qa/orders-ui-production-release.json`.
+
+## Smaller priority chips
+
+The follow-up sizing adjustment reduces chip height from 40px on desktop and
+44px on phones to **30px**, with 11px text, smaller dots and tighter padding.
+Phone chips use their natural width instead of stretching across the toolbar.
+An invisible 7px extension above and below preserves a 44px tap area.
+
+The CSS-only change passed the production build, TypeScript and formatting
+checks. Browser checks at 320, 390 and 1440px confirmed compact dimensions,
+working priority filtering, no horizontal overflow and pointer targeting in
+the expanded tap area. Code: `ce0f45633aa22f76bbfe1c1be2fca679874fcfbb`.
+
+Deployed and verified at **16:07 IST on September 14, 2026**, with Railway
+deployment `9cdb2247-0c5e-45f0-996c-43e38b1ea086` active and successful.
+The live Orders stylesheet contains the 30px chips, natural mobile widths and
+expanded tap areas. Orders, database and storage health checks passed.
+Evidence: `output/qa/orders-chip-size-production-release.json`.

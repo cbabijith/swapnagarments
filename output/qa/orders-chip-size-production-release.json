@@ -1,0 +1,34 @@
+{
+  "verifiedAt": "2026-09-14T10:37:33.074Z",
+  "commit": "ce0f45633aa22f76bbfe1c1be2fca679874fcfbb",
+  "deployment": "9cdb2247-0c5e-45f0-996c-43e38b1ea086",
+  "url": "https://swapna-garmentsweb-production.up.railway.app/orders",
+  "railwayStatus": "active-successful",
+  "ordersStatus": 200,
+  "health": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "styles": {
+    "allLoaded": true,
+    "height30px": true,
+    "font11px": true,
+    "naturalMobileWidth": true,
+    "expandedTapArea": true
+  },
+  "localValidation": {
+    "productionBuild": "passed",
+    "typescript": "passed",
+    "formatting": "passed",
+    "browserWidths": [
+      320,
+      390,
+      1440
+    ],
+    "filtering": "passed",
+    "hitAreaHeight": 44
+  },
+  "productionBusinessCommandsSubmitted": false,
+  "passed": true
+}
