@@ -116,7 +116,7 @@ const entries = Array.from({length:7}, (_, i) => ({id:`completion-${i}`, orderNu
     await page.getByRole('button',{name:'Cancel',exact:true}).click();
     await page.getByRole('link',{name:'History',exact:true}).click();
     await page.getByRole('heading',{name:'Work history',exact:true}).waitFor();
-    await page.locator('.work-history-card').first().waitFor();
+    await page.locator('[data-history-entry]').first().waitFor();
     for(const width of [320,390,430]) {
       await page.setViewportSize({width,height:844});
       await fits(`History ${width}`);
@@ -125,7 +125,7 @@ const entries = Array.from({length:7}, (_, i) => ({id:`completion-${i}`, orderNu
     await page.getByRole('textbox',{name:'Search work history'}).fill('Churidar');
     await page.getByText('3 completed stages',{exact:true}).waitFor();
     checks.push('History layouts fit phones; history search returns the matching garments');
-    await page.locator('.work-history-card').first().click();
+    await page.locator('[data-history-entry]').first().click();
     await page.getByRole('heading',{name:'Completion details',exact:true}).waitFor();
     for(const width of [320,390]) {
       await page.setViewportSize({width,height:844});
