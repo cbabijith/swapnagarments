@@ -1,5 +1,10 @@
 # Feature-driven architecture: alignment with Dolce CRM
 
+The compact worker-history details redesign is deployed and verified
+(September 14, code `e94efdd`). Feature-owned summary, tabs, measurement grids
+and an expandable full record reduce phone scrolling while preserving existing
+snapshot reads and image authorization. See [details](WORKER-HISTORY-DETAILS.md#compact-work-details--september-14).
+
 The bill preview and worker-history customer details are deployed and verified
 (September 14, code `469195f`). Billing owns its responsive A5 preview/print UI;
 the worker history service resolves bounded, session-authorized current customer

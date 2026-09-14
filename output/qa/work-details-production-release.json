@@ -1,0 +1,91 @@
+{
+  "checkedAt": "2026-09-14T08:05:06.432Z",
+  "origin": "https://swapna-garmentsweb-production.up.railway.app",
+  "codeCommit": "e94efdd46e415ff49679b218b483e80bbeeeb3d2",
+  "deploymentId": "4b7c0d16-07ec-48be-8c37-20b5a303501f",
+  "checks": {
+    "ownerSetupClosed": true,
+    "/api/session": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work/history": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work/history/not-a-uuid": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "compactWorkDetailsAssets": true
+  },
+  "pages": {
+    "/": 200,
+    "/my-work/history": 200,
+    "/my-work/history/00000000-0000-4000-8000-000000000001": 200
+  },
+  "assets": [
+    {
+      "url": "/_next/static/chunks/3r_rtfr9pyhug.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/0lfe4uc5wix6o.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/310vm2bl3xxpt.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/10_sdt0bv858g.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/06v4gr4d6j-56.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3lqlrrt7w5frg.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/turbopack-37fu1nzy6m6um.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/0uqpiblz5f8-h.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3ca3-bs3jddia.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1rr-mml_c-k-i.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/27b1n7jiwiq6m.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/0cz1d0mv5g_q7.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/2-rtuqsgzmno4.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/23os44ut3_rl3.js",
+      "status": 200
+    }
+  ],
+  "health": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "scope": "Public pages, deployed assets, health and unsigned API checks only. Worker interactions verified locally with synthetic fixtures; no production data writes."
+}

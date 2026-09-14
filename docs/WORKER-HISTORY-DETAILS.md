@@ -13,7 +13,7 @@ History remains selected in the worker navigation. **Back to history** restores
 the previous search, station filter and page.
 
 The [customer-details extension](WORKER-HISTORY.md#customer-details--september-14)
-adds a customer card with the current name and phone number, including a call
+adds the current customer name and phone number, including a call
 link. Contacts are resolved separately from the immutable stage snapshot, so
 earlier completions can show them too. Unavailable contacts are explicitly
 labelled. This extension was deployed and verified on September 14 at 13:13 IST; its
@@ -101,5 +101,12 @@ Local verification on September 14:
   no errors or warnings. Browser checks used synthetic data through the local
   `output/qa/work-details-preview.cjs` proxy and made no production writes.
 
-Release status: local verification complete; publication pending.
+Deployed and verified at **13:35 IST on September 14, 2026**:
 
+- Code commit: `e94efdd46e415ff49679b218b483e80bbeeeb3d2`.
+- Railway deployment: `4b7c0d16-07ec-48be-8c37-20b5a303501f`, active and successful.
+- Worker history and direct detail pages return 200; all 14 published assets
+  load and include the compact tabs and full-record disclosure.
+- Database and image storage are connected. Unsigned history APIs return
+  401/no-store and owner setup remains closed.
+- Evidence: `output/qa/work-details-production-release.json`.
