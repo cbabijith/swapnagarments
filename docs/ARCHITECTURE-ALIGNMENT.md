@@ -1,5 +1,10 @@
 # Feature-driven architecture: alignment with Dolce CRM
 
+The Orders screen refresh is deployed and verified (September 14, code
+`749836d`). Feature-scoped styles add a floating New order action, priority chips,
+compact headings and clearer mobile cards. Existing paginated reads and services
+are preserved. See [Orders UI and release checks](ORDERS-UI.md).
+
 The compact worker-history details redesign is deployed and verified
 (September 14, code `e94efdd`). Feature-owned summary, tabs, measurement grids
 and an expandable full record reduce phone scrolling while preserving existing

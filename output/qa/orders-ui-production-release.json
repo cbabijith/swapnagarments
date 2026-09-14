@@ -1,0 +1,56 @@
+{
+  "verifiedAt": "2026-09-14T10:26:28.375Z",
+  "commit": "749836dfc9f8de7b8c25811e267a007f3cce2cab",
+  "deployment": "2f85124a-35ec-4aa1-b338-67bc3c020bcb",
+  "url": "https://swapna-garmentsweb-production.up.railway.app",
+  "railwayStatus": "active-successful",
+  "health": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "endpoints": {
+    "/api/health": {
+      "status": 200,
+      "cacheControl": "no-store"
+    },
+    "/orders": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/orders/new": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/api/session": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/orders": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/orders/export?priority=urgent": {
+      "status": 401,
+      "cacheControl": "no-store"
+    }
+  },
+  "ownerSetup": {
+    "required": false,
+    "available": false
+  },
+  "assets": {
+    "count": 17,
+    "allLoaded": true,
+    "features": {
+      "floatingNewOrder": true,
+      "priorityChips": true,
+      "compactHeading": true,
+      "filterReset": true,
+      "clearSearch": true,
+      "mobileBalances": true
+    }
+  },
+  "productionBusinessCommandsSubmitted": false,
+  "passed": true
+}

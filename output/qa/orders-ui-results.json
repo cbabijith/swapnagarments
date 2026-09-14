@@ -1,0 +1,16 @@
+{
+  "checks": [
+    "Urgent chip filters results and exposes its selected state; reset restores all orders",
+    "Layout fits 320px; compact heading and FAB position verified",
+    "Layout fits 360px; compact heading and FAB position verified",
+    "Layout fits 390px; compact heading and FAB position verified",
+    "Layout fits 430px; compact heading and FAB position verified",
+    "Layout fits 760px; compact heading and FAB position verified",
+    "Layout fits 768px; compact heading and FAB position verified",
+    "Layout fits 1440px; compact heading and FAB position verified",
+    "Search, status and priority filters combine; empty state, clear search and full reset work without layout jumps",
+    "Normal chip and filtered CSV export work",
+    "Keyboard chip selection, last-row clearance, order details and New order FAB navigation work"
+  ],
+  "errors": []
+}
