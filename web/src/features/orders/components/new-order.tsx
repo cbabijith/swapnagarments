@@ -190,6 +190,7 @@ function OrderComposer({
   const gst = calculateGst(subtotal, gstSettings);
   const quoted = totalWithGst(subtotal, gst);
   const payment = Math.round(Number(advance || 0) * 100);
+  const hasAdvancePayment = Number.isFinite(payment) && payment > 0;
   function update(id: string, changes: Partial<DraftPiece>) {
     setItems((current) =>
       current.map((item) => (item.id === id ? { ...item, ...changes } : item)),
@@ -751,12 +752,25 @@ function OrderComposer({
             </label>
             <label className="field">
               Payment method
-              <select name="method" disabled={!payment}>
+              <select
+                name="method"
+                className={styles.paymentMethod}
+                disabled={!hasAdvancePayment}
+                aria-describedby={
+                  hasAdvancePayment ? undefined : "payment-method-hint"
+                }
+              >
                 <option>Cash</option>
                 <option>UPI</option>
                 <option>Card</option>
                 <option>Bank transfer</option>
               </select>
+              {!hasAdvancePayment && (
+                <span id="payment-method-hint">
+                  Enter an advance amount greater than ₹0 to select a payment
+                  method.
+                </span>
+              )}
             </label>
             <label className="field full-width">
               Order notes (optional)

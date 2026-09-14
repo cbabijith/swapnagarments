@@ -44,6 +44,11 @@
   padding: 10px 12px;
   font-size: 12px;
 }
+.paymentMethod:disabled {
+  color: #66735d;
+  background: #f0f2ec;
+  cursor: not-allowed;
+}
 @media (max-width: 760px) {
   .customer {
     max-width: none;
