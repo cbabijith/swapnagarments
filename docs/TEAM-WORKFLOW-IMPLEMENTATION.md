@@ -154,3 +154,20 @@ assignments, or uploads and made no storage-mode changes. Signed-in task behavio
 was verified in the isolated local environment described above; a real phone
 camera test remains outstanding. The local verification report is retained at
 `output/qa/team-workflow-production-release.json` outside source control.
+
+## Order-detail assignment release — September 14, 2026
+
+Commit `10373cf7f68a84949e209924632577ca51013aac` is deployed through Railway
+deployment `db4fea4f-4af3-4d14-bbd0-5a4c51bad096`, confirmed active and successful.
+Order details now reuse the Team assignment picker for pending production work;
+assigned pieces also link directly to their task. The existing service retains
+the station, version, measurement, skill, availability and capacity checks.
+
+Live health reports the database and bucket connected. Order and Team pages
+return 200, all 12 order-page script assets load, and the deployed bundle includes
+the assignment picker and controls. Unsigned session, team, work and order-detail
+API requests return 401 with `no-store`; owner registration remains closed.
+The signed-in browser check confirmed **Assign work** on an existing active order
+and opened the picker, which correctly reported no available worker for its
+current station. Verification made no production business-data changes.
+The release check results are in `output/qa/order-assignment-release.json`.

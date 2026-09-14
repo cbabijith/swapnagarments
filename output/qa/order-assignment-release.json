@@ -1,0 +1,64 @@
+{
+  "verifiedAt": "2026-09-14T04:11:44.972Z",
+  "commit": "10373cf7f68a84949e209924632577ca51013aac",
+  "deployment": "db4fea4f-4af3-4d14-bbd0-5a4c51bad096",
+  "url": "https://swapna-garmentsweb-production.up.railway.app",
+  "health": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "endpoints": {
+    "/api/health": {
+      "status": 200,
+      "cacheControl": "no-store"
+    },
+    "/api/session": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/team": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/orders/release-verification": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/orders/release-verification": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    "/team": {
+      "status": 200,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    }
+  },
+  "ownerSetup": {
+    "required": false,
+    "available": false
+  },
+  "assets": {
+    "count": 12,
+    "allLoaded": true,
+    "assignWork": true,
+    "reassignWork": true,
+    "picker": true,
+    "measurementGuard": true,
+    "taskLink": true
+  },
+  "productionBusinessDataModified": false,
+  "passed": true,
+  "railwayStatus": "active-successful",
+  "browser": {
+    "signedInOrderDetail": "passed",
+    "assignWorkButton": "visible",
+    "picker": "opened and loaded",
+    "eligibleWorkerResult": "No available workers match the current station",
+    "assignmentSubmitted": false
+  }
+}
