@@ -22,6 +22,13 @@ the menu and returns focus to the icon; leaving Profile resets the menu.
 1440px, including sign-out failure/retry and prevention of repeated taps. The
 production build and focused worker-shell ESLint check passed.
 
+The menu change (`68bb034`) was deployed on 2026-09-14 and verified on the live
+site in release `e56dea26de626e3783b4b09bff0bfae9373c0dfe`, Railway deployment
+`b2d9665b-4fd8-47e1-a789-eead8ce7e71b`. All menu checks passed using synthetic API
+responses without changing a real account; site, database and bucket health were
+healthy. See `output/qa/profile-account-menu-live-results.json` and the matching
+phone and desktop screenshots.
+
 ## Verification
 
 - Production build and full ESLint passed in an isolated checkout using the
