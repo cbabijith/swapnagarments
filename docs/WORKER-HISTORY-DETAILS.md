@@ -1,7 +1,10 @@
 # Worker history details
 
-Implemented locally on `shahil`, September 14, 2026. This extension has not been
-deployed; the earlier History list and Profile release remains unchanged.
+Deployed and verified on Railway, September 14, 2026, at 10:45 IST.
+
+- Release commit: `3ffd8d1c4351b211626cc7212fd5af934b042b78` on `main` and `shahil`.
+- Railway deployment: `8292c1a8-355d-4bef-b580-95c39642e470`, active and successful.
+- [Open worker history](https://swapna-garmentsweb-production.up.railway.app/my-work/history).
 
 Workers can open **View details** on a history entry, or select a recent
 completion on their profile. `/my-work/history/[id]` shows the garment, complete
@@ -51,3 +54,13 @@ Current garment data is not backfilled into older history.
 - Desktop (1440px) and phone (390px/320px) checks found no horizontal overflow.
   Reference images loaded and no browser console errors appeared. These checks
   accessed no production worker account or customer records.
+- The isolated release was installed from the committed npm lockfile and passed
+  all 36 tests, ESLint, TypeScript and the complete production build. Concurrent
+  mobile UI and Bun migration changes were left in the working directory.
+- Live verification returned 200 for worker pages, including a direct detail
+  URL, and 401/no-store for unsigned worker APIs (including invalid detail IDs).
+  All 13 published assets loaded and contained the new detail screen and links.
+  PostgreSQL and image storage were connected; owner setup remained closed.
+  Evidence is in the ignored local report
+  `output/qa/worker-profile-history-details-release.json`. Verification performed
+  no production business-data writes or worker sign-in.
