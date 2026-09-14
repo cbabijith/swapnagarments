@@ -1,5 +1,11 @@
 # Feature-driven architecture: alignment with Dolce CRM
 
+The bill preview and worker-history customer details are deployed and verified
+(September 14, code `469195f`). Billing owns its responsive A5 preview/print UI;
+the worker history service resolves bounded, session-authorized current customer
+contacts without changing immutable completion snapshots or the database schema.
+See [billing](GST-BILLING.md) and [history](WORKER-HISTORY.md) for release evidence.
+
 Scroll pagination is deployed and verified on September 14. Lists append
 bounded API pages as their footer approaches the viewport, with a manual Load
 more fallback and retry controls. See [scope and verification](SCROLL-PAGINATION.md).

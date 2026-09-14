@@ -7,7 +7,7 @@ payment records, and balance. **Print order** retains the complete A4 workshop
 details; QR labels remain a separate print action. A standard six-piece bill
 with GST fits on one A5 page; longer orders continue without dropping items.
 
-## Bill UI update — September 14 (local)
+## Bill UI update — September 14 (deployed)
 
 The responsive preview and print styles live in the billing feature. Preview
 controls stay visible while the bill scrolls; closing the dialog restores focus
@@ -21,7 +21,12 @@ bill, and all 45 garments and 24 payments in a long-order fixture. Existing A4
 order and QR printing were also checked. The GST and date-format tests,
 TypeScript, ESLint, and production build passed. See
 `output/qa/bill-ui-results.json` for browser and PDF results. This UI update has
-not been deployed; the production release below describes the earlier version.
+been deployed as code `469195f9371f1bbf9bfc59140bead593fcfab59d` through
+Railway deployment `7446035e-02f5-40d2-b168-3d2f16fe51cf`. All 49 tests passed
+before release. Live health, protected API responses, pages and published assets
+passed verification at `2026-09-14T07:43:16.201Z`. See
+`output/qa/bill-history-production-release.json`. The production release below
+describes the earlier GST version.
 
 ## GST behavior
 

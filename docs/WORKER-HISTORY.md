@@ -6,12 +6,15 @@ A [details screen extension](WORKER-HISTORY-DETAILS.md) is deployed and verified
 with immutable task snapshots and worker-scoped reference image access. Its
 deployment status is tracked separately from the release below.
 
-## Customer details — September 14 (local update)
+## Customer details — September 14
 
 History entries and their detail screens now show the customer's current name
 and phone number. Phone numbers on the detail screen can be tapped to call.
 Search also matches customer names and phone numbers, alongside order, garment
-and stage. This update is implemented locally and has not been deployed.
+and stage. Released as code `469195f9371f1bbf9bfc59140bead593fcfab59d` through Railway
+deployment `7446035e-02f5-40d2-b168-3d2f16fe51cf`. Live verification passed at
+`2026-09-14T07:43:16.201Z`; see `output/qa/bill-history-production-release.json`.
+All 49 web tests, lint, TypeScript and the production build passed before release.
 
 Contacts are resolved from the order's current customer record for only the
 authorized receipt or bounded history page. This also supports earlier receipts;
@@ -60,7 +63,7 @@ is replaced by this migration.
 The worker-only `/api/work/history` route authenticates before query validation.
 Its service obtains the staff ID from the session and filters, counts, sorts and
 pages records in PostgreSQL. Clients cannot request another worker's ID. The
-local customer extension adds only customer name and phone; the list response
+customer extension adds only customer name and phone; the list response
 excludes customer email, measurements, notes, prices, payments, other assignees
 and mutation IDs. A name change or another
 worker sharing the same name does not change history ownership.

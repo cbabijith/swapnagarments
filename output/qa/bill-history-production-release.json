@@ -1,0 +1,115 @@
+{
+  "checkedAt": "2026-09-14T07:43:16.201Z",
+  "origin": "https://swapna-garmentsweb-production.up.railway.app",
+  "codeCommit": "469195f9371f1bbf9bfc59140bead593fcfab59d",
+  "deploymentId": "7446035e-02f5-40d2-b168-3d2f16fe51cf",
+  "checks": {
+    "ownerSetupClosed": true,
+    "/api/session": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/billing": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work/history": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "/api/work/history/not-a-uuid": {
+      "status": 401,
+      "cacheControl": "no-store"
+    },
+    "newBillAndCustomerAssets": true
+  },
+  "pages": {
+    "/": 200,
+    "/orders/release-verification": 200,
+    "/my-work/history": 200,
+    "/my-work/history/00000000-0000-4000-8000-000000000001": 200
+  },
+  "assets": [
+    {
+      "url": "/_next/static/chunks/02xd9c80-gyk5.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/0lfe4uc5wix6o.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3lqlrrt7w5frg.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/06v4gr4d6j-56.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/10_sdt0bv858g.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/turbopack-37fu1nzy6m6um.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1c2olyo_y2d5v.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3-oy-psibzgbn.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/0uqpiblz5f8-h.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3ca3-bs3jddia.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/2-rtuqsgzmno4.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/310vm2bl3xxpt.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1q5kgimx61oi7.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/0cz1d0mv5g_q7.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/23os44ut3_rl3.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/27b1n7jiwiq6m.js",
+      "status": 200
+    }
+  ],
+  "health": {
+    "status": "ok",
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "scope": "Read-only public pages, deployed assets, health, and unsigned API checks. Authenticated behavior verified locally with isolated data.",
+  "deploymentStatus": "success",
+  "deploymentStatusSource": "Authorized Railway production service UI: ACTIVE and Deployment successful",
+  "validation": {
+    "testsPassed": 49,
+    "testsFailed": 0,
+    "lint": "passed",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "browser": "Local desktop and mobile UI passed",
+    "print": "A5 six-piece GST bill and long-order item/payment retention passed"
+  }
+}
