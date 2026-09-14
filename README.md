@@ -1,5 +1,12 @@
 # Swapna Garments — Tailoring Management System
 
+> **Flutter worker app (2026-09-14):** `mobile/` now implements the worker
+> portal using the same Next.js website APIs: work queue/actions, calendar,
+> QR scanning, completion history and profile. It uses feature-owned Riverpod
+> controllers, typed application events and Dart files capped at 300 lines.
+> See [mobile setup and verification](mobile/README.md). Older mobile/backlog
+> descriptions below are historical.
+
 > **Architecture requirement (2026-09-12):** Future website development must
 > follow the feature-driven structure of the owner's Dolce CRM project:
 > feature UI, thin Next.js APIs, server services, and Drizzle domain schemas.
