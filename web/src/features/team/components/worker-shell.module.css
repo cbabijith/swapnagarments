@@ -17,8 +17,20 @@
   border-radius: 24px;
   background: white;
 }
+.shell :global(.worker-nav) {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  padding-inline: max(20px, calc((100% - 880px) / 2));
+}
 .shell :global(.worker-nav a) {
   min-height: 48px;
+  justify-content: center;
+}
+.scanIcon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
 }
 .shell :global(.work-status-filters) {
   display: grid;
@@ -421,6 +433,26 @@
   .shell :global(.worker-nav a[aria-current]) {
     color: var(--green-dark);
     background: #e7f0e6;
+  }
+  .shell :global(.worker-nav) a.scanLink {
+    color: var(--green);
+    background: transparent;
+    gap: 4px;
+  }
+  .scanIcon {
+    width: 46px;
+    height: 42px;
+    margin-top: -18px;
+    border-radius: 12px;
+    background: var(--green);
+    color: white;
+    box-shadow: 0 3px 7px #31523924;
+  }
+  .scanLink[aria-current="page"] .scanIcon {
+    background: var(--green-dark);
+  }
+  .scanLink > span:last-child {
+    white-space: nowrap;
   }
   .shell:global(.worker-shell) :global(.toast) {
     bottom: calc(86px + env(safe-area-inset-bottom));

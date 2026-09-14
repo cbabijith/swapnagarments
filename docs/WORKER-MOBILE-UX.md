@@ -44,3 +44,18 @@ No production business commands were submitted during verification.
 The browser script defaults to `http://localhost:3118`; set `WORKER_TEST_URL` to
 test another local production server. Its Playwright import uses the same bundled
 Windows runtime as the existing browser QA scripts.
+
+## Centered scan navigation — September 14
+
+Worker navigation now reads **My work, Calendar, Scan piece, History, Profile**.
+Scan piece occupies the center of five equal columns at every width. On phones,
+it uses the same raised green 46×42px icon treatment as the admin scan control,
+with a readable label and an accessible link target of at least 48px in height.
+The active scan icon uses a darker green; other tabs retain their selected state.
+
+Verified with synthetic worker data at 320, 390, 768 and 1440px: centered position,
+no horizontal overflow, correct scan route/selected state, and no browser console
+errors. Production build, TypeScript and targeted ESLint passed. The scanner's
+camera and work-resolution behavior are unchanged.
+
+Release status: verified locally; publication pending.

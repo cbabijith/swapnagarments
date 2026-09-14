@@ -106,6 +106,16 @@ export function WorkerShell() {
           Calendar
         </Link>
         <Link
+          href="/scan"
+          className={styles.scanLink}
+          aria-current={pathname === "/scan" ? "page" : undefined}
+        >
+          <span className={styles.scanIcon}>
+            <ScanLine size={23} aria-hidden="true" />
+          </span>
+          <span>Scan piece</span>
+        </Link>
+        <Link
           href="/my-work/history"
           aria-current={
             pathname === "/my-work/history" || historyDetail
@@ -115,13 +125,6 @@ export function WorkerShell() {
         >
           <History size={20} />
           History
-        </Link>
-        <Link
-          href="/scan"
-          aria-current={pathname === "/scan" ? "page" : undefined}
-        >
-          <ScanLine size={20} />
-          Scan piece
         </Link>
         <Link
           href="/my-work/profile"
