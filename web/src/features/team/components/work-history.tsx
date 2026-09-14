@@ -1,4 +1,6 @@
 "use client";
+import { useListPage } from "@/shared/hooks/use-list-page";
+
 import "./team.css";
 import Link from "next/link";
 import { useRef, useState } from "react";
@@ -8,7 +10,7 @@ import { STATIONS } from "@/shared/workspace";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { useDebouncedValue } from "@/shared/hooks/use-feature-query";
 import { EmptyState, PageHeading } from "@/shared/components/ui";
-import { Pagination, QueryState } from "@/shared/components/query-state";
+import { ScrollPagination, QueryState } from "@/shared/components/query-state";
 import { useWorkHistory } from "../hooks/use-work-history";
 import type { WorkHistoryQuery } from "../contracts/work-history";
 import {
@@ -27,12 +29,15 @@ export function WorkHistory() {
   const { today } = useWorkspace();
   const searchInput = useRef<HTMLInputElement>(null);
   const results = useRef<HTMLDivElement>(null);
-  const [page, setPage] = useState(filters.page);
   const [search, setSearch] = useState(filters.q);
   const [station, setStation] = useState<WorkHistoryQuery["station"]>(
     filters.station,
   );
   const debouncedSearch = useDebouncedValue(search);
+  const [page, setPage] = useListPage(
+    JSON.stringify([debouncedSearch, station]),
+    filters.page,
+  );
   const query = useWorkHistory({
     page,
     pageSize: 20,
@@ -243,12 +248,13 @@ export function WorkHistory() {
           </EmptyState>
         )}
         {query.data && (
-          <Pagination
+          <ScrollPagination
             page={query.data.page}
+            loading={query.isRefreshing}
+            error={query.error}
+            retry={query.reload}
             onPageChange={(nextPage) => {
               changeFilters({ page: nextPage });
-              results.current?.focus({ preventScroll: true });
-              results.current?.scrollIntoView({ block: "start" });
             }}
           />
         )}

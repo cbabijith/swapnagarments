@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ArrowUpRight, Download } from "lucide-react";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { useBillingQuery } from "@/features/billing/hooks/use-billing-query";
-import { QueryState, Pagination } from "@/shared/components/query-state";
+import { QueryState, ScrollPagination } from "@/shared/components/query-state";
 import { EmptyState, PageHeading } from "@/shared/components/ui";
 import { balance, paid, money, exportOrders } from "@/shared/workspace";
 
@@ -137,13 +137,19 @@ export function Billing() {
             title="No matching orders"
             text={
               query.data.page.total
-                ? "No orders on this page. Use the page controls below."
+                ? "No matching orders. Try refreshing the list."
                 : "No orders in this payment view."
             }
           />
         )}
         {query.data && (
-          <Pagination page={query.data.page} onPageChange={setPage} />
+          <ScrollPagination
+            page={query.data.page}
+            loading={query.isRefreshing}
+            error={query.error}
+            retry={query.reload}
+            onPageChange={setPage}
+          />
         )}
       </section>
     </>

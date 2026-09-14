@@ -1,8 +1,10 @@
 "use client";
+import { useListPage } from "@/shared/hooks/use-list-page";
+
 import "./team.css";
 import { useState } from "react";
 import { useDebouncedValue } from "@/shared/hooks/use-feature-query";
-import { QueryState, Pagination } from "@/shared/components/query-state";
+import { QueryState, ScrollPagination } from "@/shared/components/query-state";
 import { Dialog } from "@/shared/components/ui";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { STATIONS } from "@/shared/workspace";
@@ -18,11 +20,14 @@ export function AssignWorkDialog({
   onClose: () => void;
 }) {
   const { send } = useWorkspace();
-  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const query = useTeam(page, useDebouncedValue(search), piece.item.station);
+  const debouncedSearch = useDebouncedValue(search);
+  const [page, setPage] = useListPage(
+    JSON.stringify([debouncedSearch, piece.item.station]),
+  );
+  const query = useTeam(page, debouncedSearch, piece.item.station);
   async function assign(assigneeId: string | null) {
     setBusy(true);
     setError("");
@@ -107,7 +112,13 @@ export function AssignWorkDialog({
           </p>
         )}
         {query.data && (
-          <Pagination page={query.data.page} onPageChange={setPage} />
+          <ScrollPagination
+            page={query.data.page}
+            loading={query.isRefreshing}
+            error={query.error}
+            retry={query.reload}
+            onPageChange={setPage}
+          />
         )}
         {error && (
           <p className="form-error" role="alert">

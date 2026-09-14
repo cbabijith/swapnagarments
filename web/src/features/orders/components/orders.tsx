@@ -1,4 +1,6 @@
 "use client";
+import { useListPage } from "@/shared/hooks/use-list-page";
+
 import { DesignSummary } from "@/features/design-library/components/design-summary";
 import {
   pieceSteps,
@@ -31,7 +33,7 @@ import {
   selectPreviewOrders,
 } from "@/features/orders/hooks/use-order-reads";
 import { useDebouncedValue } from "@/shared/hooks/use-feature-query";
-import { QueryState, Pagination } from "@/shared/components/query-state";
+import { QueryState, ScrollPagination } from "@/shared/components/query-state";
 import { useWorkflow } from "@/features/workflow/hooks/use-workflow";
 import { useBilling } from "@/features/billing/hooks/use-billing";
 import { OrderBill } from "@/features/billing/components/order-bill";
@@ -278,8 +280,11 @@ export function OrdersList() {
           />
         )}
         {read.data && (
-          <Pagination
+          <ScrollPagination
             page={read.data.page}
+            loading={read.isRefreshing}
+            error={read.error}
+            retry={read.reload}
             onPageChange={(nextPage) =>
               setPagination({ key: filterKey, page: nextPage })
             }
@@ -302,7 +307,7 @@ export function OrderDetail({ id }: { id: string }) {
     flushSync(() => setPrintLayout(layout));
     window.print();
   }
-  const [activityPage, setActivityPage] = useState(1);
+  const [activityPage, setActivityPage] = useListPage(id);
   const read = useOrderDetail(id, activityPage);
   const data = read.data?.data;
   const { advancePiece, rework } = useWorkflow();
@@ -589,8 +594,11 @@ export function OrderDetail({ id }: { id: string }) {
               </p>
             )}
             {read.data && (
-              <Pagination
+              <ScrollPagination
                 page={read.data.page}
+                loading={read.isRefreshing}
+                error={read.error}
+                retry={read.reload}
                 onPageChange={setActivityPage}
               />
             )}

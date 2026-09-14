@@ -1,0 +1,27 @@
+{
+  "checks": [
+    "Append keeps rows and metadata; repeated scrolling sends one request",
+    "Search resets to page one; empty results stop loading",
+    "Delayed old searches cannot overwrite the current filter",
+    "Failed append retains rows, stops automatic retries and recovers",
+    "Refresh rebuilds loaded pages after records are removed",
+    "/orders appends all 45 records",
+    "/customers/c0 appends all 45 records",
+    "/orders/o0 appends all 45 records",
+    "/billing appends all 45 records",
+    "/team appends all 45 records",
+    "/workflow?station=0 appends all 45 records",
+    "/team?view=work appends all 45 records",
+    "Worker assignment scrolls inside its dialog and retains workloads",
+    "/calendar appends all 45 records",
+    "/settings appends all 25 records",
+    "Daily reports append all 25 records",
+    "/customers appends all 45 records",
+    "/my-work/history appends all 45 records",
+    "/my-work appends all 45 records",
+    "/my-work/calendar appends all 45 records",
+    "Load more works without IntersectionObserver"
+  ],
+  "errors": [],
+  "requestCount": 126
+}

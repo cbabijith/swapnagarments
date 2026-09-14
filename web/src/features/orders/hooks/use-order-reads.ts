@@ -1,6 +1,7 @@
 "use client";
 
-import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
+import { useInfiniteFeatureQuery } from "@/shared/hooks/use-infinite-feature-query";
+import { workspacePageAdapter } from "@/shared/queries/workspace-pages";
 import {
   emptyWorkspace,
   isOpen,
@@ -54,36 +55,37 @@ export function useOrderDirectory(filters: OrderFilters & { page: number }) {
   const params = orderSearchParams(filters);
   params.set("page", String(filters.page));
   params.set("pageSize", String(pageSize));
-  return useFeatureQuery<OrderRead>(`/api/orders?${params}`, (workspace) => {
-    const matches = selectPreviewOrders(workspace, filters);
-    const orders = matches.slice(
-      (filters.page - 1) * pageSize,
-      filters.page * pageSize,
-    );
-    return {
-      revision: 0,
-      data: {
-        ...emptyWorkspace(),
-        orders,
-        customers: workspace.customers.filter((customer) =>
-          orders.some((order) => order.customerId === customer.id),
-        ),
-      },
-      page: {
-        page: filters.page,
-        pageSize,
-        total: matches.length,
-        pageCount: Math.ceil(matches.length / pageSize),
-      },
-    };
-  });
+  return useInfiniteFeatureQuery<OrderRead>(
+    `/api/orders?${params}`,
+    (workspace, page) => {
+      const matches = selectPreviewOrders(workspace, filters);
+      const orders = matches.slice((page - 1) * pageSize, page * pageSize);
+      return {
+        revision: 0,
+        data: {
+          ...emptyWorkspace(),
+          orders,
+          customers: workspace.customers.filter((customer) =>
+            orders.some((order) => order.customerId === customer.id),
+          ),
+        },
+        page: {
+          page,
+          pageSize,
+          total: matches.length,
+          pageCount: Math.ceil(matches.length / pageSize),
+        },
+      };
+    },
+    workspacePageAdapter,
+  );
 }
 
 export function useOrderDetail(id: string, page = 1) {
   const pageSize = 20;
-  return useFeatureQuery<OrderRead>(
+  return useInfiniteFeatureQuery<OrderRead>(
     `/api/orders/${encodeURIComponent(id)}?page=${page}&pageSize=${pageSize}`,
-    (workspace) => {
+    (workspace, page) => {
       const orders = workspace.orders.filter((order) => order.id === id);
       const activity = workspace.activity.filter(
         (entry) => entry.orderId === id,
@@ -106,5 +108,6 @@ export function useOrderDetail(id: string, page = 1) {
         },
       };
     },
+    workspacePageAdapter,
   );
 }

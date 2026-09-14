@@ -1,5 +1,6 @@
 "use client";
-import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
+import { useInfiniteFeatureQuery } from "@/shared/hooks/use-infinite-feature-query";
+import { workspacePageAdapter } from "@/shared/queries/workspace-pages";
 import { emptyWorkspace } from "@/shared/workspace";
 import {
   defaultAssignmentSettings,
@@ -9,9 +10,9 @@ import {
 import type { TeamRead } from "../types/queries";
 export function useTeam(page = 1, q = "", station?: number) {
   const pageSize = 20;
-  return useFeatureQuery<TeamRead>(
+  return useInfiniteFeatureQuery<TeamRead>(
     `/api/team?page=${page}&pageSize=${pageSize}&q=${encodeURIComponent(q)}${station === undefined ? "" : `&eligibleStation=${station}`}`,
-    (data) => {
+    (data, page) => {
       const filtered = data.staff.filter(
         (p) =>
           p.name.toLowerCase().includes(q.toLowerCase()) &&
@@ -33,5 +34,14 @@ export function useTeam(page = 1, q = "", station?: number) {
         },
       };
     },
+    teamPageAdapter,
   );
 }
+
+const teamPageAdapter = {
+  page: workspacePageAdapter.page,
+  merge: (pages: TeamRead[]): TeamRead => ({
+    ...workspacePageAdapter.merge(pages),
+    loads: Object.assign({}, ...pages.map((page) => page.loads)),
+  }),
+};

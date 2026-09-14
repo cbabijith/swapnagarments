@@ -14,8 +14,9 @@ import { SettingsTabs } from "./settings-tabs";
 import { GstSettingsPage } from "./gst-settings";
 import { WorkflowSettings } from "@/features/workflow/components/workflow-settings";
 import { PageHeading } from "@/shared/components/ui";
-import { QueryState, Pagination } from "@/shared/components/query-state";
-import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
+import { QueryState, ScrollPagination } from "@/shared/components/query-state";
+import { useInfiniteFeatureQuery } from "@/shared/hooks/use-infinite-feature-query";
+import { workspacePageAdapter } from "@/shared/queries/workspace-pages";
 import type { WorkspacePage } from "@/shared/contracts/query";
 import { money, formatDate, emptyWorkspace } from "@/shared/workspace";
 import styles from "./catalogue.module.css";
@@ -103,9 +104,9 @@ export function SettingsPage() {
 function DailyReports() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
-  const reports = useFeatureQuery<WorkspacePage>(
+  const reports = useInfiniteFeatureQuery<WorkspacePage>(
     `/api/reports?page=${page}&pageSize=${pageSize}`,
-    (workspace) => {
+    (workspace, page) => {
       const matches = [...(workspace.dayReports ?? [])].sort((a, b) =>
         b.date.localeCompare(a.date),
       );
@@ -123,6 +124,7 @@ function DailyReports() {
         },
       };
     },
+    workspacePageAdapter,
   );
   return (
     <section className={`panel ${styles.reports}`}>
@@ -163,13 +165,19 @@ function DailyReports() {
               </h3>
               <p>
                 {reports.data.page.total
-                  ? "Use the page controls to return to your reports."
+                  ? "Try refreshing the reports."
                   : "Open Overview, choose Daily report, then save your day’s summary."}
               </p>
             </div>
           )}
       {reports.data && (
-        <Pagination page={reports.data.page} onPageChange={setPage} />
+        <ScrollPagination
+          page={reports.data.page}
+          loading={reports.isRefreshing}
+          error={reports.error}
+          retry={reports.reload}
+          onPageChange={setPage}
+        />
       )}
     </section>
   );

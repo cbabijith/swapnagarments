@@ -6,7 +6,7 @@ import { ArrowUpRight, Check, Scissors, ScanLine } from "lucide-react";
 import { useWorkflow } from "@/features/workflow/hooks/use-workflow";
 import { useWorkflowColumn } from "@/features/workflow/hooks/use-workflow-column";
 import { PageHeading, PriorityBadge } from "@/shared/components/ui";
-import { QueryState, Pagination } from "@/shared/components/query-state";
+import { QueryState, ScrollPagination } from "@/shared/components/query-state";
 import { STATIONS, formatDate } from "@/shared/workspace";
 import {
   currentStepName,
@@ -153,11 +153,19 @@ function WorkflowColumn({ station }: { station: number }) {
       {column && !column.pieces.length && !query.isLoading && !query.error && (
         <p className="workflow-empty">
           {column.page.total
-            ? "No pieces on this page. Use the page controls below."
+            ? "No matching pieces. Try refreshing the list."
             : "No pieces at this station."}
         </p>
       )}
-      {column && <Pagination page={column.page} onPageChange={setPage} />}
+      {column && (
+        <ScrollPagination
+          page={column.page}
+          loading={query.isRefreshing}
+          error={query.error}
+          retry={query.reload}
+          onPageChange={setPage}
+        />
+      )}
     </section>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
-import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
+import { useInfiniteFeatureQuery } from "@/shared/hooks/use-infinite-feature-query";
+import { entryPageAdapter } from "@/shared/queries/infinite-pages";
 import type { WorkHistoryQuery } from "../contracts/work-history";
 import type { WorkHistoryRead } from "../types/work-history";
 
@@ -10,17 +11,18 @@ export function useWorkHistory(input: WorkHistoryQuery) {
     q: input.q,
     station: input.station,
   });
-  return useFeatureQuery<WorkHistoryRead>(
+  return useInfiniteFeatureQuery<WorkHistoryRead>(
     `/api/work/history?${params}`,
-    () => ({
+    (_workspace, page) => ({
       revision: 0,
       entries: [],
       page: {
-        page: input.page,
+        page,
         pageSize: input.pageSize,
         total: 0,
         pageCount: 0,
       },
     }),
+    entryPageAdapter,
   );
 }

@@ -1,5 +1,10 @@
 # Feature-driven architecture: alignment with Dolce CRM
 
+Scroll pagination is implemented in the local web application. Lists append
+bounded API pages as their footer approaches the viewport, with a manual Load
+more fallback and retry controls. See [scope and verification](SCROLL-PAGINATION.md).
+This change does not require a database migration or change the page-based API.
+
 The shop calendar is deployed with feature-owned UI/contracts, thin
 authenticated month/day APIs, and server-filtered aggregate/paginated reads.
 See [calendar behavior and validation](CALENDAR.md). No database migration is

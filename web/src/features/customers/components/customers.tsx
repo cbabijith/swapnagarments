@@ -1,4 +1,6 @@
 "use client";
+import { useListPage } from "@/shared/hooks/use-list-page";
+
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
@@ -15,7 +17,7 @@ import {
   useCustomerDetail,
 } from "@/features/customers/hooks/use-customer-reads";
 import { useDebouncedValue } from "@/shared/hooks/use-feature-query";
-import { QueryState, Pagination } from "@/shared/components/query-state";
+import { QueryState, ScrollPagination } from "@/shared/components/query-state";
 import {
   Avatar,
   Dialog,
@@ -140,8 +142,8 @@ function CustomerForm({
 
 export function CustomersList() {
   const [query, setQuery] = useState("");
-  const [page, setPage] = useState(1);
   const search = useDebouncedValue(query);
+  const [page, setPage] = useListPage(search);
   const [add, setAdd] = useState(false);
   const read = useCustomerDirectory(search, page);
   const customers = read.data?.data.customers ?? [];
@@ -211,14 +213,22 @@ export function CustomersList() {
           text="Try another name or phone number, or add a new customer."
         />
       )}
-      {read.data && <Pagination page={read.data.page} onPageChange={setPage} />}
+      {read.data && (
+        <ScrollPagination
+          page={read.data.page}
+          loading={read.isRefreshing}
+          error={read.error}
+          retry={read.reload}
+          onPageChange={setPage}
+        />
+      )}
       {add && <CustomerForm onClose={() => setAdd(false)} />}
     </>
   );
 }
 
 export function CustomerDetail({ id }: { id: string }) {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useListPage(id);
   const read = useCustomerDetail(id, page);
   const [edit, setEdit] = useState(false);
   const customer = read.data?.data.customers.find((entry) => entry.id === id);
@@ -297,13 +307,19 @@ export function CustomerDetail({ id }: { id: string }) {
                 title="No orders to show"
                 text={
                   read.data?.page.total
-                    ? "No orders on this page. Use the page controls below."
+                    ? "No matching orders. Try refreshing the list."
                     : "This customer has no orders yet."
                 }
               />
             )}
             {read.data && (
-              <Pagination page={read.data.page} onPageChange={setPage} />
+              <ScrollPagination
+                page={read.data.page}
+                loading={read.isRefreshing}
+                error={read.error}
+                retry={read.reload}
+                onPageChange={setPage}
+              />
             )}
           </section>
         </div>

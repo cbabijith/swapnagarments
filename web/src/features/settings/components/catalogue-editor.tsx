@@ -14,7 +14,7 @@ import {
   CalendarDays,
   ArrowUpRight,
 } from "lucide-react";
-import { QueryState, Pagination } from "@/shared/components/query-state";
+import { QueryState, ScrollPagination } from "@/shared/components/query-state";
 import { useCatalogue } from "../hooks/use-catalogue";
 import { useSaveCatalogue } from "../hooks/use-save-catalogue";
 import type { Catalogue, Garment } from "../contracts/catalogue";
@@ -255,152 +255,146 @@ export function CatalogueSettings({
               <span />
             </div>
             <ul className={styles.garmentList}>
-              {matches
-                .slice((visiblePage - 1) * pageSize, visiblePage * pageSize)
-                .map((garment) => {
-                  const index = catalogue.garments.findIndex(
-                    (g) => g.id === garment.id,
-                  );
-                  return (
-                    <li key={garment.id} className={styles.garmentRow}>
-                      <div className={styles.garmentIdentity}>
-                        <GarmentImage garment={garment} size={44} />
-                        <div>
-                          <button
-                            type="button"
-                            className={styles.nameButton}
-                            disabled={blocked}
-                            onClick={() => edit(garment)}
-                          >
-                            {garment.name}
-                          </button>
-                          <div className={styles.badges}>
-                            {garment.id === catalogue.defaultGarmentId && (
-                              <span>Default</span>
-                            )}
-                            {!garment.active && (
-                              <span className={styles.archived}>Archived</span>
-                            )}
-                            <small className={styles.mobileMeta}>
-                              {garment.fields.length
-                                ? `${garment.fields.length} fields · ${garment.unit === "in" ? "inches" : "cm"}`
-                                : "No measurements"}
-                            </small>
-                          </div>
-                        </div>
-                      </div>
-                      <div className={styles.templateMeta}>
-                        <strong>
-                          {garment.fields.length
-                            ? `${garment.fields.length} fields`
-                            : "No measurements"}
-                        </strong>
-                        <small>
-                          {garment.unit === "in" ? "Inches" : "Centimetres"}
-                          {garment.presets.length
-                            ? ` · ${garment.presets.length} size presets`
-                            : ""}
-                        </small>
-                      </div>
-                      <span className={styles.price}>
-                        {garment.price ? (
-                          money(garment.price)
-                        ) : (
-                          <small>Set per order</small>
-                        )}
-                      </span>
-                      <div className={styles.rowActions}>
+              {matches.slice(0, visiblePage * pageSize).map((garment) => {
+                const index = catalogue.garments.findIndex(
+                  (g) => g.id === garment.id,
+                );
+                return (
+                  <li key={garment.id} className={styles.garmentRow}>
+                    <div className={styles.garmentIdentity}>
+                      <GarmentImage garment={garment} size={44} />
+                      <div>
                         <button
                           type="button"
-                          className={styles.editButton}
-                          aria-label={`Edit ${garment.name}`}
+                          className={styles.nameButton}
                           disabled={blocked}
                           onClick={() => edit(garment)}
                         >
-                          <Pencil size={15} />
-                          <span>Edit</span>
+                          {garment.name}
                         </button>
-                        <details
-                          className={styles.more}
-                          onBlur={(e) => {
-                            if (!e.currentTarget.contains(e.relatedTarget))
-                              e.currentTarget.open = false;
+                        <div className={styles.badges}>
+                          {garment.id === catalogue.defaultGarmentId && (
+                            <span>Default</span>
+                          )}
+                          {!garment.active && (
+                            <span className={styles.archived}>Archived</span>
+                          )}
+                          <small className={styles.mobileMeta}>
+                            {garment.fields.length
+                              ? `${garment.fields.length} fields · ${garment.unit === "in" ? "inches" : "cm"}`
+                              : "No measurements"}
+                          </small>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={styles.templateMeta}>
+                      <strong>
+                        {garment.fields.length
+                          ? `${garment.fields.length} fields`
+                          : "No measurements"}
+                      </strong>
+                      <small>
+                        {garment.unit === "in" ? "Inches" : "Centimetres"}
+                        {garment.presets.length
+                          ? ` · ${garment.presets.length} size presets`
+                          : ""}
+                      </small>
+                    </div>
+                    <span className={styles.price}>
+                      {garment.price ? (
+                        money(garment.price)
+                      ) : (
+                        <small>Set per order</small>
+                      )}
+                    </span>
+                    <div className={styles.rowActions}>
+                      <button
+                        type="button"
+                        className={styles.editButton}
+                        aria-label={`Edit ${garment.name}`}
+                        disabled={blocked}
+                        onClick={() => edit(garment)}
+                      >
+                        <Pencil size={15} />
+                        <span>Edit</span>
+                      </button>
+                      <details
+                        className={styles.more}
+                        onBlur={(e) => {
+                          if (!e.currentTarget.contains(e.relatedTarget))
+                            e.currentTarget.open = false;
+                        }}
+                      >
+                        <summary
+                          aria-label={`More actions for ${garment.name}`}
+                          aria-disabled={blocked}
+                          onClick={(e) => {
+                            if (blocked) e.preventDefault();
                           }}
                         >
-                          <summary
-                            aria-label={`More actions for ${garment.name}`}
-                            aria-disabled={blocked}
-                            onClick={(e) => {
-                              if (blocked) e.preventDefault();
-                            }}
+                          <Ellipsis size={19} />
+                        </summary>
+                        <div
+                          className={styles.menu}
+                          onClick={(e) => {
+                            const details = e.currentTarget.closest("details");
+                            if (details) details.open = false;
+                          }}
+                        >
+                          <button
+                            type="button"
+                            disabled={
+                              blocked || catalogue.garments.length >= 50
+                            }
+                            onClick={() => duplicate(garment)}
                           >
-                            <Ellipsis size={19} />
-                          </summary>
-                          <div
-                            className={styles.menu}
-                            onClick={(e) => {
-                              const details =
-                                e.currentTarget.closest("details");
-                              if (details) details.open = false;
-                            }}
+                            <Copy size={15} />
+                            Duplicate
+                          </button>
+                          <button
+                            type="button"
+                            disabled={blocked || index === 0}
+                            onClick={() => void listChange(garment, "up")}
                           >
-                            <button
-                              type="button"
-                              disabled={
-                                blocked || catalogue.garments.length >= 50
-                              }
-                              onClick={() => duplicate(garment)}
-                            >
-                              <Copy size={15} />
-                              Duplicate
-                            </button>
-                            <button
-                              type="button"
-                              disabled={blocked || index === 0}
-                              onClick={() => void listChange(garment, "up")}
-                            >
-                              <ArrowUp size={15} />
-                              Move up
-                            </button>
-                            <button
-                              type="button"
-                              disabled={
-                                blocked ||
-                                index === catalogue.garments.length - 1
-                              }
-                              onClick={() => void listChange(garment, "down")}
-                            >
-                              <ArrowDown size={15} />
-                              Move down
-                            </button>
-                            <button
-                              type="button"
-                              disabled={
-                                blocked ||
-                                garment.id === catalogue.defaultGarmentId
-                              }
-                              title={
-                                garment.id === catalogue.defaultGarmentId
-                                  ? "Choose another default garment first"
-                                  : undefined
-                              }
-                              onClick={() =>
-                                void listChange(garment, "archive")
-                              }
-                            >
-                              {garment.active ? (
-                                <Archive size={15} />
-                              ) : (
-                                <ArchiveRestore size={15} />
-                              )}
-                              {garment.active ? "Archive" : "Restore"}
-                            </button>
-                          </div>
-                        </details>
-                      </div>
-                    </li>
-                  );
-                })}
+                            <ArrowUp size={15} />
+                            Move up
+                          </button>
+                          <button
+                            type="button"
+                            disabled={
+                              blocked || index === catalogue.garments.length - 1
+                            }
+                            onClick={() => void listChange(garment, "down")}
+                          >
+                            <ArrowDown size={15} />
+                            Move down
+                          </button>
+                          <button
+                            type="button"
+                            disabled={
+                              blocked ||
+                              garment.id === catalogue.defaultGarmentId
+                            }
+                            title={
+                              garment.id === catalogue.defaultGarmentId
+                                ? "Choose another default garment first"
+                                : undefined
+                            }
+                            onClick={() => void listChange(garment, "archive")}
+                          >
+                            {garment.active ? (
+                              <Archive size={15} />
+                            ) : (
+                              <ArchiveRestore size={15} />
+                            )}
+                            {garment.active ? "Archive" : "Restore"}
+                          </button>
+                        </div>
+                      </details>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
             {!matches.length && (
               <div className={styles.empty}>
@@ -428,7 +422,7 @@ export function CatalogueSettings({
               </div>
             )}
             {pageCount > 1 && (
-              <Pagination
+              <ScrollPagination
                 page={{
                   page: visiblePage,
                   pageSize,
@@ -436,6 +430,7 @@ export function CatalogueSettings({
                   pageCount,
                 }}
                 onPageChange={setPage}
+                disabled={blocked}
               />
             )}
             <div className={styles.catalogueFoot}>

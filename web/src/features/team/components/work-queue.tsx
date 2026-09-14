@@ -1,4 +1,6 @@
 "use client";
+import { useListPage } from "@/shared/hooks/use-list-page";
+
 import "./team.css";
 import Link from "next/link";
 import { useState } from "react";
@@ -15,7 +17,8 @@ import {
   CalendarDays,
   ChevronDown,
 } from "lucide-react";
-import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
+import { useInfiniteFeatureQuery } from "@/shared/hooks/use-infinite-feature-query";
+import { workPageAdapter } from "../hooks/work-pages";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import {
   PageHeading,
@@ -23,7 +26,7 @@ import {
   PriorityBadge,
   Dialog,
 } from "@/shared/components/ui";
-import { QueryState, Pagination } from "@/shared/components/query-state";
+import { QueryState, ScrollPagination } from "@/shared/components/query-state";
 import { STATIONS, formatDate } from "@/shared/workspace";
 import {
   currentStepName,
@@ -48,7 +51,6 @@ export function WorkQueue({
   const params = useSearchParams();
   const router = useRouter();
   const code = params.get("code") ?? undefined;
-  const [page, setPage] = useState(1);
   const [status, setStatus] = useState<WorkQuery["status"]>("all");
   const [station, setStation] = useState<WorkQuery["station"]>("all");
   const [busy, setBusy] = useState("");
@@ -58,6 +60,9 @@ export function WorkQueue({
     piece: WorkPiece;
     operation: "complete" | "block";
   } | null>(null);
+  const [page, setPage] = useListPage(
+    JSON.stringify([status, station, member?.id, code]),
+  );
   const input: WorkQuery = {
     page,
     pageSize: 20,
@@ -74,9 +79,11 @@ export function WorkQueue({
   });
   if (member) search.set("member", member.id);
   if (code) search.set("code", code);
-  const query = useFeatureQuery<WorkRead>(
+  const query = useInfiniteFeatureQuery<WorkRead>(
     `/api/work?${search}`,
-    (data) => previewWork(data, input, worker ? owner.staffId : undefined),
+    (data, page) =>
+      previewWork(data, { ...input, page }, worker ? owner.staffId : undefined),
+    workPageAdapter,
     { keepPreviousData: worker },
   );
   async function update(
@@ -548,8 +555,11 @@ export function WorkQueue({
         </EmptyState>
       )}
       {query.data && (
-        <Pagination
+        <ScrollPagination
           page={query.data.page}
+          loading={query.isRefreshing}
+          error={query.error}
+          retry={query.reload}
           onPageChange={setPage}
           disabled={query.isPreviousData}
         />

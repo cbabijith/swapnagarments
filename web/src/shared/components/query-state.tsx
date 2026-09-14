@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, LoaderCircle } from "lucide-react";
+import { useCallback, useEffect, useRef } from "react";
+import { LoaderCircle } from "lucide-react";
 import type { PageInfo } from "@/shared/contracts/query";
 
 export function QueryState({
@@ -31,49 +32,85 @@ export function QueryState({
   return null;
 }
 
-export function Pagination({
+export function ScrollPagination({
   page,
   onPageChange,
   disabled = false,
+  loading = false,
+  error = "",
+  retry,
 }: {
   page: PageInfo;
   onPageChange: (page: number) => void;
   disabled?: boolean;
+  loading?: boolean;
+  error?: string;
+  retry?: () => void;
 }) {
-  if (page.total === 0 && page.page <= 1) return null;
-  const start = (page.page - 1) * page.pageSize + 1;
+  const sentinel = useRef<HTMLDivElement>(null);
+  const requested = useRef(false);
+  const hasMore = page.page < page.pageCount;
+  const loadMore = useCallback(() => {
+    if (!hasMore || loading || disabled || error || requested.current) return;
+    requested.current = true;
+    onPageChange(page.page + 1);
+  }, [hasMore, loading, disabled, error, onPageChange, page.page]);
+  useEffect(() => {
+    requested.current = false;
+  }, [page.page, page.total, loading]);
+  useEffect(() => {
+    const target = sentinel.current;
+    if (
+      !target ||
+      !hasMore ||
+      loading ||
+      disabled ||
+      error ||
+      typeof IntersectionObserver === "undefined"
+    )
+      return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) loadMore();
+      },
+      { rootMargin: "0px 0px 200px 0px" },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [hasMore, loading, disabled, error, loadMore]);
+  if (page.total === 0 && !error) return null;
   const end = Math.min(page.page * page.pageSize, page.total);
   return (
-    <nav className="query-pagination" aria-label="Record pages">
-      <span>
-        {start > page.total
-          ? `0 of ${page.total}`
-          : `${start}–${end} of ${page.total}`}
+    <div
+      ref={sentinel}
+      className="query-pagination"
+      aria-label="More records"
+      aria-busy={loading}
+    >
+      <span role="status" aria-live="polite">
+        {loading
+          ? "Loading records…"
+          : `${end} of ${page.total} loaded${hasMore ? "" : " · All records loaded"}`}
       </span>
-      {(page.pageCount > 1 || page.page > 1) && (
-        <div>
-          <button
-            type="button"
-            className="button small-button"
-            disabled={disabled || page.page <= 1}
-            onClick={() => onPageChange(page.page - 1)}
-            aria-label="Previous page"
-          >
-            <ChevronLeft size={16} />
-            Previous
-          </button>
-          <button
-            type="button"
-            className="button small-button"
-            disabled={disabled || page.page >= page.pageCount}
-            onClick={() => onPageChange(page.page + 1)}
-            aria-label="Next page"
-          >
-            Next
-            <ChevronRight size={16} />
-          </button>
-        </div>
-      )}
-    </nav>
+      {error ? (
+        <button
+          type="button"
+          className="button small-button"
+          onClick={retry}
+          disabled={disabled || loading}
+        >
+          Try again
+        </button>
+      ) : hasMore ? (
+        <button
+          type="button"
+          className="button small-button"
+          onClick={loadMore}
+          disabled={disabled || loading}
+        >
+          {loading ? "Loading…" : "Load more"}
+        </button>
+      ) : null}
+    </div>
   );
 }

@@ -1,14 +1,15 @@
 "use client";
 
-import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
+import { useInfiniteFeatureQuery } from "@/shared/hooks/use-infinite-feature-query";
+import { uniqueRecords } from "@/shared/queries/infinite-pages";
 import { isOpen, prioritySort, shopDate } from "@/shared/workspace";
 import type { WorkflowRead } from "@/features/workflow/types/queries";
 
 export function useWorkflowColumn(station: number, page: number) {
   const pageSize = 20;
-  return useFeatureQuery<WorkflowRead>(
+  return useInfiniteFeatureQuery<WorkflowRead>(
     `/api/workflow?station=${station}&page=${page}&pageSize=${pageSize}`,
-    (workspace) => {
+    (workspace, page) => {
       const pieces = workspace.orders
         .filter(isOpen)
         .sort(prioritySort)
@@ -48,5 +49,27 @@ export function useWorkflowColumn(station: number, page: number) {
         ],
       };
     },
+    workflowPageAdapter,
   );
 }
+
+const workflowPageAdapter = {
+  page: (data: WorkflowRead) => data.columns[0].page,
+  merge: (pages: WorkflowRead[]): WorkflowRead => {
+    const latest = pages[pages.length - 1];
+    return {
+      ...latest,
+      columns: latest.columns.map((column) => ({
+        ...column,
+        pieces: uniqueRecords(
+          pages.flatMap(
+            (page) =>
+              page.columns.find((entry) => entry.station === column.station)
+                ?.pieces ?? [],
+          ),
+          (piece) => piece.item.id,
+        ),
+      })),
+    };
+  },
+};

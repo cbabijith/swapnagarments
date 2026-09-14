@@ -1,5 +1,7 @@
 "use client";
 import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
+import { useInfiniteFeatureQuery } from "@/shared/hooks/use-infinite-feature-query";
+import { entryPageAdapter } from "@/shared/queries/infinite-pages";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { shopDate } from "@/shared/workspace";
 import {
@@ -27,8 +29,15 @@ export function useWorkCalendarDay(input: WorkCalendarDayQuery) {
     page: String(input.page),
     pageSize: String(input.pageSize),
   });
-  return useFeatureQuery<WorkCalendarDayRead>(
+  return useInfiniteFeatureQuery<WorkCalendarDayRead>(
     `/api/work/calendar/day?${params}`,
-    (data) => previewWorkCalendarDay(data, owner.staffId, input, shopDate()),
+    (data, page) =>
+      previewWorkCalendarDay(
+        data,
+        owner.staffId,
+        { ...input, page },
+        shopDate(),
+      ),
+    entryPageAdapter,
   );
 }

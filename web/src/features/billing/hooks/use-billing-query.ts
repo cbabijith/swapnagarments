@@ -1,14 +1,15 @@
 "use client";
 
-import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
+import { useInfiniteFeatureQuery } from "@/shared/hooks/use-infinite-feature-query";
+import { workspacePageAdapter } from "@/shared/queries/workspace-pages";
 import { emptyWorkspace, balance, paid } from "@/shared/workspace";
 import type { BillingRead } from "@/features/billing/types/queries";
 
 export function useBillingQuery(filter: string, page: number) {
   const pageSize = 20;
-  return useFeatureQuery<BillingRead>(
+  return useInfiniteFeatureQuery<BillingRead>(
     `/api/billing?filter=${filter}&page=${page}&pageSize=${pageSize}`,
-    (workspace) => {
+    (workspace, page) => {
       const matches = workspace.orders.filter(
         (order) =>
           order.status !== "cancelled" &&
@@ -42,5 +43,6 @@ export function useBillingQuery(filter: string, page: number) {
         },
       };
     },
+    workspacePageAdapter,
   );
 }

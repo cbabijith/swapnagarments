@@ -14,7 +14,7 @@ import {
   useCalendarMonth,
 } from "@/features/calendar/hooks/use-calendar";
 import { PageHeading, EmptyState, StatusBadge } from "@/shared/components/ui";
-import { Pagination, QueryState } from "@/shared/components/query-state";
+import { ScrollPagination, QueryState } from "@/shared/components/query-state";
 import { money, shopDate } from "@/shared/workspace";
 import styles from "./calendar.module.css";
 import { CalendarMonthPanel, dateLabel } from "./calendar-month-panel";
@@ -195,8 +195,11 @@ export function Calendar() {
             </ul>
           )}
           {dayQuery.data && (
-            <Pagination
+            <ScrollPagination
               page={dayQuery.data.page}
+              loading={dayQuery.isRefreshing}
+              error={dayQuery.error}
+              retry={dayQuery.reload}
               disabled={dayQuery.isLoading}
               onPageChange={(page) =>
                 setSelection((current) => ({ ...current, page }))

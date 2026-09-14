@@ -1,4 +1,6 @@
 "use client";
+import { useListPage } from "@/shared/hooks/use-list-page";
+
 import Link from "next/link";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -11,7 +13,7 @@ import {
   Search,
 } from "lucide-react";
 import { useDebouncedValue } from "@/shared/hooks/use-feature-query";
-import { QueryState, Pagination } from "@/shared/components/query-state";
+import { QueryState, ScrollPagination } from "@/shared/components/query-state";
 import { Avatar, EmptyState, PageHeading } from "@/shared/components/ui";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { STATIONS, type Employee } from "@/shared/workspace";
@@ -23,7 +25,6 @@ import { WorkQueue } from "./work-queue";
 export function Team() {
   const params = useSearchParams();
   const { send } = useWorkspace();
-  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState(
     params.get("view") === "work" ? "work" : "members",
@@ -35,7 +36,9 @@ export function Team() {
   const [rules, setRules] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const query = useTeam(page, useDebouncedValue(search));
+  const debouncedSearch = useDebouncedValue(search);
+  const [page, setPage] = useListPage(debouncedSearch);
+  const query = useTeam(page, debouncedSearch);
   const settings = query.data?.settings;
   async function toggleAutomatic() {
     if (!settings) return;
@@ -280,7 +283,13 @@ export function Team() {
             />
           )}
           {query.data && (
-            <Pagination page={query.data.page} onPageChange={setPage} />
+            <ScrollPagination
+              page={query.data.page}
+              loading={query.isRefreshing}
+              error={query.error}
+              retry={query.reload}
+              onPageChange={setPage}
+            />
           )}
         </>
       ) : (

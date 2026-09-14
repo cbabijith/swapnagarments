@@ -1,6 +1,8 @@
 "use client";
 
 import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
+import { useInfiniteFeatureQuery } from "@/shared/hooks/use-infinite-feature-query";
+import { entryPageAdapter } from "@/shared/queries/infinite-pages";
 import { shopDate } from "@/shared/workspace";
 import {
   selectCalendarDay,
@@ -25,8 +27,10 @@ export function useCalendarDay(input: CalendarDayQuery) {
     page: String(input.page),
     pageSize: String(input.pageSize),
   });
-  return useFeatureQuery<CalendarDayRead>(
+  return useInfiniteFeatureQuery<CalendarDayRead>(
     `/api/calendar/day?${params}`,
-    (workspace) => selectCalendarDay(workspace, input, shopDate()),
+    (workspace, page) =>
+      selectCalendarDay(workspace, { ...input, page }, shopDate()),
+    entryPageAdapter,
   );
 }
