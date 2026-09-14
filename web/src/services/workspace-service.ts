@@ -29,6 +29,7 @@ import { reportService } from "./report-service";
 import { settingsService } from "./settings-service";
 import { measurementService } from "./measurement-service";
 import { intakeService } from "./intake-service";
+import { recordWorkCompletion } from "./work-history-service";
 import {
   readStoredWorkspace,
   persistStoredWorkspace,
@@ -205,6 +206,13 @@ export async function executeWorkspaceCommand(
       type: eventType,
       resultId: result.resultId ?? null,
     });
+    await recordWorkCompletion(
+      tx,
+      action,
+      snapshot.data,
+      input.mutationId,
+      now.toISOString(),
+    );
     if (header.storageModel === "relational")
       await recordWorkflowHistory(
         tx,

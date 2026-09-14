@@ -2,16 +2,31 @@
 import Link from "next/link";
 import { Suspense, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Scissors, ScanLine, ListTodo, LogOut, X } from "lucide-react";
+import {
+  Scissors,
+  ScanLine,
+  ListTodo,
+  History,
+  UserRound,
+  LogOut,
+  X,
+} from "lucide-react";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
 import { WorkQueue } from "./work-queue";
+import { WorkHistory } from "./work-history";
+import { WorkerProfilePage } from "./worker-profile";
 import { Scan } from "@/features/qr-tags/components/qr-tags";
 export function WorkerShell() {
   const { owner, signOut, notice, notify } = useWorkspace();
   const pathname = usePathname();
   const router = useRouter();
   useEffect(() => {
-    if (pathname !== "/my-work" && pathname !== "/scan")
+    if (
+      pathname !== "/my-work" &&
+      pathname !== "/my-work/history" &&
+      pathname !== "/my-work/profile" &&
+      pathname !== "/scan"
+    )
       router.replace("/my-work");
   }, [pathname, router]);
   return (
@@ -27,7 +42,14 @@ export function WorkerShell() {
           </strong>
         </Link>
         <div>
-          <span>{owner.name}</span>
+          <Link
+            className="worker-account-link"
+            href="/my-work/profile"
+            aria-label={`View ${owner.name}'s profile`}
+          >
+            <UserRound size={17} />
+            <span>{owner.name}</span>
+          </Link>
           <button className="button" onClick={() => void signOut()}>
             <LogOut size={16} />
             Sign out
@@ -36,7 +58,15 @@ export function WorkerShell() {
       </header>
       <main className="page-content" id="main-content">
         <Suspense fallback={<p>Loading your work…</p>}>
-          {pathname === "/scan" ? <Scan /> : <WorkQueue />}
+          {pathname === "/scan" ? (
+            <Scan />
+          ) : pathname === "/my-work/history" ? (
+            <WorkHistory />
+          ) : pathname === "/my-work/profile" ? (
+            <WorkerProfilePage />
+          ) : (
+            <WorkQueue />
+          )}
         </Suspense>
       </main>
       <nav className="worker-nav" aria-label="Worker navigation">
@@ -48,11 +78,25 @@ export function WorkerShell() {
           My work
         </Link>
         <Link
+          href="/my-work/history"
+          aria-current={pathname === "/my-work/history" ? "page" : undefined}
+        >
+          <History size={20} />
+          History
+        </Link>
+        <Link
           href="/scan"
           aria-current={pathname === "/scan" ? "page" : undefined}
         >
           <ScanLine size={20} />
           Scan piece
+        </Link>
+        <Link
+          href="/my-work/profile"
+          aria-current={pathname === "/my-work/profile" ? "page" : undefined}
+        >
+          <UserRound size={20} />
+          Profile
         </Link>
       </nav>
       {notice && (

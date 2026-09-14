@@ -12,6 +12,7 @@ import {
   Shuffle,
   X,
   RefreshCw,
+  History,
 } from "lucide-react";
 import { useFeatureQuery } from "@/shared/hooks/use-feature-query";
 import { useWorkspace } from "@/shared/compat/workspace-provider";
@@ -30,6 +31,7 @@ import {
 import { previewWork } from "../domain/queries";
 import type { WorkRead, WorkPiece, WorkQuery } from "../types/queries";
 import { AssignWorkDialog } from "./assign-work-dialog";
+import { WorkerProfileCard } from "./worker-profile-card";
 import { AssetImage } from "@/features/design-library/components/asset-image";
 
 export function WorkQueue({
@@ -142,12 +144,19 @@ export function WorkQueue({
               : "Assign, start, and track every piece at its current station."
           }
         >
+          {worker && (
+            <Link className="button" href="/my-work/history">
+              <History size={17} />
+              Work history
+            </Link>
+          )}
           <Link className="button primary" href="/scan">
             <ScanLine size={17} />
             Scan a piece
           </Link>
         </PageHeading>
       )}
+      {worker && !embedded && <WorkerProfileCard />}
       {summary && (
         <div className="work-summary">
           {(

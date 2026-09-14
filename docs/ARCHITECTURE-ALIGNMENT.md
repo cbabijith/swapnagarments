@@ -1,5 +1,10 @@
 # Feature-driven architecture: alignment with Dolce CRM
 
+Worker completion history is implemented locally and awaits deployment. Its
+feature UI, authenticated read service and additive migration 10 retain completed
+stages by worker ID, independently of the active queue and storage selector.
+See [behavior, earlier-record recovery and validation](WORKER-HISTORY.md).
+
 GST settings and compact customer bills are implemented in the billing
 and settings features. Shared billing domain calculations are used by intake and
 server services; per-order tax snapshots keep payment balances, SQL billing reads,

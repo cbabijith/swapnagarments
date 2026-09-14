@@ -12,6 +12,7 @@ node_modules/
 
 # testing
 /coverage
+/output/qa/worker-profile-*
 
 # next.js
 .next/

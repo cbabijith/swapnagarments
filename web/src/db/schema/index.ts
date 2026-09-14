@@ -6,6 +6,7 @@ export * from "./billing";
 export * from "./workflow";
 export * from "./reports";
 export * from "./team";
+export * from "./work-history";
 export * from "./activity";
 export * from "./backups";
 export * from "./catalogue";
