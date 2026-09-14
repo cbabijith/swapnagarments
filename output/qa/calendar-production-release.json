@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-09-14T06:17:04.148Z",
+  "origin": "https://swapna-garmentsweb-production.up.railway.app",
+  "commit": "af42cda351ca57464fd43cf7c8d5bb0eb8e8c1f7",
+  "deploymentId": "f21081d2-bd21-4017-98c3-049d20404a14",
+  "deploymentStatus": "successful",
+  "health": {
+    "database": "connected",
+    "bucket": "connected"
+  },
+  "routes": [
+    {
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/calendar",
+      "status": 200
+    },
+    {
+      "path": "/orders",
+      "status": 200
+    },
+    {
+      "path": "/api/calendar?month=2026-09",
+      "status": 401
+    },
+    {
+      "path": "/api/calendar/day?date=2026-09-14",
+      "status": 401
+    },
+    {
+      "path": "/api/session",
+      "status": 401
+    }
+  ],
+  "assetsChecked": 11,
+  "calendarAssets": [
+    "/_next/static/chunks/3-d-ky6dy6mgc.js"
+  ],
+  "ownerSetupClosed": true,
+  "liveBusinessWrites": 0
+}

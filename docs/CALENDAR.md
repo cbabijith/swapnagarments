@@ -1,7 +1,7 @@
 # Shop calendar
 
-Implemented locally on September 14, 2026, following the month-grid and selected-day
-list in Dolce CRM's `ProfileCalendar.tsx`. This feature has not been deployed.
+Deployed on September 14, 2026, following the month-grid and selected-day
+list in Dolce CRM's `ProfileCalendar.tsx`.
 
 ## Using the calendar
 
@@ -65,3 +65,19 @@ Preview checks use sample data; database integration checks use isolated fixture
 
 Final checks passed: `bun run build` (web and backend), `bun run lint`, the
 web TypeScript check, and all 40 tests in `bun run test`.
+
+## Production release
+
+- Calendar code: `af42cda351ca57464fd43cf7c8d5bb0eb8e8c1f7`, published to `main` and `shahil`.
+- Railway deployment: `f21081d2-bd21-4017-98c3-049d20404a14`, successful.
+- Live calendar: https://swapna-garmentsweb-production.up.railway.app/calendar
+- Verified at `2026-09-14T06:17:04.148Z`: health, Overview, Calendar and Orders
+  returned HTTP 200; database and bucket reported connected. Both new calendar
+  APIs returned HTTP 401 without a session and retained `Cache-Control: no-store`.
+- All 11 calendar-page script assets loaded successfully; the new month/day query
+  code was present in the deployed client bundle. Owner setup remained closed.
+- The release was built and all 40 tests rerun in a clean checkout with the
+  committed npm lockfile and the existing Railway build configuration.
+- Production verification was read-only. No shop business records were changed.
+
+Machine-readable checks: `output/qa/calendar-production-release.json`.
