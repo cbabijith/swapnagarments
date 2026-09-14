@@ -2,7 +2,7 @@
 
 Deployed and verified on Railway, September 14, 2026.
 
-A [details screen extension](WORKER-HISTORY-DETAILS.md) is implemented locally
+A [details screen extension](WORKER-HISTORY-DETAILS.md) is deployed and verified
 with immutable task snapshots and worker-scoped reference image access. Its
 deployment status is tracked separately from the release below.
 
